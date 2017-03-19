@@ -2,97 +2,36 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
-//#include <FS.h>
 #include <Hash.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <SD.h>
-//#include <SPIFFSEditor.h>
 
 // SKETCH BEGIN
 AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");
-AsyncEventSource events("/events");
-
-void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
-  if(type == WS_EVT_CONNECT){
-    Serial.printf("ws[%s][%u] connect\n", server->url(), client->id());
-    client->printf("Hello Client %u :)", client->id());
-    client->ping();
-  } else if(type == WS_EVT_DISCONNECT){
-    Serial.printf("ws[%s][%u] disconnect: %u\n", server->url(), client->id());
-  } else if(type == WS_EVT_ERROR){
-    Serial.printf("ws[%s][%u] error(%u): %s\n", server->url(), client->id(), *((uint16_t*)arg), (char*)data);
-  } else if(type == WS_EVT_PONG){
-    Serial.printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");
-  } else if(type == WS_EVT_DATA){
-    AwsFrameInfo * info = (AwsFrameInfo*)arg;
-    String msg = "";
-    if(info->final && info->index == 0 && info->len == len){
-      //the whole message is in a single frame and we got all of it's data
-      Serial.printf("ws[%s][%u] %s-message[%llu]: ", server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
-
-      if(info->opcode == WS_TEXT){
-        for(size_t i=0; i < info->len; i++) {
-          msg += (char) data[i];
-        }
-      } else {
-        char buff[3];
-        for(size_t i=0; i < info->len; i++) {
-          sprintf(buff, "%02x ", (uint8_t) data[i]);
-          msg += buff ;
-        }
-      }
-      Serial.printf("%s\n",msg.c_str());
-
-      if(info->opcode == WS_TEXT)
-        client->text("I got your text message");
-      else
-        client->binary("I got your binary message");
-    } else {
-      //message is comprised of multiple frames or the frame is split into multiple packets
-      if(info->index == 0){
-        if(info->num == 0)
-          Serial.printf("ws[%s][%u] %s-message start\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
-        Serial.printf("ws[%s][%u] frame[%u] start[%llu]\n", server->url(), client->id(), info->num, info->len);
-      }
-
-      Serial.printf("ws[%s][%u] frame[%u] %s[%llu - %llu]: ", server->url(), client->id(), info->num, (info->message_opcode == WS_TEXT)?"text":"binary", info->index, info->index + len);
-
-      if(info->opcode == WS_TEXT){
-        for(size_t i=0; i < info->len; i++) {
-          msg += (char) data[i];
-        }
-      } else {
-        char buff[3];
-        for(size_t i=0; i < info->len; i++) {
-          sprintf(buff, "%02x ", (uint8_t) data[i]);
-          msg += buff ;
-        }
-      }
-      Serial.printf("%s\n",msg.c_str());
-
-      if((info->index + len) == info->len){
-        Serial.printf("ws[%s][%u] frame[%u] end[%llu]\n", server->url(), client->id(), info->num, info->len);
-        if(info->final){
-          Serial.printf("ws[%s][%u] %s-message end\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
-          if(info->message_opcode == WS_TEXT)
-            client->text("I got your text message");
-          else
-            client->binary("I got your binary message");
-        }
-      }
-    }
-  }
-}
 
 const char* ssid = SSID_NAME;
 const char* password = SSID_PASSWORD;
-// const char* ssid = "*******";
-// const char* password = "*******";
-const char * hostName = "esp-async";
+
+const char* hostName = "esp-async";
 const char* http_username = "admin";
 const char* http_password = "admin";
+
+void printInfo()
+{
+    Serial.printf("ESP STARTED!\n");
+    Serial.printf("Heap: %d\n", ESP.getFreeHeap());
+    Serial.printf("SDK: %s\n", ESP.getSdkVersion());
+    Serial.printf("Cpu_freq: %d\n", ESP.getCpuFreqMHz());
+    Serial.printf("Flash size: %d\n", ESP.getFlashChipRealSize());
+    Serial.printf("Sketch size: %d\n", ESP.getSketchSize());
+    Serial.printf("Sketch free size: %d\n", ESP.getFreeSketchSpace());
+}
+
+String getShortFileName(String filename)
+{
+    
+}
 
 void setup(){
   Serial.begin(115200);
@@ -115,37 +54,26 @@ void setup(){
         return;
     };
 
-  //Send OTA events to the browser
-  ArduinoOTA.onStart([]() { events.send("Update Start", "ota"); });
-  ArduinoOTA.onEnd([]() { events.send("Update End", "ota"); });
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    char p[32];
-    sprintf(p, "Progress: %u%%\n", (progress/(total/100)));
-    events.send(p, "ota");
-  });
-  ArduinoOTA.onError([](ota_error_t error) {
-    if(error == OTA_AUTH_ERROR) events.send("Auth Failed", "ota");
-    else if(error == OTA_BEGIN_ERROR) events.send("Begin Failed", "ota");
-    else if(error == OTA_CONNECT_ERROR) events.send("Connect Failed", "ota");
-    else if(error == OTA_RECEIVE_ERROR) events.send("Recieve Failed", "ota");
-    else if(error == OTA_END_ERROR) events.send("End Failed", "ota");
-  });
-  ArduinoOTA.setHostname(hostName);
-  ArduinoOTA.begin();
+    ArduinoOTA.onStart([]() {
+     Serial.println("Start");
+     });
+     ArduinoOTA.onEnd([]() {
+     Serial.println("\nEnd");
+     });
+     ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+     Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+     });
+     ArduinoOTA.onError([](ota_error_t error) {
+     Serial.printf("Error[%u]: ", error);
+     if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+     else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+     else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+     else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+     else if (error == OTA_END_ERROR) Serial.println("End Failed");
+     });
+     ArduinoOTA.begin();
 
   MDNS.addService("http","tcp",80);
-
-  //SPIFFS.begin();
-
-  ws.onEvent(onWsEvent);
-  server.addHandler(&ws);
-
-  events.onConnect([](AsyncEventSourceClient *client){
-    client->send("hello!",NULL,millis(),1000);
-  });
-  server.addHandler(&events);
-
-  //server.addHandler(new SPIFFSEditor(http_username,http_password));
 
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
@@ -154,8 +82,9 @@ void setup(){
 
 
   server.on("/", HTTP_ANY, [](AsyncWebServerRequest *request){
+      Serial.printf("Received get: %s\n", request->url().c_str());
       AsyncWebServerResponse *response = request->beginChunkedResponse("text/html",  [](uint8_t* buffer, size_t maxLen, size_t index) {
-          sd::File file = SD.open("/WWW/INDEX~1.HTM");
+          sd::File file = SD.open("/www/index.html");
           file.seek(index);
           size_t readedSize = file.read(buffer, maxLen);
           file.close();
@@ -165,88 +94,89 @@ void setup(){
       request->send(response);
   });
 
-  server.on("/index", HTTP_ANY, [](AsyncWebServerRequest *request){
-      AsyncWebServerResponse *response = request->beginChunkedResponse("text/html",  [](uint8_t* buffer, size_t maxLen, size_t index) {
-          sd::File file = SD.open("/WWW/INDEX~1.HTM");
-          file.seek(index);
-          size_t readedSize = file.read(buffer, maxLen);
-          file.close();
-          return readedSize;
-      });
+  // server.on("/index", HTTP_ANY, [](AsyncWebServerRequest *request){
+  //     Serial.printf("Received get: %s\n", request->url().c_str());
+  //     AsyncWebServerResponse *response = request->beginChunkedResponse("text/html",  [](uint8_t* buffer, size_t maxLen, size_t index) {
+  //         sd::File file = SD.open("/WWW/INDEX~1.HTM");
+  //         file.seek(index);
+  //         size_t readedSize = file.read(buffer, maxLen);
+  //         file.close();
+  //         return readedSize;
+  //     });
+  //
+  //     request->send(response);
+  // });
 
-      request->send(response);
-  });
-
-  server.on("/css/foundation.css", HTTP_ANY, [](AsyncWebServerRequest *request){
-      AsyncWebServerResponse *response = request->beginChunkedResponse("text/css",  [](uint8_t* buffer, size_t maxLen, size_t index) {
-          sd::File file = SD.open("/WWW/CSS/FOUNDA~2.CSS");
-          file.seek(index);
-          size_t readedSize = file.read(buffer, maxLen);
-          file.close();
-          return readedSize;
-      });
-
-      request->send(response);
-  });
-  server.on("/js/app.js", HTTP_ANY, [](AsyncWebServerRequest *request){
-      AsyncWebServerResponse *response = request->beginChunkedResponse("text/html",  [](uint8_t* buffer, size_t maxLen, size_t index) {
-          sd::File file = SD.open("/WWW/JS/APP.JS");
-          file.seek(index);
-          size_t readedSize = file.read(buffer, maxLen);
-          file.close();
-          return readedSize;
-      });
-
-      request->send(response);
-  });
-
-  server.on("/js/vendor/jquery.js", HTTP_ANY, [](AsyncWebServerRequest *request){
-      AsyncWebServerResponse *response = request->beginChunkedResponse("text/html",  [](uint8_t* buffer, size_t maxLen, size_t index) {
-          sd::File file = SD.open("/WWW/JS/VENDOR/JQUERY.JS");
-          file.seek(index);
-          size_t readedSize = file.read(buffer, maxLen);
-          file.close();
-          return readedSize;
-      });
-
-      request->send(response);
-  });
-
-  server.on("/js/vendor/foundation.js", HTTP_ANY, [](AsyncWebServerRequest *request){
-      AsyncWebServerResponse *response = request->beginChunkedResponse("text/html",  [](uint8_t* buffer, size_t maxLen, size_t index) {
-          sd::File file = SD.open("/WWW/JS/VENDOR/FOUNDA~2.JS");
-          file.seek(index);
-          size_t readedSize = file.read(buffer, maxLen);
-          file.close();
-          return readedSize;
-      });
-
-      request->send(response);
-  });
-
-  server.on("/css/app.css", HTTP_ANY, [](AsyncWebServerRequest *request){
-      AsyncWebServerResponse *response = request->beginChunkedResponse("text/css",  [](uint8_t* buffer, size_t maxLen, size_t index) {
-          sd::File file = SD.open("/WWW/CSS/APP.CSS");
-          file.seek(index);
-          size_t readedSize = file.read(buffer, maxLen);
-          file.close();
-          return readedSize;
-      });
-
-      request->send(response);
-  });
-
-  server.on("/js/vendor/what-input.js", HTTP_ANY, [](AsyncWebServerRequest *request){
-      AsyncWebServerResponse *response = request->beginChunkedResponse("text/html",  [](uint8_t* buffer, size_t maxLen, size_t index) {
-          sd::File file = SD.open("/WWW/JS/VENDOR/WHAT-I~1.JS");
-          file.seek(index);
-          size_t readedSize = file.read(buffer, maxLen);
-          file.close();
-          return readedSize;
-      });
-
-      request->send(response);
-  });
+  // server.on("/css/foundation.css", HTTP_ANY, [](AsyncWebServerRequest *request){
+  //     AsyncWebServerResponse *response = request->beginChunkedResponse("text/css",  [](uint8_t* buffer, size_t maxLen, size_t index) {
+  //         sd::File file = SD.open("/WWW/CSS/FOUNDA~2.CSS");
+  //         file.seek(index);
+  //         size_t readedSize = file.read(buffer, maxLen);
+  //         file.close();
+  //         return readedSize;
+  //     });
+  //
+  //     request->send(response);
+  // });
+  // server.on("/js/app.js", HTTP_ANY, [](AsyncWebServerRequest *request){
+  //     AsyncWebServerResponse *response = request->beginChunkedResponse("text/html",  [](uint8_t* buffer, size_t maxLen, size_t index) {
+  //         sd::File file = SD.open("/WWW/JS/APP.JS");
+  //         file.seek(index);
+  //         size_t readedSize = file.read(buffer, maxLen);
+  //         file.close();
+  //         return readedSize;
+  //     });
+  //
+  //     request->send(response);
+  // });
+  //
+  // server.on("/js/vendor/jquery.js", HTTP_ANY, [](AsyncWebServerRequest *request){
+  //     AsyncWebServerResponse *response = request->beginChunkedResponse("text/html",  [](uint8_t* buffer, size_t maxLen, size_t index) {
+  //         sd::File file = SD.open("/WWW/JS/VENDOR/JQUERY.JS");
+  //         file.seek(index);
+  //         size_t readedSize = file.read(buffer, maxLen);
+  //         file.close();
+  //         return readedSize;
+  //     });
+  //
+  //     request->send(response);
+  // });
+  //
+  // server.on("/js/vendor/foundation.js", HTTP_ANY, [](AsyncWebServerRequest *request){
+  //     AsyncWebServerResponse *response = request->beginChunkedResponse("text/html",  [](uint8_t* buffer, size_t maxLen, size_t index) {
+  //         sd::File file = SD.open("/WWW/JS/VENDOR/FOUNDA~2.JS");
+  //         file.seek(index);
+  //         size_t readedSize = file.read(buffer, maxLen);
+  //         file.close();
+  //         return readedSize;
+  //     });
+  //
+  //     request->send(response);
+  // });
+  //
+  // server.on("/css/app.css", HTTP_ANY, [](AsyncWebServerRequest *request){
+  //     AsyncWebServerResponse *response = request->beginChunkedResponse("text/css",  [](uint8_t* buffer, size_t maxLen, size_t index) {
+  //         sd::File file = SD.open("/WWW/CSS/APP.CSS");
+  //         file.seek(index);
+  //         size_t readedSize = file.read(buffer, maxLen);
+  //         file.close();
+  //         return readedSize;
+  //     });
+  //
+  //     request->send(response);
+  // });
+  //
+  // server.on("/js/vendor/what-input.js", HTTP_ANY, [](AsyncWebServerRequest *request){
+  //     AsyncWebServerResponse *response = request->beginChunkedResponse("text/html",  [](uint8_t* buffer, size_t maxLen, size_t index) {
+  //         sd::File file = SD.open("/WWW/JS/VENDOR/WHAT-I~1.JS");
+  //         file.seek(index);
+  //         size_t readedSize = file.read(buffer, maxLen);
+  //         file.close();
+  //         return readedSize;
+  //     });
+  //
+  //     request->send(response);
+  // });
 
 
 
@@ -311,8 +241,65 @@ void setup(){
       Serial.printf("BodyEnd: %u\n", total);
   });
   server.begin();
+  printInfo();
 }
 
 void loop(){
   ArduinoOTA.handle();
 }
+//
+//
+// #include <ESP8266WiFi.h>
+// #include <ESP8266mDNS.h>
+// #include <WiFiUdp.h>
+// #include <ArduinoOTA.h>
+//
+// const char* ssid = SSID_NAME;
+// const char* password = SSID_PASSWORD;
+//
+// void setup() {
+//  Serial.begin(115200);
+//  Serial.println("Booting");
+//  WiFi.mode(WIFI_STA);
+//  WiFi.begin(ssid, password);
+//  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+//  Serial.println("Connection Failed! Rebooting...");
+//  delay(5000);
+//  ESP.restart();
+//  }
+//
+// // Port defaults to 8266
+//  // ArduinoOTA.setPort(8266);
+//
+// // Hostname defaults to esp8266-[ChipID]
+//  // ArduinoOTA.setHostname("myesp8266");
+//
+// // No authentication by default
+//  // ArduinoOTA.setPassword((const char *)"123");
+//
+// ArduinoOTA.onStart([]() {
+//  Serial.println("Start");
+//  });
+//  ArduinoOTA.onEnd([]() {
+//  Serial.println("\nEnd");
+//  });
+//  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+//  Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+//  });
+//  ArduinoOTA.onError([](ota_error_t error) {
+//  Serial.printf("Error[%u]: ", error);
+//  if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+//  else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+//  else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+//  else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+//  else if (error == OTA_END_ERROR) Serial.println("End Failed");
+//  });
+//  ArduinoOTA.begin();
+//  Serial.println("Ready");
+//  Serial.print("IPess: ");
+//  Serial.println(WiFi.localIP());
+// }
+//
+// void loop() {
+//  ArduinoOTA.handle();
+// }
