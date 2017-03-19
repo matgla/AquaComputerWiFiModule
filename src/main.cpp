@@ -1,3 +1,4 @@
+#ifndef UNIT_TEST  // IMPORTANT LINE!
 
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
@@ -30,7 +31,7 @@ void printInfo()
 
 String getShortFileName(String filename)
 {
-    
+
 }
 
 void setup(){
@@ -303,3 +304,5 @@ void loop(){
 // void loop() {
 //  ArduinoOTA.handle();
 // }
+
+#endif    // IMPORTANT LINE!
