@@ -4,3 +4,4 @@
 .gcc-flags.json
 bin/
 platformio.ini
+.vscode/browse.vc.db*
