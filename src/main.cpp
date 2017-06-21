@@ -268,10 +268,10 @@
 //     Serial.printf("Sketch free size: %d\n", ESP.getFreeSketchSpace());
 // }
 
-#ifndef UNIT_TEST
+#ifndef X86_ARCH
 #include "Arduino.h"
-#include "Spi.h`"
-void setup() 
+#include "Spi.h"
+void setup()
 {
 
 }
@@ -282,10 +282,21 @@ void loop()
 }
 #else
 #include <iostream>
+#include <string>
+
+#include "hal/net/tcpSocket.hpp"
+#include "logger/stdOutLogger.hpp"
+#include "logger/socketLogger.hpp"
 int main()
 {
-    std::cout << "native" << std::endl;
+    auto logger = logger::StdOutLogger();
+    logger << "Test" << " Proba mikrofonu"; // << std::endl;
+    auto logger2 = logger::SocketLogger("127.0.0.1", 1234);
+    logger2 << "I do pliczku dziala tez";
+    // net::TcpSocket s;
+    // s.connect("127.0.0.1", 1234);
+    // s.write("Panie dzialaj pan\n");
     return 0;
 }
 
-#endif  // UNIT_TEST
+#endif  // X86_ARCH
