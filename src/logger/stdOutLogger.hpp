@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 
 #include "loggerBase.hpp"
 
@@ -11,6 +12,7 @@ class StdOutLogger : public LoggerBase
 {
 public:
     StdOutLogger();
+    StdOutLogger(const std::string& name);
 };
 
 }  // namespace logger

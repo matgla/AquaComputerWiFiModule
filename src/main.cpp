@@ -270,33 +270,45 @@
 
 #ifndef X86_ARCH
 #include "Arduino.h"
-#include "Spi.h"
+
+#else
+
+#include <iostream>
+#include <string>
+
+
+void setup();
+void loop();
+
+int main()
+{
+    setup();
+    loop();
+}
+
+#endif
+
+// #include "hal/net/tcpSocket.hpp"
+#include "logger/logger.hpp"
+// #include "logger/stdOutLogger.hpp"
+#include "logger/socketLogger.hpp"
+
+
 void setup()
 {
-
+   auto logger = logger::Logger();
+   // logger.add(logger::StdOutLogger("main"));
+   logger.add(logger::SocketLogger("127.0.0.1", 1234, "main"));
+   logger.info() << "Test" << " Proba mikrofonu\n";
+   logger.warn() << "I do pliczku dziala tez\n";
+    // net::TcpSocket s;
+    // s.connect("127.0.0.1", 1234);
+    // s.write("Panie dzialaj pan\n");
 }
 
 void loop()
 {
 
 }
-#else
-#include <iostream>
-#include <string>
 
-#include "hal/net/tcpSocket.hpp"
-#include "logger/stdOutLogger.hpp"
-#include "logger/socketLogger.hpp"
-int main()
-{
-    auto logger = logger::StdOutLogger();
-    logger << "Test" << " Proba mikrofonu"; // << std::endl;
-    auto logger2 = logger::SocketLogger("127.0.0.1", 1234);
-    logger2 << "I do pliczku dziala tez";
-    // net::TcpSocket s;
-    // s.connect("127.0.0.1", 1234);
-    // s.write("Panie dzialaj pan\n");
-    return 0;
-}
 
-#endif  // X86_ARCH

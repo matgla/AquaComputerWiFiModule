@@ -11,10 +11,7 @@ namespace stream
 class SocketStream : public std::ostream
 {
 public:
-    SocketStream(const std::string& host, u16 port) :
-        buffer_(host, port),
-        std::ostream(&buffer_)
-    {}
+    SocketStream(const std::string& host, u16 port);
 
 private:
     SocketBuffer buffer_;

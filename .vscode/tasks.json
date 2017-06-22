@@ -1,9 +1,9 @@
 {
     "version": "0.1.0",
     "runner": "terminal",
-    "command": "cmd",
-    "isShellCommand": true,
-    "args": ["/C"],
+    "command": "C:\\Users\\matgl\\.platformio\\penv\\Scripts\\platformio.exe",
+    "isShellCommand": false,
+    "args": ["-c", "vscode"],
     "showOutput": "always",
     "echoCommand": false,
     "suppressTaskName": true,
@@ -11,7 +11,7 @@
         {
             "taskName": "PlatformIO: Build",
             "isBuildCommand": true,
-            "args": ["C:\\Users\\matgl\\.platformio\\penv\\Scripts\\platformio.exe", "run"],
+            "args": ["run"],
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": ["relative", "${workspaceRoot}"],
@@ -27,11 +27,11 @@
         },
         {
             "taskName": "PlatformIO: Clean",
-            "args": ["C:\\Users\\matgl\\.platformio\\penv\\Scripts\\platformio.exe", "run", "-t", "clean"]
+            "args": ["run", "-t", "clean"]
         },
         {
             "taskName": "PlatformIO: Upload",
-            "args": ["C:\\Users\\matgl\\.platformio\\penv\\Scripts\\platformio.exe", "run", "-t", "upload"],
+            "args": ["run", "-t", "upload"],
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": ["relative", "${workspaceRoot}"],
@@ -47,7 +47,7 @@
         },
         {
             "taskName": "PlatformIO: Upload using Programmer",
-            "args": ["C:\\Users\\matgl\\.platformio\\penv\\Scripts\\platformio.exe", "run", "-t", "program"],
+            "args": ["run", "-t", "program"],
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": ["relative", "${workspaceRoot}"],
@@ -63,7 +63,7 @@
         },
         {
             "taskName": "PlatformIO: Upload SPIFFS image",
-            "args": ["C:\\Users\\matgl\\.platformio\\penv\\Scripts\\platformio.exe", "run", "-t", "uploadfs"],
+            "args": ["run", "-t", "uploadfs"],
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": ["relative", "${workspaceRoot}"],
@@ -79,7 +79,7 @@
         },
         {
             "taskName": "PlatformIO: Test",
-            "args": ["C:\\Users\\matgl\\.platformio\\penv\\Scripts\\platformio.exe", "test"],
+            "args": ["test"],
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": ["relative", "${workspaceRoot}"],
@@ -95,16 +95,11 @@
         },
         {
             "taskName": "PlatformIO: Update platforms and libraries",
-            "args": ["C:\\Users\\matgl\\.platformio\\penv\\Scripts\\platformio.exe", "update"]
+            "args": ["update"]
         },
         {
             "taskName": "PlatformIO: Upgrade PIO Core",
-            "args": ["C:\\Users\\matgl\\.platformio\\penv\\Scripts\\platformio.exe", "upgrade"]
-        },
-        {
-            "taskName": "Run UTs",
-            "isTestCommand": true,
-            "args": ["C:\\Users\\matgl\\.platformio\\penv\\Scripts\\platformio.exe", "run", "-e", "native_tests", ";", ".\\.pioenvs\\native_tests\\program.exe"]
+            "args": ["upgrade"]
         }
     ]
 }

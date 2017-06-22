@@ -12,7 +12,7 @@ class SocketLogger : public LoggerBase
 {
 public:
     SocketLogger() = delete;
-    SocketLogger(const std::string& host, u16 port);
+    SocketLogger(const std::string& host, u16 port, const std::string& name = "default");
 };
 
 }  // namespace logger
