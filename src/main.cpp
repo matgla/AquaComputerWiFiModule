@@ -294,6 +294,8 @@ int main()
 #include "logger/socketLogger.hpp"
 #include "hal/serial/serialPort.hpp"
 
+#include <chrono>
+#include <thread>
 
 void setup()
 {
@@ -303,7 +305,20 @@ void setup()
 //    logger.info() << "Test" << " Proba mikrofonu\n";
 //    logger.warn() << "I do pliczku dziala tez\n";
     serial::SerialPort port("COM4");
+    std::cout << "wyszedlem za konstruktor" << std::endl;
     port.write("Jazda jazda jazda\n");
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        if (port.isDataToRecive())
+        {
+            size_t len = port.isDataToRecive();
+            char buf[1024];
+            port.read((u8*)buf, len);
+            buf[len] = 0;
+            std::cout << buf << std::endl;
+        }
+    }
     // net::TcpSocket s;
     // s.connect("127.0.0.1", 1234);
     // s.write("Panie dzialaj pan\n");
