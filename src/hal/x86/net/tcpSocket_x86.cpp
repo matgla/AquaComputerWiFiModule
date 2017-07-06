@@ -4,9 +4,10 @@
 
 #include <boost/asio.hpp>
 
+using namespace boost::asio::ip;
+
 namespace net
 {
-using boost::asio::ip::tcp;
 
 class TcpSocket::SocketWrapper
 {

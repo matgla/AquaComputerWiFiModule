@@ -292,18 +292,22 @@ int main()
 #include "logger/logger.hpp"
 // #include "logger/stdOutLogger.hpp"
 #include "logger/socketLogger.hpp"
+#include "hal/serial/serialPort.hpp"
 
 
 void setup()
 {
-   auto logger = logger::Logger();
-   // logger.add(logger::StdOutLogger("main"));
-   logger.add(logger::SocketLogger("127.0.0.1", 1234, "main"));
-   logger.info() << "Test" << " Proba mikrofonu\n";
-   logger.warn() << "I do pliczku dziala tez\n";
+//    auto logger = logger::Logger();
+//    // logger.add(logger::StdOutLogger("main"));
+//    logger.add(logger::SocketLogger("127.0.0.1", 1234, "main"));
+//    logger.info() << "Test" << " Proba mikrofonu\n";
+//    logger.warn() << "I do pliczku dziala tez\n";
+    serial::SerialPort port("COM4");
+    port.write("Jazda jazda jazda\n");
     // net::TcpSocket s;
     // s.connect("127.0.0.1", 1234);
     // s.write("Panie dzialaj pan\n");
+
 }
 
 void loop()
