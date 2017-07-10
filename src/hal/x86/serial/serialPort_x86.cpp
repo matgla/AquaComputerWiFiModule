@@ -30,26 +30,27 @@ public:
     int baudrate_;
     u8 rawBuffer_[1024];
     containers::Buffer<2048> buffer_;
+
 private:
     void loop();
     void readCallback(const boost::system::error_code& error,
-        std::size_t bytes_transferred);
+                      std::size_t bytes_transferred);
 };
 
-SerialPort::SerialWrapper::SerialWrapper(const std::string& port, int baudrate) :
-    serialPort_(ioService_),
-    port_(port),
-    baudrate_(baudrate)
+SerialPort::SerialWrapper::SerialWrapper(const std::string& port, int baudrate)
+    : serialPort_(ioService_),
+      port_(port),
+      baudrate_(baudrate)
 {
     try
     {
         serialPort_.open(port);
         serialPort_.set_option(asio::serial_port_base::baud_rate(baudrate_));
-        std::thread t([this](){while(true) {ioService_.run();}});
+        std::thread t([this]() {while(true) {ioService_.run();} });
         t.detach();
         loop();
     }
-    catch(boost::system::system_error& e)
+    catch (boost::system::system_error& e)
     {
         std::cerr << "Error: " << e.what() << std::endl;
     }
@@ -63,14 +64,13 @@ SerialPort::SerialWrapper::~SerialWrapper()
 void SerialPort::SerialWrapper::loop()
 {
     serialPort_.async_read_some(boost::asio::buffer(rawBuffer_),
-        boost::bind(&SerialPort::SerialWrapper::readCallback, this, _1, _2));
+                                boost::bind(&SerialPort::SerialWrapper::readCallback, this, _1, _2));
 
-   //boost::shared_ptr<asio::io_service::work> work(new asio::io_service::work(ioService_));
-
+    //boost::shared_ptr<asio::io_service::work> work(new asio::io_service::work(ioService_));
 }
 
 void SerialPort::SerialWrapper::readCallback(const boost::system::error_code& error,
-    std::size_t bytes_transferred)
+                                             std::size_t bytes_transferred)
 {
     if (error || !bytes_transferred)
     {
@@ -81,9 +81,10 @@ void SerialPort::SerialWrapper::readCallback(const boost::system::error_code& er
 }
 
 
-SerialPort::SerialPort(const std::string& port, int baudrate) :
-    serialWrapper_(new SerialWrapper(port, baudrate))
-{}
+SerialPort::SerialPort(const std::string& port, int baudrate)
+    : serialWrapper_(new SerialWrapper(port, baudrate))
+{
+}
 
 SerialPort::~SerialPort() = default;
 
@@ -117,4 +118,4 @@ u8 SerialPort::readByte()
     return serialWrapper_->buffer_.getByte();
 }
 
-}  // namespace serial
+} // namespace serial

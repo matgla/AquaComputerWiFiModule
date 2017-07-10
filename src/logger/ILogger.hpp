@@ -11,4 +11,4 @@ public:
     virtual ILogger& err() = 0;
 };
 
-}  // namespace logger
+} // namespace logger

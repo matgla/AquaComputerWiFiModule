@@ -13,7 +13,7 @@ class Logger : public ILogger
 public:
     void add(LoggerBase logger);
 
-    template<typename T>
+    template <typename T>
     Logger& operator<<(const T& data)
     {
         for (auto& logger : loggers_)
@@ -31,4 +31,4 @@ protected:
     std::vector<LoggerBase> loggers_;
 };
 
-}  // namespace logger
+} // namespace logger

@@ -7,6 +7,7 @@
 
 namespace net
 {
+
 class TcpSocket
 {
 public:
@@ -15,8 +16,10 @@ public:
     void connect(const std::string& name, u16 port);
     void write(const std::string& data);
     void close();
+
 private:
     class SocketWrapper;
     std::unique_ptr<SocketWrapper> socketWrapper_;
 };
-}
+
+}  // namespace net

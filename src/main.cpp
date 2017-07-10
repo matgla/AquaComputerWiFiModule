@@ -276,7 +276,6 @@
 #include <iostream>
 #include <string>
 
-
 void setup();
 void loop();
 
@@ -291,19 +290,20 @@ int main()
 // #include "hal/net/tcpSocket.hpp"
 #include "logger/logger.hpp"
 // #include "logger/stdOutLogger.hpp"
-#include "logger/socketLogger.hpp"
+#include "hal/net/http/asyncHttpServer.hpp"
 #include "hal/serial/serialPort.hpp"
+#include "logger/socketLogger.hpp"
 
 #include <chrono>
 #include <thread>
 
 void setup()
 {
-//    auto logger = logger::Logger();
-//    // logger.add(logger::StdOutLogger("main"));
-//    logger.add(logger::SocketLogger("127.0.0.1", 1234, "main"));
-//    logger.info() << "Test" << " Proba mikrofonu\n";
-//    logger.warn() << "I do pliczku dziala tez\n";
+    //    auto logger = logger::Logger();
+    //    // logger.add(logger::StdOutLogger("main"));
+    //    logger.add(logger::SocketLogger("127.0.0.1", 1234, "main"));
+    //    logger.info() << "Test" << " Proba mikrofonu\n";
+    //    logger.warn() << "I do pliczku dziala tez\n";
     // serial::SerialPort port("COM4");
     // std::cout << "wyszedlem za konstruktor" << std::endl;
     // port.write("Jazda jazda jazda\n");
@@ -322,12 +322,13 @@ void setup()
     // net::TcpSocket s;
     // s.connect("127.0.0.1", 1234);
     // s.write("Panie dzialaj pan\n");
-
+    using namespace net::http;
+    AsyncHttpServer server(80);
+    server.get("/test", [](AsyncHttpRequest* request) {
+        // request->send(200, "test/plain", "Cos tam dzialam");
+    });
 }
 
 void loop()
 {
-
 }
-
-

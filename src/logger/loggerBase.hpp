@@ -2,8 +2,9 @@
 
 #include <memory>
 #include <ostream>
+#include <string>
 
-#include "ILogger.hpp"
+#include "logger/ILogger.hpp"
 
 namespace logger
 {
@@ -12,10 +13,10 @@ class LoggerBase : public ILogger
 {
 public:
     LoggerBase();
-    LoggerBase(const std::string& name);
+    explicit LoggerBase(const std::string& name);
     virtual ~LoggerBase() = default;
 
-    template<typename T>
+    template <typename T>
     LoggerBase& operator<<(const T& data)
     {
         (*stream_) << data;
@@ -33,4 +34,4 @@ protected:
     std::string name_;
 };
 
-}  // namespace logger
+} // namespace logger
