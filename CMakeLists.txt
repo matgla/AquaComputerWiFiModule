@@ -1,0 +1,52 @@
+cmake_minimum_required(VERSION 3.1)
+
+project(AquaLampServer C CXX ASM)
+
+set(BUILD_TESTS OFF CACHE STRING "Build all available tests")
+set(BUILD_TARGET OFF CACHE STRING "Build target")
+set(ARCH "X86" CACHE STRING "Target architecture (X86|ESP8266)")
+
+set(ASAN_ENABLED OFF CACHE STRING "Enable address sanitizer")
+set(LSAN_ENABLED OFF CACHE STRING "Enable leak sanitizer")
+set(TSAN_ENABLED OFF CACHE STRING "Enable thread sanitizer")
+
+if (ASAN_ENABLED)
+    if (${ARCH} STREQUAL "ESP8266")
+        message(WARNING "ESP8266 not support address sanitizer")
+    endif (${ARCH} STREQUAL "ESP8266")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+endif (ASAN_ENABLED)
+
+if (LSAN_ENABLED)    
+    if (${ARCH} STREQUAL "ESP8266")
+        message(WARNING "ESP8266 not support leak sanitizer")
+    endif (${ARCH} STREQUAL "ESP8266")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=leak")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak")
+endif (LSAN_ENABLED)
+
+if (TSAN_ENABLED)
+    if (${ARCH} STREQUAL "ESP8266")
+        message(WARNING "ESP8266 not support thread sanitizer")
+    endif (${ARCH} STREQUAL "ESP8266")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=thread")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
+endif (TSAN_ENABLED)
+
+if (BUILD_TARGET)
+    if (${ARCH} STREQUAL "ESP8266")
+        message(FATAL_ERROR "ESP8266 isn't supported currently")
+    endif (${ARCH} STREQUAL "ESP8266")
+    add_subdirectory(src)
+    add_subdirectory(lib)
+endif (BUILD_TARGET)
+
+if (BUILD_TESTS)
+    message("Building Tests")
+    if (NOT ${ARCH} STREQUAL "X86")
+        message(FATAL_ERROR "Tests can be build only for X86")
+    endif (NOT ${ARCH} STREQUAL "X86")
+    
+    add_subdirectory(test)
+endif (BUILD_TESTS)

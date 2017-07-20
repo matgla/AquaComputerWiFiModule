@@ -1,6 +1,6 @@
 #include "socketLogger.hpp"
 
-#include "stream/SocketStream.hpp"
+#include "stream/socketStream.hpp"
 
 namespace logger
 {

@@ -7,3 +7,6 @@ platformio.ini
 .vscode/browse.vc.db*
 .vscode/*
 .vscode
+.pioenvs
+.piolibdeps
+bin*
