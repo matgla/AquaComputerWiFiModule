@@ -330,9 +330,6 @@ void setup()
     server.get("/test", [](AsyncHttpRequest* request) {
         request->send(200, "text/plain", "Cos tam dzialam");
     });
-    server.get("/dupa", [](AsyncHttpRequest* request) {
-        request->send(200, "text/plain", "cycki");
-    });
     server.begin();
 }
 

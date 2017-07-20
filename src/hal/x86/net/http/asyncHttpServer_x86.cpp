@@ -82,8 +82,8 @@ private:
         switch (request_.method())
         {
             case beast::http::verb::get:
-                response_.result(beast::http::status::ok);
-                response_.set(beast::http::field::server, "Beast");
+                response_.result(beast::http::status::internal_server_error);
+                response_.set(beast::http::field::server, "AquaComputerServer");
                 create_response();
                 break;
 
@@ -111,8 +111,8 @@ private:
         {
             std::unique_ptr<AsyncHttpRequest> req(new AsyncHttpRequest());
             handler->second(req.get());
-            logger.info() << req->getType() << "\n";
             response_.set(beast::http::field::content_type, req->getType());
+            response_.result(req->getCode());
             beast::ostream(response_.body)
                 << req->getMsg();
         }
