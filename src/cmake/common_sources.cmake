@@ -3,6 +3,7 @@ set(COMMON_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 set(common_srcs
     ${COMMON_SRC_DIR}/logger/logger.cpp
     ${COMMON_SRC_DIR}/logger/loggerBase.cpp
+    ${COMMON_SRC_DIR}/logger/loggerConf.cpp
     ${COMMON_SRC_DIR}/logger/socketLogger.cpp
     ${COMMON_SRC_DIR}/logger/stdOutLogger.cpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.cpp
@@ -19,6 +20,7 @@ set(common_incs
     ${COMMON_SRC_DIR}/hal/serial/serialPort.hpp
     ${COMMON_SRC_DIR}/logger/ILogger.hpp
     ${COMMON_SRC_DIR}/logger/logger.hpp
+    ${COMMON_SRC_DIR}/logger/loggerConf.hpp
     ${COMMON_SRC_DIR}/logger/loggerBase.hpp
     ${COMMON_SRC_DIR}/logger/socketLogger.hpp
     ${COMMON_SRC_DIR}/logger/stdOutLogger.hpp

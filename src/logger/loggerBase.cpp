@@ -5,31 +5,26 @@
 namespace logger
 {
 
-LoggerBase::LoggerBase() :
-    stream_(nullptr),
-    name_("default")
-{}
-
-LoggerBase::LoggerBase(const std::string& name) :
-    stream_(nullptr),
-    name_(name)
-{}
-
-LoggerBase& LoggerBase::info()
+LoggerBase::LoggerBase()
+    : stream_(nullptr)
 {
-    (*stream_) << "<" << getFormatedDateAndTime() << "> INF/" << name_ << ": ";
+}
+
+LoggerBase& LoggerBase::info(const std::string& componentName)
+{
+    (*stream_) << "<" << getFormatedDateAndTime() << "> INF/" << componentName << ": ";
     return *this;
 }
 
-LoggerBase& LoggerBase::err()
+LoggerBase& LoggerBase::err(const std::string& componentName)
 {
-    (*stream_) << "<" << getFormatedDateAndTime() << "> ERR/" << name_ << ": ";
+    (*stream_) << "<" << getFormatedDateAndTime() << "> ERR/" << componentName << ": ";
     return *this;
 }
 
-LoggerBase& LoggerBase::warn()
+LoggerBase& LoggerBase::warn(const std::string& componentName)
 {
-    (*stream_) << "<" << getFormatedDateAndTime() << "> WRN/" << name_ << ": ";
+    (*stream_) << "<" << getFormatedDateAndTime() << "> WRN/" << componentName << ": ";
     return *this;
 }
 
@@ -38,9 +33,9 @@ std::string LoggerBase::getFormatedDateAndTime()
     const int TIME_BUFFER_SIZE = 18;
     char buffer[TIME_BUFFER_SIZE];
     auto t = std::time(nullptr);
-    struct tm *currentTime = std::localtime(&t);
+    struct tm* currentTime = std::localtime(&t);
     std::strftime(buffer, TIME_BUFFER_SIZE, "%d/%m/%y %H:%M:%S", currentTime);
     return std::string(buffer);
 }
 
-}  // namespace logger
+} // namespace logger

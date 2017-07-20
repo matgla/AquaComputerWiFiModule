@@ -10,3 +10,4 @@ platformio.ini
 .pioenvs
 .piolibdeps
 bin*
+build

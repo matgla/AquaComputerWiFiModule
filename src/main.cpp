@@ -288,21 +288,24 @@ int main()
 #endif
 
 // #include "hal/net/tcpSocket.hpp"
-#include "logger/logger.hpp"
-// #include "logger/stdOutLogger.hpp"
+#include "hal/net/http/asyncHttpRequest.hpp"
 #include "hal/net/http/asyncHttpServer.hpp"
 #include "hal/serial/serialPort.hpp"
+#include "logger/logger.hpp"
+#include "logger/loggerConf.hpp"
 #include "logger/socketLogger.hpp"
+#include "logger/stdOutLogger.hpp"
 
 #include <chrono>
 #include <thread>
 
 void setup()
 {
-    //    auto logger = logger::Logger();
-    //    // logger.add(logger::StdOutLogger("main"));
+    logger::LoggerConf::get().add(logger::StdOutLogger{});
+    auto logger = logger::Logger("main");
     //    logger.add(logger::SocketLogger("127.0.0.1", 1234, "main"));
-    //    logger.info() << "Test" << " Proba mikrofonu\n";
+    logger.info() << "Test"
+                  << " Proba mikrofonu\n";
     //    logger.warn() << "I do pliczku dziala tez\n";
     // serial::SerialPort port("COM4");
     // std::cout << "wyszedlem za konstruktor" << std::endl;
@@ -325,8 +328,12 @@ void setup()
     using namespace net::http;
     AsyncHttpServer server(80);
     server.get("/test", [](AsyncHttpRequest* request) {
-        // request->send(200, "test/plain", "Cos tam dzialam");
+        request->send(200, "text/plain", "Cos tam dzialam");
     });
+    server.get("/dupa", [](AsyncHttpRequest* request) {
+        request->send(200, "text/plain", "cycki");
+    });
+    server.begin();
 }
 
 void loop()

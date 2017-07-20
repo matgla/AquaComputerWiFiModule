@@ -3,36 +3,36 @@
 namespace logger
 {
 
-void Logger::add(LoggerBase logger)
+Logger::Logger(const std::string& name)
+    : name_(name)
 {
-    loggers_.push_back(logger);
 }
 
 Logger& Logger::info()
 {
-    for (auto& logger : loggers_)
+    for (auto& logger : LoggerConf::get().getLoggers())
     {
-        logger.info();
+        logger.info(name_);
     }
     return *this;
 }
 
 Logger& Logger::warn()
 {
-    for (auto& logger : loggers_)
+    for (auto& logger : LoggerConf::get().getLoggers())
     {
-        logger.warn();
+        logger.warn(name_);
     }
     return *this;
 }
 
 Logger& Logger::err()
 {
-    for (auto& logger : loggers_)
+    for (auto& logger : LoggerConf::get().getLoggers())
     {
-        logger.err();
+        logger.err(name_);
     }
     return *this;
 }
 
-}  // namespace logger
+} // namespace logger

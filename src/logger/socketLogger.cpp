@@ -5,10 +5,9 @@
 namespace logger
 {
 
-SocketLogger::SocketLogger(const std::string& host, u16 port, const std::string& name) :
-    LoggerBase(name)
+SocketLogger::SocketLogger(const std::string& host, u16 port)
 {
     stream_ = std::make_shared<stream::SocketStream>(host, port);
 }
 
-}  // namespace logger
+} // namespace logger
