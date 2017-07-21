@@ -1,8 +1,10 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 
+#include "logger/Logger.hpp"
 #include "utils/types.hpp"
 
 namespace net
@@ -13,41 +15,39 @@ namespace http
 class AsyncHttpRequest
 {
 public:
+    using SendCallback = std::function<void(u16 code, const std::string& type,
+                                            const std::string& body)>;
+
     AsyncHttpRequest()
-        : code_(0),
-          type_(""),
-          msg_("")
+        : logger_("AsyncHttpRequest"),
+          sendCallback_(nullptr)
     {
     }
 
     ~AsyncHttpRequest()
     {
     }
-    void send(u16 code, const std::string& type, const std::string& msg)
+
+    void setSendCallback(SendCallback sendCallback)
     {
-        code_ = code;
-        type_ = type;
-        msg_ = msg;
-    }
-    const std::string& getType()
-    {
-        return type_;
-    }
-    const std::string& getMsg()
-    {
-        return msg_;
-    }
-    u16 getCode()
-    {
-        return code_;
+        sendCallback_ = sendCallback;
     }
 
+    void send(u16 code, const std::string& type, const std::string& msg)
+    {
+        if (nullptr == sendCallback_)
+        {
+            logger_.err() << "Callback for send hasn't been set for msg: " << msg << "\n";
+            return;
+        }
+        sendCallback_(code, type, msg);
+    }
+
+
 private:
-    u16 code_;
-    std::string type_;
-    std::string msg_;
-    // class AsyncHttpRequestWrapper;
-    //  std::unique_ptr<AsyncHttpRequestWrapper> asyncHttpReqWrapper_;
+    logger::Logger logger_;
+
+    SendCallback sendCallback_;
 };
 
 } // namespace http

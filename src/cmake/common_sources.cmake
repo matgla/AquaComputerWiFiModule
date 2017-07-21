@@ -18,6 +18,7 @@ set(common_incs
     ${COMMON_SRC_DIR}/hal/net/http/fwd.hpp
     ${COMMON_SRC_DIR}/hal/net/http/httpMethod.hpp
     ${COMMON_SRC_DIR}/hal/serial/serialPort.hpp
+    ${COMMON_SRC_DIR}/hal/fs/file.hpp
     ${COMMON_SRC_DIR}/logger/ILogger.hpp
     ${COMMON_SRC_DIR}/logger/logger.hpp
     ${COMMON_SRC_DIR}/logger/loggerConf.hpp
