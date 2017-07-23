@@ -288,7 +288,9 @@ int main()
 #endif
 
 // #include "hal/net/tcpSocket.hpp"
+#include "hal/fs/File.hpp"
 #include "hal/net/http/asyncHttpRequest.hpp"
+#include "hal/net/http/asyncHttpResponse.hpp"
 #include "hal/net/http/asyncHttpServer.hpp"
 #include "hal/serial/serialPort.hpp"
 #include "logger/logger.hpp"
@@ -297,6 +299,7 @@ int main()
 #include "logger/stdOutLogger.hpp"
 
 #include <chrono>
+#include <iostream>
 #include <thread>
 
 void setup()
@@ -329,6 +332,28 @@ void setup()
     AsyncHttpServer server(80);
     server.get("/test", [](AsyncHttpRequest* request) {
         request->send(200, "text/plain", "Cos tam dzialam");
+    });
+
+    server.get("/index", [](AsyncHttpRequest* request) {
+        std::unique_ptr<AsyncHttpResponse> response(std::move(
+            request->beginChunkedResponse("text/html",
+                                          [](uint8_t* buffer, size_t maxLen, size_t index) {
+                                              fs::File file;
+                                              file.open("index.html");
+                                              if (!file.isOpen())
+                                              {
+                                                  logger::Logger logger("IndexResp");
+                                                  logger.err() << "Can't open file: index.html\n";
+                                                  return std::size_t(0);
+                                              }
+                                              file.seek(index);
+                                              size_t readedSize = file.read(reinterpret_cast<char*>(buffer),
+                                                                            maxLen);
+                                              file.close();
+                                              return readedSize;
+                                          })));
+
+        request->send(response.get());
     });
     server.begin();
 }

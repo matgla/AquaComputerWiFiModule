@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 
+#include "hal/net/http/asyncHttpResponse.hpp"
 #include "logger/Logger.hpp"
 #include "utils/types.hpp"
 
@@ -17,10 +18,18 @@ class AsyncHttpRequest
 public:
     using SendCallback = std::function<void(u16 code, const std::string& type,
                                             const std::string& body)>;
+    using SendResponseCallback = std::function<void(AsyncHttpResponse*)>;
 
+    using ChunkedResponseParseCallback = std::function<std::size_t(
+        u8*, std::size_t, std::size_t)>;
+
+    using ChunkedResponseCallback = std::function<std::unique_ptr<AsyncHttpResponse>(const std::string& type,
+                                                                                     ChunkedResponseParseCallback callback)>;
     AsyncHttpRequest()
         : logger_("AsyncHttpRequest"),
-          sendCallback_(nullptr)
+          sendCallback_(nullptr),
+          sendResponseCallback_(nullptr),
+          chunkedResponseCallback_(nullptr)
     {
     }
 
@@ -33,6 +42,16 @@ public:
         sendCallback_ = sendCallback;
     }
 
+    void setSendResponseCallback(SendResponseCallback sendCallback)
+    {
+        sendResponseCallback_ = sendCallback;
+    }
+
+    void setChunkedResponseCallback(ChunkedResponseCallback chunkedCallback)
+    {
+        chunkedResponseCallback_ = chunkedCallback;
+    }
+
     void send(u16 code, const std::string& type, const std::string& msg)
     {
         if (nullptr == sendCallback_)
@@ -43,11 +62,34 @@ public:
         sendCallback_(code, type, msg);
     }
 
+    void send(AsyncHttpResponse* response)
+    {
+        if (nullptr == sendCallback_)
+        {
+            logger_.err() << "Callback for send response hasn't been set for msg: \n";
+            return;
+        }
+        sendCallback_(response->getCode(), response->getType(), response->getMsg());
+    }
+
+    std::unique_ptr<AsyncHttpResponse> beginChunkedResponse(const std::string& type, ChunkedResponseParseCallback callback)
+    {
+        if (nullptr == chunkedResponseCallback_)
+        {
+            logger_.err() << "Callback for chunked response hasn't been set for msg: \n";
+            return nullptr;
+        }
+        std::unique_ptr<AsyncHttpResponse> resp(std::move(chunkedResponseCallback_(type, callback)));
+        return resp;
+    }
+
 
 private:
     logger::Logger logger_;
 
     SendCallback sendCallback_;
+    SendResponseCallback sendResponseCallback_;
+    ChunkedResponseCallback chunkedResponseCallback_;
 };
 
 } // namespace http

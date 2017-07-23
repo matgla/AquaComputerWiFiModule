@@ -3,6 +3,7 @@
 #include <beast/version.hpp>
 
 #include "hal/net/http/asyncHttpRequest.hpp"
+#include "hal/net/http/asyncHttpResponse.hpp"
 
 #include <iostream>
 
@@ -27,6 +28,26 @@ void HttpConnection::getCallback(u16 code, const std::string& type, const std::s
     response_.set(beast::http::field::content_type, type);
     response_.result(code);
     beast::ostream(response_.body) << body;
+};
+
+std::unique_ptr<AsyncHttpResponse> HttpConnection::chunkedResponseCallback(const std::string& type,
+                                                                           AsyncHttpRequest::ChunkedResponseParseCallback callback)
+{
+    std::unique_ptr<u8[]> buffer(new u8[1001]);
+    std::unique_ptr<AsyncHttpResponse> response(new AsyncHttpResponse());
+    response->setType(type);
+    response->setCode(static_cast<u16>(beast::http::status::ok));
+
+    std::size_t index = 0;
+    std::size_t readedBytes = 1;
+    while (readedBytes != 0)
+    {
+        readedBytes = callback(buffer.get(), 1000, index);
+        index += readedBytes;
+        response->getMsg() += reinterpret_cast<char*>(buffer.get());
+        std::memset(buffer.get(), 0, sizeof(u8) * 1001);
+    }
+    return response;
 };
 
 void HttpConnection::readRequest()
@@ -81,6 +102,10 @@ void HttpConnection::createGetResponse()
                                        this, std::placeholders::_1,
                                        std::placeholders::_2,
                                        std::placeholders::_3));
+
+        req->setChunkedResponseCallback(std::bind(&chunkedResponseCallback,
+                                                  this, std::placeholders::_1,
+                                                  std::placeholders::_2));
 
         handler->second(req.get());
     }

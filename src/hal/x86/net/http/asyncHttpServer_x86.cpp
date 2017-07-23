@@ -57,7 +57,6 @@ void AsyncHttpServer::AsyncHttpWrapper::begin()
 void AsyncHttpServer::AsyncHttpWrapper::loop()
 {
     acceptor_.async_accept(socket_, [&](beast::error_code ec) {
-        logger.info() << "I've got some message\n";
         if (!ec)
         {
             std::make_shared<HttpConnection>(std::move(socket_), reqHandlers_)->start();

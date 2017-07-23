@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "hal/net/http/asyncHttpRequest.hpp"
 #include "hal/net/http/asyncHttpServer.hpp"
 #include "logger/logger.hpp"
 
@@ -31,6 +32,8 @@ private:
     void processRequest();
     void createGetResponse();
     void writeResponse();
+    std::unique_ptr<AsyncHttpResponse> chunkedResponseCallback(const std::string& type,
+                                                               AsyncHttpRequest::ChunkedResponseParseCallback callback);
 
     boost::asio::ip::tcp::socket socket_;
 
