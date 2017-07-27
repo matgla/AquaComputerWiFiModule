@@ -16,13 +16,13 @@ namespace net
 {
 namespace http
 {
-using Handlers = std::map<std::string, RequestType>;
+using Handlers = std::map<std::string, RequestHandler>;
 
 class HttpConnection : public std::enable_shared_from_this<HttpConnection>
 {
 public:
     HttpConnection(boost::asio::ip::tcp::socket socket,
-                   Handlers& handlers);
+                   Handlers& getHandlers, Handlers& postHandlers);
 
     void start();
 
@@ -32,6 +32,8 @@ private:
     void processRequest();
     void createGetResponse();
     void writeResponse();
+    void handlePost();
+    std::string getBodyCallback();
     std::unique_ptr<AsyncHttpResponse> chunkedResponseCallback(const std::string& type,
                                                                AsyncHttpRequest::ChunkedResponseParseCallback callback);
 
@@ -42,6 +44,7 @@ private:
     beast::http::response<beast::http::dynamic_body> response_;
 
     Handlers& getHandlers_;
+    Handlers& postHandlers_;
     logger::Logger logger_;
 };
 

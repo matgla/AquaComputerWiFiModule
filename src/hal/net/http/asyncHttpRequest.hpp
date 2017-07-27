@@ -25,6 +25,8 @@ public:
 
     using ChunkedResponseCallback = std::function<std::unique_ptr<AsyncHttpResponse>(const std::string& type,
                                                                                      ChunkedResponseParseCallback callback)>;
+
+    using GetBodyCallback = std::function<std::string()>;
     AsyncHttpRequest()
         : logger_("AsyncHttpRequest"),
           sendCallback_(nullptr),
@@ -50,6 +52,11 @@ public:
     void setChunkedResponseCallback(ChunkedResponseCallback chunkedCallback)
     {
         chunkedResponseCallback_ = chunkedCallback;
+    }
+
+    void setGetBodyCallback(GetBodyCallback getBodyCallback)
+    {
+        getBodyCallback_ = getBodyCallback;
     }
 
     void send(u16 code, const std::string& type, const std::string& msg)
@@ -83,13 +90,25 @@ public:
         return resp;
     }
 
+    std::string getBody()
+    {
+
+        if (nullptr == getBodyCallback_)
+        {
+            logger_.err() << "Callback for getBody hasn't been set for msg: \n";
+            return "";
+        }
+        return getBodyCallback_();
+    }
+
 
 private:
     logger::Logger logger_;
-
+    std::string body_;
     SendCallback sendCallback_;
     SendResponseCallback sendResponseCallback_;
     ChunkedResponseCallback chunkedResponseCallback_;
+    GetBodyCallback getBodyCallback_;
 };
 
 } // namespace http

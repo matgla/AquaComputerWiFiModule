@@ -26,7 +26,7 @@ namespace http
 
 auto logger = logger::Logger("HttpServer");
 
-using Handlers = std::map<std::string, RequestType>;
+using Handlers = std::map<std::string, RequestHandler>;
 
 class AsyncHttpServer::AsyncHttpWrapper
 {
@@ -38,7 +38,8 @@ public:
     }
     void begin();
 
-    std::map<std::string, RequestType> reqHandlers_;
+    std::map<std::string, RequestHandler> getHandlers_;
+    std::map<std::string, RequestHandler> postHandlers_;
 
 private:
     io_service ioService_;
@@ -59,7 +60,7 @@ void AsyncHttpServer::AsyncHttpWrapper::loop()
     acceptor_.async_accept(socket_, [&](beast::error_code ec) {
         if (!ec)
         {
-            std::make_shared<HttpConnection>(std::move(socket_), reqHandlers_)->start();
+            std::make_shared<HttpConnection>(std::move(socket_), getHandlers_, postHandlers_)->start();
         }
         loop();
     });
@@ -73,9 +74,14 @@ AsyncHttpServer::AsyncHttpServer(u16 port)
 AsyncHttpServer::~AsyncHttpServer() = default;
 
 
-void AsyncHttpServer::get(const std::string& uri, RequestType request)
+void AsyncHttpServer::get(const std::string& uri, RequestHandler handler)
 {
-    asyncHttpWrapper_->reqHandlers_[uri] = request;
+    asyncHttpWrapper_->getHandlers_[uri] = handler;
+}
+
+void AsyncHttpServer::post(const std::string& uri, RequestHandler handler)
+{
+    asyncHttpWrapper_->postHandlers_[uri] = handler;
 }
 
 void AsyncHttpServer::begin()

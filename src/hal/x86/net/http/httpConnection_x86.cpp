@@ -12,9 +12,11 @@ namespace net
 namespace http
 {
 
-HttpConnection::HttpConnection(boost::asio::ip::tcp::socket socket, Handlers& handlers)
+HttpConnection::HttpConnection(boost::asio::ip::tcp::socket socket, Handlers& getHandlers, Handlers& postHandlers)
     : socket_(std::move(socket)),
-      getHandlers_(handlers), logger_("HttpConnection")
+      getHandlers_(getHandlers),
+      postHandlers_(postHandlers),
+      logger_("HttpConnection")
 {
 }
 
@@ -29,6 +31,13 @@ void HttpConnection::getCallback(u16 code, const std::string& type, const std::s
     response_.result(code);
     beast::ostream(response_.body) << body;
 };
+
+std::string HttpConnection::getBodyCallback()
+{
+    std::stringstream ss;
+    ss << beast::buffers(request_.body.data());
+    return ss.str();
+}
 
 std::unique_ptr<AsyncHttpResponse> HttpConnection::chunkedResponseCallback(const std::string& type,
                                                                            AsyncHttpRequest::ChunkedResponseParseCallback callback)
@@ -76,7 +85,9 @@ void HttpConnection::processRequest()
             response_.set(beast::http::field::server, "AquaComputerServer");
             createGetResponse();
             break;
-
+        case beast::http::verb::post:
+            handlePost();
+            break;
         default:
 
             response_.result(beast::http::status::bad_request);
@@ -89,6 +100,29 @@ void HttpConnection::processRequest()
     }
 
     writeResponse();
+}
+
+void HttpConnection::handlePost()
+{
+    auto handler = postHandlers_.find(request_.target().to_string());
+    if (handler != postHandlers_.end())
+    {
+        std::unique_ptr<AsyncHttpRequest> req(new AsyncHttpRequest());
+
+        req->setGetBodyCallback(std::bind(&getBodyCallback, this));
+
+        logger_.info() << "Found handler, calling...\n";
+        handler->second(req.get());
+    }
+    else
+    {
+        response_.result(beast::http::status::not_found);
+        response_.set(beast::http::field::content_type, "text/plain");
+        beast::ostream(response_.body) << "File not found\r\n";
+    }
+    logger_.info() << "Handle post request: " << request_.target().to_string() << "\n";
+
+    logger_.info() << "body?: " << beast::buffers(request_.body.data()) << "\n";
 }
 
 void HttpConnection::createGetResponse()

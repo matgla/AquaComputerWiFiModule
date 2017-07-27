@@ -355,6 +355,16 @@ void setup()
 
         request->send(response.get());
     });
+
+    server.post("/software_to_update", [](AsyncHttpRequest* request) {
+        fs::File file;
+        file.open("sw.bin");
+        file.write(request->getBody());
+        file.close();
+        logger::Logger logger("file");
+        logger.info() << "File saved\n";
+    });
+
     server.begin();
 }
 

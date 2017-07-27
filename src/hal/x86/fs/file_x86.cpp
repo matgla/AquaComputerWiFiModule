@@ -24,6 +24,11 @@ void File::open(const std::string& path)
     fileWrapper_->fs_.open(path, std::fstream::in | std::fstream::out);
 }
 
+void File::write(const std::string& data)
+{
+    fileWrapper_->fs_ << data;
+}
+
 void File::seek(std::size_t index)
 {
     fileWrapper_->fs_.seekg(index);
