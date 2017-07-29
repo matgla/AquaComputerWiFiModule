@@ -1,0 +1,16 @@
+{
+  "name": "aqua_computer_server_system_tests",
+  "version": "1.0.0",
+  "description": "System level tests for aqua computer server.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests --recursive"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "chai": "latest",
+    "eslint": "latest",
+    "sleep": "^5.1.1"
+  }
+}

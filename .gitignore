@@ -11,3 +11,4 @@ platformio.ini
 .piolibdeps
 bin*
 build
+*node_modules*
