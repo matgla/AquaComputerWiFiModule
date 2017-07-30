@@ -13,6 +13,7 @@ set(common_srcs
 
 set(common_incs
     ${COMMON_SRC_DIR}/hal/net/tcpSocket.hpp
+    ${COMMON_SRC_DIR}/hal/net/websocket.hpp
     ${COMMON_SRC_DIR}/hal/net/http/asyncHttpRequest.hpp
     ${COMMON_SRC_DIR}/hal/net/http/asyncHttpServer.hpp
     ${COMMON_SRC_DIR}/hal/net/http/fwd.hpp

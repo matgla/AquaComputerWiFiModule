@@ -11,7 +11,8 @@ if (${ARCH} STREQUAL "X86")
     find_package(Boost 1.61 COMPONENTS system program_options REQUIRED)
     include_directories(${Boost_INCLUDE_DIR})
     include_directories(${Beast_INCLUDE_DIR})
-
+    message("test: ${WEBSOCKETPP_INCLUDE}")
+    include_directories(${WEBSOCKETPP_ROOT})
     set(production_srcs ${production_srcs} ${x86_srcs} ${x86_incs})
 
     set(target_libs ${target_libs} ${Boost_LIBRARIES} beast)
