@@ -63,17 +63,24 @@ std::unique_ptr<AsyncHttpResponse> HttpConnection::chunkedResponseCallback(const
 
 void HttpConnection::readRequest()
 {
-    logger_.debug() << "Read request called";
-    auto self = shared_from_this();
     boost::beast::error_code ec;
-    boost::beast::http::read(socket_, buffer_, request_, ec);
-    if (!ec)
+    boost::beast::flat_buffer buffer;
+
+    boost::beast::http::read(socket_, buffer, request_, ec);
+    if (ec == boost::beast::http::error::end_of_stream)
     {
-        self->processRequest();
+        return;
     }
+    if (ec)
+    {
+        throw boost::beast::system_error{ec};
+    }
+    auto self = shared_from_this();
+
+    self->processRequest(ec);
 }
 
-void HttpConnection::processRequest()
+void HttpConnection::processRequest(boost::beast::error_code& ec)
 {
     response_.version = 11;
     response_.set(boost::beast::http::field::connection, "close");
@@ -83,10 +90,10 @@ void HttpConnection::processRequest()
         case boost::beast::http::verb::get:
             response_.result(boost::beast::http::status::internal_server_error);
             response_.set(boost::beast::http::field::server, "AquaComputerServer");
-            createGetResponse();
+            createGetResponse(ec);
             break;
         case boost::beast::http::verb::post:
-            handlePost();
+            handlePost(ec);
             break;
         default:
 
@@ -99,10 +106,10 @@ void HttpConnection::processRequest()
             break;
     }
 
-    writeResponse();
+    writeResponse(ec);
 }
 
-void HttpConnection::handlePost()
+void HttpConnection::handlePost(boost::beast::error_code& ec)
 {
     auto handler = postHandlers_.find(request_.target().to_string());
     if (handler != postHandlers_.end())
@@ -111,7 +118,6 @@ void HttpConnection::handlePost()
 
         req->setGetBodyCallback(std::bind(&HttpConnection::getBodyCallback, this));
 
-        logger_.info() << "Found handler, calling...";
         handler->second(req.get());
     }
     else
@@ -120,12 +126,9 @@ void HttpConnection::handlePost()
         response_.set(boost::beast::http::field::content_type, "text/plain");
         boost::beast::ostream(response_.body) << "File not found\r\n";
     }
-    logger_.info() << "Handle post request: " << request_.target().to_string();
-
-    logger_.info() << "body?: " << boost::beast::buffers(request_.body.data());
 }
 
-void HttpConnection::createGetResponse()
+void HttpConnection::createGetResponse(boost::beast::error_code& ec)
 {
     auto handler = getHandlers_.find(request_.target().to_string());
     if (handler != getHandlers_.end())
@@ -151,13 +154,11 @@ void HttpConnection::createGetResponse()
     }
 }
 
-void HttpConnection::writeResponse()
+void HttpConnection::writeResponse(boost::beast::error_code& ec)
 {
-    auto self = shared_from_this();
-
     response_.set(boost::beast::http::field::content_length, response_.body.size());
 
-    boost::beast::http::write(socket_, response_);
+    boost::beast::http::write(socket_, response_, ec);
     socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_send);
 }
 

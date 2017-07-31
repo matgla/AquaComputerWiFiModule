@@ -1,8 +1,8 @@
 #pragma once
 
+#include <boost/asio.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
-#include <boost/asio.hpp>
 
 #include <map>
 #include <memory>
@@ -29,10 +29,10 @@ public:
 private:
     void getCallback(u16 code, const std::string& type, const std::string& body);
     void readRequest();
-    void processRequest();
-    void createGetResponse();
-    void writeResponse();
-    void handlePost();
+    void processRequest(boost::beast::error_code& ec);
+    void createGetResponse(boost::beast::error_code& ec);
+    void writeResponse(boost::beast::error_code& ec);
+    void handlePost(boost::beast::error_code& ec);
     std::string getBodyCallback();
     std::unique_ptr<AsyncHttpResponse> chunkedResponseCallback(const std::string& type,
                                                                AsyncHttpRequest::ChunkedResponseParseCallback callback);

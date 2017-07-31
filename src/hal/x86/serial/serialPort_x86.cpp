@@ -52,7 +52,7 @@ SerialPort::SerialWrapper::SerialWrapper(const std::string& port, int baudrate)
     }
     catch (boost::system::system_error& e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
+        throw boost::system::system_error{e};
     }
 }
 

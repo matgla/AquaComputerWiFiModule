@@ -7,14 +7,18 @@ namespace logger
 
 std::mutex logMutex;
 
-Logger::Logger(const std::string& name)
-    : name_(name)
+Logger::Logger(const std::string& name, bool insertNewlineWhenDestruct)
+    : name_(name),
+      insertNewlineWhenDestruct_(insertNewlineWhenDestruct)
 {
 }
 
 Logger::~Logger()
 {
-    operator<<("\n");
+    if (insertNewlineWhenDestruct_)
+    {
+        operator<<("\n");
+    }
     logMutex.unlock();
 }
 
@@ -25,7 +29,7 @@ Logger Logger::debug()
     {
         logger.debug(name_);
     }
-    return Logger(name_);
+    return Logger(name_, true);
 }
 
 Logger Logger::info()
@@ -35,7 +39,7 @@ Logger Logger::info()
     {
         logger.info(name_);
     }
-    return Logger(name_);
+    return Logger(name_, true);
 }
 
 Logger Logger::warn()
@@ -45,7 +49,7 @@ Logger Logger::warn()
     {
         logger.warn(name_);
     }
-    return Logger(name_);
+    return Logger(name_, true);
 }
 
 Logger Logger::err()
@@ -55,7 +59,7 @@ Logger Logger::err()
     {
         logger.err(name_);
     }
-    return Logger(name_);
+    return Logger(name_, true);
 }
 
 } // namespace logger

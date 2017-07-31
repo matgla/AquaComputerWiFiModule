@@ -52,25 +52,16 @@ private:
 
 void AsyncHttpServer::AsyncHttpWrapper::begin()
 {
-
-
-    // std::thread t([this]() {
-    //     while (true)
-    //     {
-    //         this->ioService_.run();
-    //     }
-    // });
-    logger.debug() << "Thread started";
     std::thread{std::bind(&AsyncHttpServer::AsyncHttpWrapper::loop, this)}.detach();
-    //   t.detach();
 }
 
 void AsyncHttpServer::AsyncHttpWrapper::loop()
 {
-    logger.debug() << "In loop";
-    acceptor_.accept(socket_);
-    std::make_shared<HttpConnection>(std::move(socket_), getHandlers_, postHandlers_)->start();
-    loop();
+    while (true)
+    {
+        acceptor_.accept(socket_);
+        std::make_shared<HttpConnection>(std::move(socket_), getHandlers_, postHandlers_)->start();
+    }
 }
 
 AsyncHttpServer::AsyncHttpServer(u16 port)

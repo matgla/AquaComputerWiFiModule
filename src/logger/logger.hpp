@@ -13,7 +13,7 @@ namespace logger
 class Logger
 {
 public:
-    Logger(const std::string& name = "");
+    Logger(const std::string& name = "", bool insertNewlineWhenDestruct = false);
     ~Logger();
     void add(LoggerBase logger);
 
@@ -34,6 +34,7 @@ public:
 
 protected:
     std::string name_;
+    bool insertNewlineWhenDestruct_;
 };
 
 } // namespace logger
