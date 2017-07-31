@@ -9,6 +9,5 @@ platformio.ini
 .vscode
 .pioenvs
 .piolibdeps
-bin*
 build
 *node_modules*
