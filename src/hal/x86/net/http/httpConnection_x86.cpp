@@ -1,6 +1,6 @@
 #include "hal/x86/net/http/httpConnection_x86.hpp"
 
-#include <beast/version.hpp>
+#include <boost/beast/version.hpp>
 
 #include "hal/net/http/asyncHttpRequest.hpp"
 #include "hal/net/http/asyncHttpResponse.hpp"
@@ -27,15 +27,15 @@ void HttpConnection::start()
 
 void HttpConnection::getCallback(u16 code, const std::string& type, const std::string& body)
 {
-    response_.set(beast::http::field::content_type, type);
+    response_.set(boost::beast::http::field::content_type, type);
     response_.result(code);
-    beast::ostream(response_.body) << body;
+    boost::beast::ostream(response_.body) << body;
 };
 
 std::string HttpConnection::getBodyCallback()
 {
     std::stringstream ss;
-    ss << beast::buffers(request_.body.data());
+    ss << boost::beast::buffers(request_.body.data());
     return ss.str();
 }
 
@@ -45,7 +45,7 @@ std::unique_ptr<AsyncHttpResponse> HttpConnection::chunkedResponseCallback(const
     std::unique_ptr<u8[]> buffer(new u8[1001]);
     std::unique_ptr<AsyncHttpResponse> response(new AsyncHttpResponse());
     response->setType(type);
-    response->setCode(static_cast<u16>(beast::http::status::ok));
+    response->setCode(static_cast<u16>(boost::beast::http::status::ok));
 
     std::size_t index = 0;
     std::size_t readedBytes = 1;
@@ -63,11 +63,11 @@ void HttpConnection::readRequest()
 {
     auto self = shared_from_this();
 
-    beast::http::async_read(
+    boost::beast::http::async_read(
         socket_,
         buffer_,
         request_,
-        [self](beast::error_code ec) {
+        [self](boost::beast::error_code ec) {
             if (!ec)
                 self->processRequest();
         });
@@ -76,23 +76,23 @@ void HttpConnection::readRequest()
 void HttpConnection::processRequest()
 {
     response_.version = 11;
-    response_.set(beast::http::field::connection, "close");
+    response_.set(boost::beast::http::field::connection, "close");
 
     switch (request_.method())
     {
-        case beast::http::verb::get:
-            response_.result(beast::http::status::internal_server_error);
-            response_.set(beast::http::field::server, "AquaComputerServer");
+        case boost::beast::http::verb::get:
+            response_.result(boost::beast::http::status::internal_server_error);
+            response_.set(boost::beast::http::field::server, "AquaComputerServer");
             createGetResponse();
             break;
-        case beast::http::verb::post:
+        case boost::beast::http::verb::post:
             handlePost();
             break;
         default:
 
-            response_.result(beast::http::status::bad_request);
-            response_.set(beast::http::field::content_type, "text/plain");
-            beast::ostream(response_.body)
+            response_.result(boost::beast::http::status::bad_request);
+            response_.set(boost::beast::http::field::content_type, "text/plain");
+            boost::beast::ostream(response_.body)
                 << "Invalid request-method '"
                 << request_.method_string().to_string()
                 << "'";
@@ -109,20 +109,20 @@ void HttpConnection::handlePost()
     {
         std::unique_ptr<AsyncHttpRequest> req(new AsyncHttpRequest());
 
-        req->setGetBodyCallback(std::bind(&getBodyCallback, this));
+        req->setGetBodyCallback(std::bind(&HttpConnection::getBodyCallback, this));
 
         logger_.info() << "Found handler, calling...\n";
         handler->second(req.get());
     }
     else
     {
-        response_.result(beast::http::status::not_found);
-        response_.set(beast::http::field::content_type, "text/plain");
-        beast::ostream(response_.body) << "File not found\r\n";
+        response_.result(boost::beast::http::status::not_found);
+        response_.set(boost::beast::http::field::content_type, "text/plain");
+        boost::beast::ostream(response_.body) << "File not found\r\n";
     }
     logger_.info() << "Handle post request: " << request_.target().to_string() << "\n";
 
-    logger_.info() << "body?: " << beast::buffers(request_.body.data()) << "\n";
+    logger_.info() << "body?: " << boost::beast::buffers(request_.body.data()) << "\n";
 }
 
 void HttpConnection::createGetResponse()
@@ -132,12 +132,12 @@ void HttpConnection::createGetResponse()
     {
         std::unique_ptr<AsyncHttpRequest> req(new AsyncHttpRequest());
 
-        req->setSendCallback(std::bind(&getCallback,
+        req->setSendCallback(std::bind(&HttpConnection::getCallback,
                                        this, std::placeholders::_1,
                                        std::placeholders::_2,
                                        std::placeholders::_3));
 
-        req->setChunkedResponseCallback(std::bind(&chunkedResponseCallback,
+        req->setChunkedResponseCallback(std::bind(&HttpConnection::chunkedResponseCallback,
                                                   this, std::placeholders::_1,
                                                   std::placeholders::_2));
 
@@ -145,9 +145,9 @@ void HttpConnection::createGetResponse()
     }
     else
     {
-        response_.result(beast::http::status::not_found);
-        response_.set(beast::http::field::content_type, "text/plain");
-        beast::ostream(response_.body) << "File not found\r\n";
+        response_.result(boost::beast::http::status::not_found);
+        response_.set(boost::beast::http::field::content_type, "text/plain");
+        boost::beast::ostream(response_.body) << "File not found\r\n";
     }
 }
 
@@ -155,12 +155,12 @@ void HttpConnection::writeResponse()
 {
     auto self = shared_from_this();
 
-    response_.set(beast::http::field::content_length, response_.body.size());
+    response_.set(boost::beast::http::field::content_length, response_.body.size());
 
-    beast::http::async_write(
+    boost::beast::http::async_write(
         socket_,
         response_,
-        [self](beast::error_code ec) {
+        [self](boost::beast::error_code ec) {
             self->socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_send, ec);
         });
 }

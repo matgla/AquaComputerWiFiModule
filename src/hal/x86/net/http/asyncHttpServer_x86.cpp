@@ -1,9 +1,9 @@
 #include "hal/net/http/asyncHttpServer.hpp"
 
-#include <beast/core.hpp>
-#include <beast/http.hpp>
-#include <beast/version.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
 #include <boost/asio.hpp>
+#include <boost/beast/version.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -57,7 +57,7 @@ void AsyncHttpServer::AsyncHttpWrapper::begin()
 
 void AsyncHttpServer::AsyncHttpWrapper::loop()
 {
-    acceptor_.async_accept(socket_, [&](beast::error_code ec) {
+    acceptor_.async_accept(socket_, [&](boost::beast::error_code ec) {
         if (!ec)
         {
             std::make_shared<HttpConnection>(std::move(socket_), getHandlers_, postHandlers_)->start();

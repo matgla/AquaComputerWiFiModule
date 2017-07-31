@@ -5,7 +5,7 @@
 #include <string>
 
 #include "hal/net/http/asyncHttpResponse.hpp"
-#include "logger/Logger.hpp"
+#include "logger/logger.hpp"
 #include "utils/types.hpp"
 
 namespace net

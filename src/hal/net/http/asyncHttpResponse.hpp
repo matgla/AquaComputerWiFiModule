@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "logger/Logger.hpp"
+#include "logger/logger.hpp"
 #include "utils/types.hpp"
 
 namespace net

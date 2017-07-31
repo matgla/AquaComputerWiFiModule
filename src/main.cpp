@@ -288,7 +288,7 @@ int main()
 #endif
 
 // #include "hal/net/tcpSocket.hpp"
-#include "hal/fs/File.hpp"
+#include "hal/fs/file.hpp"
 #include "hal/net/http/asyncHttpRequest.hpp"
 #include "hal/net/http/asyncHttpResponse.hpp"
 #include "hal/net/http/asyncHttpServer.hpp"

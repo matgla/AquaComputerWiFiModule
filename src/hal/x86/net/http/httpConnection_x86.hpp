@@ -1,7 +1,7 @@
 #pragma once
 
-#include <beast/core.hpp>
-#include <beast/http.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
 #include <boost/asio.hpp>
 
 #include <map>
@@ -39,9 +39,9 @@ private:
 
     boost::asio::ip::tcp::socket socket_;
 
-    beast::flat_buffer buffer_{8192};
-    beast::http::request<beast::http::dynamic_body> request_;
-    beast::http::response<beast::http::dynamic_body> response_;
+    boost::beast::flat_buffer buffer_{8192};
+    boost::beast::http::request<boost::beast::http::dynamic_body> request_;
+    boost::beast::http::response<boost::beast::http::dynamic_body> response_;
 
     Handlers& getHandlers_;
     Handlers& postHandlers_;
