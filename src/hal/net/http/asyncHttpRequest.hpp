@@ -63,7 +63,7 @@ public:
     {
         if (nullptr == sendCallback_)
         {
-            logger_.err() << "Callback for send hasn't been set for msg: " << msg << "\n";
+            logger_.err() << "Callback for send hasn't been set for msg: " << msg;
             return;
         }
         sendCallback_(code, type, msg);
@@ -73,7 +73,7 @@ public:
     {
         if (nullptr == sendCallback_)
         {
-            logger_.err() << "Callback for send response hasn't been set for msg: \n";
+            logger_.err() << "Callback for send response hasn't been set for msg:";
             return;
         }
         sendCallback_(response->getCode(), response->getType(), response->getMsg());
@@ -83,7 +83,7 @@ public:
     {
         if (nullptr == chunkedResponseCallback_)
         {
-            logger_.err() << "Callback for chunked response hasn't been set for msg: \n";
+            logger_.err() << "Callback for chunked response hasn't been set for msg:";
             return nullptr;
         }
         std::unique_ptr<AsyncHttpResponse> resp(std::move(chunkedResponseCallback_(type, callback)));
@@ -95,7 +95,7 @@ public:
 
         if (nullptr == getBodyCallback_)
         {
-            logger_.err() << "Callback for getBody hasn't been set for msg: \n";
+            logger_.err() << "Callback for getBody hasn't been set for msg:";
             return "";
         }
         return getBodyCallback_();

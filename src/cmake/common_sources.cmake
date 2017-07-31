@@ -28,5 +28,6 @@ set(common_incs
     ${COMMON_SRC_DIR}/logger/stdOutLogger.hpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.hpp
     ${COMMON_SRC_DIR}/stream/socketStream.hpp
+    ${COMMON_SRC_DIR}/hal/time/sleep.hpp
     ${COMMON_SRC_DIR}/utils/types.hpp
 )

@@ -22,6 +22,7 @@ public:
         return *this;
     }
 
+    LoggerBase& debug(const std::string& componentName) override;
     LoggerBase& info(const std::string& componentName) override;
     LoggerBase& err(const std::string& componentName) override;
     LoggerBase& warn(const std::string& componentName) override;

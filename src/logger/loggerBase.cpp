@@ -10,6 +10,12 @@ LoggerBase::LoggerBase()
 {
 }
 
+LoggerBase& LoggerBase::debug(const std::string& componentName)
+{
+    (*stream_) << "<" << getFormatedDateAndTime() << "> DBG/" << componentName << ": ";
+    return *this;
+}
+
 LoggerBase& LoggerBase::info(const std::string& componentName)
 {
     (*stream_) << "<" << getFormatedDateAndTime() << "> INF/" << componentName << ": ";

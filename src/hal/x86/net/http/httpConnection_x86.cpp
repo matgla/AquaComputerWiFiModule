@@ -1,5 +1,7 @@
 #include "hal/x86/net/http/httpConnection_x86.hpp"
 
+#include <thread>
+
 #include <boost/beast/version.hpp>
 
 #include "hal/net/http/asyncHttpRequest.hpp"
@@ -22,7 +24,7 @@ HttpConnection::HttpConnection(boost::asio::ip::tcp::socket socket, Handlers& ge
 
 void HttpConnection::start()
 {
-    readRequest();
+    std::thread{&HttpConnection::readRequest, shared_from_this()}.detach();
 }
 
 void HttpConnection::getCallback(u16 code, const std::string& type, const std::string& body)
@@ -61,16 +63,14 @@ std::unique_ptr<AsyncHttpResponse> HttpConnection::chunkedResponseCallback(const
 
 void HttpConnection::readRequest()
 {
+    logger_.debug() << "Read request called";
     auto self = shared_from_this();
-
-    boost::beast::http::async_read(
-        socket_,
-        buffer_,
-        request_,
-        [self](boost::beast::error_code ec) {
-            if (!ec)
-                self->processRequest();
-        });
+    boost::beast::error_code ec;
+    boost::beast::http::read(socket_, buffer_, request_, ec);
+    if (!ec)
+    {
+        self->processRequest();
+    }
 }
 
 void HttpConnection::processRequest()
@@ -111,7 +111,7 @@ void HttpConnection::handlePost()
 
         req->setGetBodyCallback(std::bind(&HttpConnection::getBodyCallback, this));
 
-        logger_.info() << "Found handler, calling...\n";
+        logger_.info() << "Found handler, calling...";
         handler->second(req.get());
     }
     else
@@ -120,9 +120,9 @@ void HttpConnection::handlePost()
         response_.set(boost::beast::http::field::content_type, "text/plain");
         boost::beast::ostream(response_.body) << "File not found\r\n";
     }
-    logger_.info() << "Handle post request: " << request_.target().to_string() << "\n";
+    logger_.info() << "Handle post request: " << request_.target().to_string();
 
-    logger_.info() << "body?: " << boost::beast::buffers(request_.body.data()) << "\n";
+    logger_.info() << "body?: " << boost::beast::buffers(request_.body.data());
 }
 
 void HttpConnection::createGetResponse()
@@ -157,12 +157,8 @@ void HttpConnection::writeResponse()
 
     response_.set(boost::beast::http::field::content_length, response_.body.size());
 
-    boost::beast::http::async_write(
-        socket_,
-        response_,
-        [self](boost::beast::error_code ec) {
-            self->socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_send, ec);
-        });
+    boost::beast::http::write(socket_, response_);
+    socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_send);
 }
 
 } // namespace http

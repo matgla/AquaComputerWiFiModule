@@ -292,7 +292,9 @@ int main()
 #include "hal/net/http/asyncHttpRequest.hpp"
 #include "hal/net/http/asyncHttpResponse.hpp"
 #include "hal/net/http/asyncHttpServer.hpp"
+#include "hal/net/websocket.hpp"
 #include "hal/serial/serialPort.hpp"
+#include "hal/time/sleep.hpp"
 #include "logger/logger.hpp"
 #include "logger/loggerConf.hpp"
 #include "logger/socketLogger.hpp"
@@ -308,7 +310,7 @@ void setup()
     auto logger = logger::Logger("main");
     //    logger.add(logger::SocketLogger("127.0.0.1", 1234, "main"));
     logger.info() << "Test"
-                  << " Proba mikrofonu\n";
+                  << " Proba mikrofonu";
     //    logger.warn() << "I do pliczku dziala tez\n";
     // serial::SerialPort port("COM4");
     // std::cout << "wyszedlem za konstruktor" << std::endl;
@@ -343,7 +345,7 @@ void setup()
                                               if (!file.isOpen())
                                               {
                                                   logger::Logger logger("IndexResp");
-                                                  logger.err() << "Can't open file: index.html\n";
+                                                  logger.err() << "Can't open file: index.html";
                                                   return std::size_t(0);
                                               }
                                               file.seek(index);
@@ -362,12 +364,21 @@ void setup()
         file.write(request->getBody());
         file.close();
         logger::Logger logger("file");
-        logger.info() << "File saved\n";
+        logger.info() << "File saved";
     });
 
     server.begin();
+    logger.debug() << "begin end";
+    while (true)
+    {
+        hal::time::sleep(1);
+    }
 }
 
 void loop()
 {
+    while (true)
+    {
+        hal::time::sleep(1);
+    }
 }

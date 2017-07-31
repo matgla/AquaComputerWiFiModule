@@ -10,10 +10,11 @@
 namespace logger
 {
 
-class Logger : public ILogger
+class Logger
 {
 public:
     Logger(const std::string& name = "");
+    ~Logger();
     void add(LoggerBase logger);
 
     template <typename T>
@@ -26,9 +27,10 @@ public:
         return *this;
     }
 
-    Logger& info() override;
-    Logger& warn() override;
-    Logger& err() override;
+    Logger debug();
+    Logger info();
+    Logger warn();
+    Logger err();
 
 protected:
     std::string name_;

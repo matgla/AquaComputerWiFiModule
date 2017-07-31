@@ -1,8 +1,8 @@
 #include "hal/net/http/asyncHttpServer.hpp"
 
+#include <boost/asio.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
-#include <boost/asio.hpp>
 #include <boost/beast/version.hpp>
 
 #include <chrono>
@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include "hal/net/http/asyncHttpRequest.hpp"
 #include "hal/x86/net/http/httpConnection_x86.hpp"
@@ -51,19 +52,25 @@ private:
 
 void AsyncHttpServer::AsyncHttpWrapper::begin()
 {
-    loop();
-    ioService_.run();
+
+
+    // std::thread t([this]() {
+    //     while (true)
+    //     {
+    //         this->ioService_.run();
+    //     }
+    // });
+    logger.debug() << "Thread started";
+    std::thread{std::bind(&AsyncHttpServer::AsyncHttpWrapper::loop, this)}.detach();
+    //   t.detach();
 }
 
 void AsyncHttpServer::AsyncHttpWrapper::loop()
 {
-    acceptor_.async_accept(socket_, [&](boost::beast::error_code ec) {
-        if (!ec)
-        {
-            std::make_shared<HttpConnection>(std::move(socket_), getHandlers_, postHandlers_)->start();
-        }
-        loop();
-    });
+    logger.debug() << "In loop";
+    acceptor_.accept(socket_);
+    std::make_shared<HttpConnection>(std::move(socket_), getHandlers_, postHandlers_)->start();
+    loop();
 }
 
 AsyncHttpServer::AsyncHttpServer(u16 port)
@@ -86,7 +93,7 @@ void AsyncHttpServer::post(const std::string& uri, RequestHandler handler)
 
 void AsyncHttpServer::begin()
 {
-    logger.info() << "Starting....\n";
+    logger.info() << "Starting....";
     asyncHttpWrapper_->begin();
 }
 

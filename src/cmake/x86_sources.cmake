@@ -7,7 +7,7 @@ set(x86_srcs
     ${X86_SRC_DIR}/net/http/httpConnection_x86.cpp
     ${X86_SRC_DIR}/serial/serialPort_x86.cpp
     ${X86_SRC_DIR}/fs/file_x86.cpp
-
+    ${X86_SRC_DIR}/time/sleep_x86.cpp
 )
 
 set(x86_incs
