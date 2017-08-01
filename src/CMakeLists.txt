@@ -28,6 +28,8 @@ elseif (${ARCH} strequal "ESP8266")
     message("ESP8266 is not currently supported")
 endif (${ARCH} STREQUAL "X86")
 
+set(target_libs ${target_libs} nlohmann_json)
+
 set(target_name AquaLampServer)
 
 add_executable(${target_name} ${production_srcs})

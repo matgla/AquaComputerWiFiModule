@@ -13,10 +13,6 @@ logger::Logger logger("WS");
 
 typedef websocketpp::server<websocketpp::config::asio> Server;
 
-using websocketpp::lib::placeholders::_1;
-using websocketpp::lib::placeholders::_2;
-using websocketpp::lib::bind;
-
 class WebSocket::WebSocketWrapper
 {
 public:
@@ -24,7 +20,7 @@ public:
         : uri_(uri), port_(port)
     {
         server_.init_asio();
-        server_.set_message_handler(bind(&onMessage, this, ::_1, ::_2));
+        server_.set_message_handler(websocketpp::lib::bind(&WebSocketWrapper::onMessage, this, websocketpp::lib::placeholders::_1, websocketpp::lib::placeholders::_2));
         server_.listen(port_);
     }
 

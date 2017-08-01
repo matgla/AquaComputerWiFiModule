@@ -271,10 +271,21 @@
 #ifndef X86_ARCH
 #include "Arduino.h"
 
+namespace settings
+{
+const char* path = "esp8266_settings.json";  
+}
+ 
+
 #else
 
 #include <iostream>
 #include <string>
+
+namespace settings
+{
+const char* path = "x86_settings.json";  
+}
 
 void setup();
 void loop();
@@ -304,6 +315,9 @@ int main()
 #include <iostream>
 #include <thread>
 
+net::http::AsyncHttpServer server(80);
+net::WebSocket ws("\ws", 80);
+
 void setup()
 {
     logger::LoggerConf::get().add(logger::StdOutLogger{});
@@ -331,7 +345,6 @@ void setup()
     // s.connect("127.0.0.1", 1234);
     // s.write("Panie dzialaj pan\n");
     using namespace net::http;
-    AsyncHttpServer server(80);
     server.get("/test", [](AsyncHttpRequest* request) {
         request->send(200, "text/plain", "Cos tam dzialam");
     });
@@ -368,11 +381,7 @@ void setup()
     });
 
     server.begin();
-    logger.debug() << "begin end";
-    while (true)
-    {
-        hal::time::sleep(1);
-    }
+    logger.debug() << "begin end"; 
 }
 
 void loop()
