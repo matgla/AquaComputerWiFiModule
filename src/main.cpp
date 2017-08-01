@@ -273,9 +273,9 @@
 
 namespace settings
 {
-const char* path = "esp8266_settings.json";  
+const char* path = "esp8266_settings.json";
 }
- 
+
 
 #else
 
@@ -284,7 +284,7 @@ const char* path = "esp8266_settings.json";
 
 namespace settings
 {
-const char* path = "x86_settings.json";  
+const char* path = "x86_settings.json";
 }
 
 void setup();
@@ -316,7 +316,7 @@ int main()
 #include <thread>
 
 net::http::AsyncHttpServer server(80);
-net::WebSocket ws("\ws", 80);
+net::WebSocket ws("/ws", 9002);
 
 void setup()
 {
@@ -381,13 +381,11 @@ void setup()
     });
 
     server.begin();
-    logger.debug() << "begin end"; 
+    logger.debug() << "begin end";
+    ws.start();
 }
 
 void loop()
 {
-    while (true)
-    {
-        hal::time::sleep(1);
-    }
+    net::http::waitForBreak();
 }

@@ -46,8 +46,7 @@ SerialPort::SerialWrapper::SerialWrapper(const std::string& port, int baudrate)
     {
         serialPort_.open(port);
         serialPort_.set_option(asio::serial_port_base::baud_rate(baudrate_));
-        std::thread t([this]() {while(true) {ioService_.run();} });
-        t.detach();
+        std::thread{[this]() {while(true) {ioService_.run();} }}.detach();
         loop();
     }
     catch (boost::system::system_error& e)

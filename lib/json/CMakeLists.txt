@@ -15,7 +15,7 @@ option(JSON_BuildTests "Build the unit tests" ON)
 ## CONFIGURATION
 ##
 set(NLOHMANN_JSON_TARGET_NAME               ${PROJECT_NAME})
-set(NLOHMANN_JSON_SOURCE_DIR                "src/")
+set(NLOHMANN_JSON_SOURCE_DIR                "src/" CACHE STRING "Path to json includes" FORCE)
 set(NLOHMANN_JSON_CONFIG_INSTALL_DIR        "lib/cmake/${PROJECT_NAME}")
 set(NLOHMANN_JSON_INCLUDE_INSTALL_DIR       "include")
 set(NLOHMANN_JSON_HEADER_INSTALL_DIR        "${NLOHMANN_JSON_INCLUDE_INSTALL_DIR}/nlohmann")
@@ -35,16 +35,6 @@ target_include_directories(
     ${NLOHMANN_JSON_TARGET_NAME}
     INTERFACE $<INSTALL_INTERFACE:include/>
 )
-            
-##
-## TESTS
-## create and configure the unit test target
-##
-if(JSON_BuildTests)
-    enable_testing()
-    include_directories(${NLOHMANN_JSON_SOURCE_DIR})
-    add_subdirectory(test)
-endif()
 
 ##
 ## INSTALL

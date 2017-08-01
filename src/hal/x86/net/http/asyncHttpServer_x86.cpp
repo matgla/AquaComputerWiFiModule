@@ -88,5 +88,14 @@ void AsyncHttpServer::begin()
     asyncHttpWrapper_->begin();
 }
 
+void waitForBreak()
+{
+    boost::asio::io_service ios{1};
+    boost::asio::signal_set signals(ios, SIGINT, SIGTERM);
+    signals.async_wait([&](boost::system::error_code const&, int) {});
+    ios.run();
+}
+
+
 } // namespace http
 } // namespace net

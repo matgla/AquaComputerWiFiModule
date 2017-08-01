@@ -30,5 +30,7 @@ private:
     std::unique_ptr<AsyncHttpWrapper> asyncHttpWrapper_;
 };
 
+void waitForBreak();
+
 } // namespace http
 } // namespace net
