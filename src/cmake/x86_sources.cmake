@@ -11,6 +11,5 @@ set(x86_srcs
 )
 
 set(x86_incs
-    ${X86_SRC_DIR}/serial/buffer.hpp
     ${X86_SRC_DIR}/net/http/httpConnection_x86.hpp
 )

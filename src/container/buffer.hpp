@@ -5,7 +5,7 @@
 
 #include "utils/types.hpp"
 
-namespace containers
+namespace container
 {
 
 template <std::size_t BUF_SIZE>
@@ -152,5 +152,5 @@ class Buffer
     std::mutex dataMutex_;
 };
 
-}  // namespace containers
+}  // namespace container
 

@@ -298,12 +298,13 @@ int main()
 
 #endif
 
-// #include "hal/net/tcpSocket.hpp"
+#include "hal/net/tcpSocket.hpp"
 #include "hal/fs/file.hpp"
 #include "hal/net/http/asyncHttpRequest.hpp"
 #include "hal/net/http/asyncHttpResponse.hpp"
 #include "hal/net/http/asyncHttpServer.hpp"
 #include "hal/net/websocket.hpp"
+
 #include "hal/serial/serialPort.hpp"
 #include "hal/time/sleep.hpp"
 #include "logger/logger.hpp"
@@ -383,6 +384,23 @@ void setup()
     server.begin();
     logger.debug() << "begin end";
     ws.start();
+  
+    net::TcpSocket serv(1234);
+    net::TcpSocket client(1234);
+  
+    serv.start();
+    logger.info() << "server started";
+    client.connect("127.0.0.1");
+    logger.info() << "connecting...";
+    client.write("witaj swiece");
+    client.write("witaj swiece 1");
+    client.write("witaj swiece 2");
+    client.write("witaj swiece 3");
+    client.write("witaj swiece 4");
+    client.write("witaj swiece 5");
+    client.write("witaj swiece 6");
+    logger.info() << "closing connection";
+    serv.close();
 }
 
 void loop()

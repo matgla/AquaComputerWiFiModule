@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -11,15 +12,20 @@ namespace net
 class TcpSocket
 {
 public:
+    using HandlerCallback = std::function<void(void* data)>;
     ~TcpSocket();
-    TcpSocket();
-    void connect(const std::string& name, u16 port);
+    TcpSocket(u16 port);
+    void start();
+    void connect(const std::string& name);
     void write(const std::string& data);
+    void setHandler(HandlerCallback handler);
     void close();
 
 private:
     class SocketWrapper;
     std::unique_ptr<SocketWrapper> socketWrapper_;
+    HandlerCallback handler_;
+    u8 port_;
 };
 
 }  // namespace net

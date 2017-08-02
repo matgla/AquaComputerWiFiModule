@@ -4,8 +4,9 @@ namespace stream
 {
 
 SocketBuffer::SocketBuffer(const std::string& host, u16 port)
+  : socket_(port)
 {
-    socket_.connect(host, port);
+    socket_.connect(host);
 }
 
 std::streambuf::int_type SocketBuffer::overflow(std::streambuf::int_type c)
