@@ -2,7 +2,6 @@
 
 #include <functional>
 #include <memory>
-#include <string>
 
 #include "utils/types.hpp"
 

@@ -302,8 +302,8 @@ int main()
 #include "hal/net/http/asyncHttpRequest.hpp"
 #include "hal/net/http/asyncHttpResponse.hpp"
 #include "hal/net/http/asyncHttpServer.hpp"
+#include "hal/net/tcpClient.hpp"
 #include "hal/net/tcpServer.hpp"
-#include "hal/net/tcpSocket.hpp"
 #include "hal/net/websocket.hpp"
 
 #include "hal/serial/serialPort.hpp"
@@ -319,7 +319,7 @@ int main()
 
 net::http::AsyncHttpServer server(80);
 net::WebSocket ws("/ws", 9002);
-hal::net::TcpServer serv(1234);
+//hal::net::TcpServer serv(1234);
 
 void setup()
 {
@@ -388,27 +388,19 @@ void setup()
     // ws.start();
 
 
-    serv.start();
-    logger.info() << "server started";
-    logger.info() << "connecting...";
-    // net::TcpSocket client(1234);
-    // client.connect("127.0.0.1");
-    // client.write("witaj swiece");
-    // client.write("witaj swiece 1");
-    // client.write("witaj swiece 2");
-    // client.write("witaj swiece 3");
-    // client.write("witaj swiece 4");
-    // client.write("witaj swiece 5");
-    // client.write("witaj swiece 6");
-    logger.info() << "closing connection";
-
-    logger.info() << "closed";
+    //serv.start();
 }
 
 void loop()
 {
     auto logger = logger::Logger("main");
-    logger.info() << "Wait for end";
+    hal::net::TcpClient client("127.0.0.1", 1234);
+    {
+        client.start();
+        client.write("Welcome my friend");
+        client.write(69);
+    }
     net::http::waitForBreak();
-    serv.stop();
+    logger.info() << "exiting..";
+    // serv.stop();
 }
