@@ -290,7 +290,8 @@ public:
 
 
 WebSocket::WebSocket(const std::string& uri, u16 port)
-    : webSocketWrapper_(new WebSocketWrapper(uri, port))
+    : webSocketWrapper_(new WebSocketWrapper(uri, port)),
+      handler_([](std::unique_ptr<Message>) {})
 {
     websocket::permessage_deflate pmd;
     pmd.client_enable = true;
@@ -300,6 +301,11 @@ WebSocket::WebSocket(const std::string& uri, u16 port)
 }
 
 WebSocket::~WebSocket() = default;
+
+void WebSocket::setHandler(HandlerCallback handler)
+{
+    handler_ = handler;
+}
 
 void WebSocket::start()
 {

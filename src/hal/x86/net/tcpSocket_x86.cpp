@@ -1,13 +1,13 @@
 #include "hal/net/tcpSocket.hpp"
 
-#include <thread>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include <boost/asio.hpp>
 
-#include "logger/logger.hpp"
 #include "container/buffer.hpp"
+#include "logger/logger.hpp"
 #include "utils/types.hpp"
 
 using namespace boost::asio::ip;
@@ -19,7 +19,7 @@ namespace net
 void handle(std::shared_ptr<tcp::socket> socket_)
 {
     logger::Logger logger_("SocketHandler");
-    while(true)
+    while (true)
     {
         const size_t bufferSize = 1024;
         u8 buffer[bufferSize];
@@ -34,7 +34,7 @@ void handle(std::shared_ptr<tcp::socket> socket_)
         {
             logger_.err() << "Error: " << ec.message();
         }
-        buffer[length+1] = 0;
+        buffer[length + 1] = 0;
         logger_.info() << "got data: " << (char*)(buffer);
     }
     socket_->close();
@@ -43,26 +43,27 @@ void handle(std::shared_ptr<tcp::socket> socket_)
 class TcpSocket::SocketWrapper
 {
 public:
-    SocketWrapper() :
-        socket_(io_service_),
-        resolver_(io_service_)
+    SocketWrapper()
+        : socket_(io_service_),
+          resolver_(io_service_)
     {
-
     }
     boost::asio::io_service io_service_;
     tcp::socket socket_;
     tcp::resolver resolver_;
 };
 
-TcpSocket::TcpSocket(u16 port) : socketWrapper_(new SocketWrapper()), port_(port)
-{}
+TcpSocket::TcpSocket(u16 port)
+    : socketWrapper_(new SocketWrapper()), port_(port)
+{
+}
 
 TcpSocket::~TcpSocket() = default;
 
 void TcpSocket::start()
 {
-    std::thread{[this](){
-        while(true)
+    std::thread{[this]() {
+        while (true)
         {
             tcp::acceptor acceptor(socketWrapper_->io_service_, tcp::endpoint(tcp::v4(), port_));
             std::shared_ptr<tcp::socket> socket(new tcp::socket(socketWrapper_->io_service_));
@@ -71,7 +72,7 @@ void TcpSocket::start()
         }
     }}.detach();
 }
-    
+
 void TcpSocket::connect(const std::string& host)
 {
     boost::asio::connect(socketWrapper_->socket_, socketWrapper_->resolver_.resolve({host, std::to_string(port_)}));
@@ -86,10 +87,10 @@ void TcpSocket::setHandler(HandlerCallback handler)
 {
     handler_ = handler;
 }
-    
+
 void TcpSocket::close()
 {
     socketWrapper_->socket_.close();
 }
 
-}  // namespace net
+} // namespace net

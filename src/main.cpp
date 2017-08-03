@@ -298,11 +298,12 @@ int main()
 
 #endif
 
-#include "hal/net/tcpSocket.hpp"
 #include "hal/fs/file.hpp"
 #include "hal/net/http/asyncHttpRequest.hpp"
 #include "hal/net/http/asyncHttpResponse.hpp"
 #include "hal/net/http/asyncHttpServer.hpp"
+#include "hal/net/tcpServer.hpp"
+#include "hal/net/tcpSocket.hpp"
 #include "hal/net/websocket.hpp"
 
 #include "hal/serial/serialPort.hpp"
@@ -318,14 +319,15 @@ int main()
 
 net::http::AsyncHttpServer server(80);
 net::WebSocket ws("/ws", 9002);
+hal::net::TcpServer serv(1234);
 
 void setup()
 {
     logger::LoggerConf::get().add(logger::StdOutLogger{});
     auto logger = logger::Logger("main");
     //    logger.add(logger::SocketLogger("127.0.0.1", 1234, "main"));
-    logger.info() << "Test"
-                  << " Proba mikrofonu";
+    // logger.info() << "Test"
+    //               << " Proba mikrofonu";
     //    logger.warn() << "I do pliczku dziala tez\n";
     // serial::SerialPort port("COM4");
     // std::cout << "wyszedlem za konstruktor" << std::endl;
@@ -345,65 +347,68 @@ void setup()
     // net::TcpSocket s;
     // s.connect("127.0.0.1", 1234);
     // s.write("Panie dzialaj pan\n");
-    using namespace net::http;
-    server.get("/test", [](AsyncHttpRequest* request) {
-        request->send(200, "text/plain", "Cos tam dzialam");
-    });
+    // using namespace net::http;
+    // server.get("/test", [](AsyncHttpRequest* request) {
+    //     request->send(200, "text/plain", "Cos tam dzialam");
+    // });
 
-    server.get("/index", [](AsyncHttpRequest* request) {
-        std::unique_ptr<AsyncHttpResponse> response(std::move(
-            request->beginChunkedResponse("text/html",
-                                          [](uint8_t* buffer, size_t maxLen, size_t index) {
-                                              fs::File file;
-                                              file.open("index.html");
-                                              if (!file.isOpen())
-                                              {
-                                                  logger::Logger logger("IndexResp");
-                                                  logger.err() << "Can't open file: index.html";
-                                                  return std::size_t(0);
-                                              }
-                                              file.seek(index);
-                                              size_t readedSize = file.read(reinterpret_cast<char*>(buffer),
-                                                                            maxLen);
-                                              file.close();
-                                              return readedSize;
-                                          })));
+    // server.get("/index", [](AsyncHttpRequest* request) {
+    //     std::unique_ptr<AsyncHttpResponse> response(std::move(
+    //         request->beginChunkedResponse("text/html",
+    //                                       [](uint8_t* buffer, size_t maxLen, size_t index) {
+    //                                           fs::File file;
+    //                                           file.open("index.html");
+    //                                           if (!file.isOpen())
+    //                                           {
+    //                                               logger::Logger logger("IndexResp");
+    //                                               logger.err() << "Can't open file: index.html";
+    //                                               return std::size_t(0);
+    //                                           }
+    //                                           file.seek(index);
+    //                                           size_t readedSize = file.read(reinterpret_cast<char*>(buffer),
+    //                                                                         maxLen);
+    //                                           file.close();
+    //                                           return readedSize;
+    //                                       })));
 
-        request->send(response.get());
-    });
+    //     request->send(response.get());
+    // });
 
-    server.post("/software_to_update", [](AsyncHttpRequest* request) {
-        fs::File file;
-        file.open("sw.bin");
-        file.write(request->getBody());
-        file.close();
-        logger::Logger logger("file");
-        logger.info() << "File saved";
-    });
+    // server.post("/software_to_update", [](AsyncHttpRequest* request) {
+    //     fs::File file;
+    //     file.open("sw.bin");
+    //     file.write(request->getBody());
+    //     file.close();
+    //     logger::Logger logger("file");
+    //     logger.info() << "File saved";
+    // });
 
-    server.begin();
+    // server.begin();
     logger.debug() << "begin end";
-    ws.start();
-  
-    net::TcpSocket serv(1234);
-    net::TcpSocket client(1234);
-  
+    // ws.start();
+
+
     serv.start();
     logger.info() << "server started";
-    client.connect("127.0.0.1");
     logger.info() << "connecting...";
-    client.write("witaj swiece");
-    client.write("witaj swiece 1");
-    client.write("witaj swiece 2");
-    client.write("witaj swiece 3");
-    client.write("witaj swiece 4");
-    client.write("witaj swiece 5");
-    client.write("witaj swiece 6");
+    // net::TcpSocket client(1234);
+    // client.connect("127.0.0.1");
+    // client.write("witaj swiece");
+    // client.write("witaj swiece 1");
+    // client.write("witaj swiece 2");
+    // client.write("witaj swiece 3");
+    // client.write("witaj swiece 4");
+    // client.write("witaj swiece 5");
+    // client.write("witaj swiece 6");
     logger.info() << "closing connection";
-    serv.close();
+
+    logger.info() << "closed";
 }
 
 void loop()
 {
+    auto logger = logger::Logger("main");
+    logger.info() << "Wait for end";
     net::http::waitForBreak();
+    serv.stop();
 }
