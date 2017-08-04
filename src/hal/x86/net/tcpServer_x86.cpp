@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 #include <thread>
+#include <vector>
 #include <utility>
 
 #include <boost/asio.hpp>
@@ -20,7 +21,7 @@ namespace net
 const std::size_t BUF_SIZE = 1024;
 
 
-class Session : public std::enable_shared_from_this<Session>
+class Session
 {
 public:
     Session(tcp::socket socket)
@@ -32,6 +33,14 @@ public:
 
     ~Session()
     {
+        logger_.debug() << "Session killing";
+        if (socket_.is_open())
+        {
+            boost::system::error_code ec;
+            socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
+            socket_.cancel();
+            socket_.close();
+        }
         logger_.debug() << "Session killed";
     }
 
@@ -48,10 +57,8 @@ public:
 private:
     void doRead()
     {
-        auto self(shared_from_this());
-
         socket_.async_read_some(buffer(buffer_, BUF_SIZE),
-                                [this, self](boost::system::error_code error, std::size_t tranferred_bytes) {
+                                [this](boost::system::error_code error, std::size_t tranferred_bytes) {
                                     if (error == boost::asio::error::eof)
                                     {
                                         logger_.debug() << "Client from ["
@@ -83,11 +90,16 @@ class TcpServer::TcpServerImpl
 public:
     TcpServerImpl(u16 port)
         : logger_("TcpServerImpl"),
-          acceptor_(ioService_, tcp::endpoint(tcp::v4(), port)),
-          socket_(ioService_)
+          socket_(ioService_),
+          acceptor_(ioService_, tcp::endpoint(tcp::v4(), port))
     {
     }
-
+  
+    ~TcpServerImpl()
+    {
+        stop();
+    }
+  
     void start()
     {
         doAccept();
@@ -99,8 +111,19 @@ public:
 
     void stop()
     {
+        logger_.debug() << "TcpServerImpl destroing...";
+        sessions_.clear();
+      //         for (auto& session : sessions_)
+//         {
+//             session.release();
+//         }
+      
         ioService_.stop();
-        thread_.join();
+        if (thread_.joinable())
+        {
+            thread_.join();  
+        }
+        logger_.debug() << "TcpServerImpl destroyed!";
     }
 
 private:
@@ -112,7 +135,8 @@ private:
                                [this](boost::system::error_code error) {
                                    if (!error)
                                    {
-                                       std::make_shared<Session>(std::move(socket_))->start();
+                                       sessions_.push_back(std::make_unique<Session>(std::move(socket_)));
+                                       sessions_.back()->start();
                                    }
 
                                    doAccept();
@@ -121,8 +145,9 @@ private:
 
     logger::Logger logger_;
     io_service ioService_;
-    tcp::acceptor acceptor_;
     tcp::socket socket_;
+    tcp::acceptor acceptor_;
+    std::vector<std::unique_ptr<Session>> sessions_;
     std::thread thread_;
 };
 

@@ -319,7 +319,6 @@ int main()
 
 net::http::AsyncHttpServer server(80);
 net::WebSocket ws("/ws", 9002);
-//hal::net::TcpServer serv(1234);
 
 void setup()
 {
@@ -388,19 +387,20 @@ void setup()
     // ws.start();
 
 
-    //serv.start();
 }
 
 void loop()
 {
+  hal::net::TcpServer serv(1234);
+    serv.start();
+
     auto logger = logger::Logger("main");
-    hal::net::TcpClient client("127.0.0.1", 1234);
-    {
+  {      
+  hal::net::TcpClient client("127.0.0.1", 1234);
         client.start();
         client.write("Welcome my friend");
         client.write(69);
     }
     net::http::waitForBreak();
     logger.info() << "exiting..";
-    // serv.stop();
 }
