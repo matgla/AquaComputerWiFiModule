@@ -397,9 +397,14 @@ void loop()
     auto logger = logger::Logger("main");
   {      
   hal::net::TcpClient client("127.0.0.1", 1234);
+   hal::net::TcpClient client2("127.0.0.1", 1234);
         client.start();
         client.write("Welcome my friend");
         client.write(69);
+  client2.start();
+        client2.write("client 2 sie lonczy");
+       client.write("dalej dzialam");
+  client2.write("i ja tez");
     }
     net::http::waitForBreak();
     logger.info() << "exiting..";

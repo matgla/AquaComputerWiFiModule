@@ -20,6 +20,8 @@ namespace net
 
 const std::size_t BUF_SIZE = 1024;
 
+// TODO common this for client and server
+  
 class ClientSession
 {
 public:
