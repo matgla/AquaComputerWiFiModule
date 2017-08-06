@@ -1,6 +1,5 @@
 if (${ARCH} STREQUAL "X86")
     add_subdirectory(beast)
-    add_subdirectory(websocketpp)
     add_subdirectory(json)
 endif (${ARCH} STREQUAL "X86")
 

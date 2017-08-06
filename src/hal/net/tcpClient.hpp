@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 
+#include "hal/net/tcpHandler.hpp"
 #include "utils/types.hpp"
 
 namespace hal
@@ -15,7 +16,7 @@ class TcpClient
 {
 public:
     ~TcpClient();
-    TcpClient(const std::string& url, u16 port);
+    TcpClient(const std::string& url, u16 port, TcpReadCallback readerCallback = defaultReader);
 
     void start();
     void stop();

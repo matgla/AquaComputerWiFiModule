@@ -8,6 +8,7 @@
 
 #include <boost/asio.hpp>
 
+#include "hal/x86/net/tcpSession.hpp"
 #include "logger/logger.hpp"
 
 using namespace boost::asio;
@@ -18,140 +19,26 @@ namespace hal
 namespace net
 {
 
-const std::size_t BUF_SIZE = 1024;
-
-// TODO common this for client and server
-  
-class ClientSession
-{
-public:
-    ClientSession(tcp::socket socket)
-        : socket_(std::move(socket)),
-          logger_("ClientSession")
-    {
-        logger_.info() << "CS created";
-    }
-
-    ~ClientSession()
-    {
-        disconnect();
-        logger_.info() << "CS destroyed";
-    }
-
-    void start()
-    {
-        logger_.debug() << "ClientSession started";
-
-        doRead();
-    }
-
-    tcp::socket& getSocket()
-    {
-        return socket_;
-    }
-
-    void doWrite(const std::string& data)
-    {
-        async_write(socket_, buffer(data),
-                    [this](boost::system::error_code error, std::size_t size) {
-                        if (error)
-                        {
-                            logger_.err() << "Write failed: " << error.message();
-                        }
-                    });
-    }
-
-    void doWrite(const u8* buf, std::size_t length)
-    {
-        async_write(socket_, buffer(buf, length),
-                    [this](boost::system::error_code error, std::size_t size) {
-                        if (error)
-                        {
-                            logger_.err() << "Write failed: " << error.message();
-                        }
-                    });
-    }
-
-    void doWrite(u8 byte)
-    {
-        std::array<u8, 1> buf = {byte};
-        async_write(socket_, buffer(buf, 1),
-                    [this](boost::system::error_code error, std::size_t size) {
-                        if (error)
-                        {
-                            logger_.err() << "Write failed: " << error.message();
-                        }
-                    });
-    }
-
-    void disconnect()
-    {
-        if (socket_.is_open())
-        {
-            boost::system::error_code ec;
-            socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
-            socket_.cancel();
-            socket_.close();
-        }
-    }
-
-    bool connected()
-    {
-        return socket_.is_open();
-    }
-
-private:
-    void doRead()
-    {
-        socket_.async_read_some(buffer(buffer_, BUF_SIZE),
-                                [this](boost::system::error_code error, std::size_t tranferred_bytes) {
-                                    if (error == boost::asio::error::eof)
-                                    {
-                                        logger_.debug() << "Connection lost to "
-                                                        << socket_.remote_endpoint().address().to_string();
-                                        return;
-                                    }
-
-                                    if (!error)
-                                    {
-                                        buffer_[tranferred_bytes + 1] = 0;
-                                        logger_.info() << buffer_;
-                                        doRead();
-                                    }
-                                    else
-                                    {
-                                        logger_.err() << "Reading failed: " << error.message();
-                                    }
-                                });
-    }
-
-    u8 buffer_[BUF_SIZE];
-    tcp::socket socket_;
-    logger::Logger logger_;
-};
-
 class TcpClient::TcpClientImpl
 {
 public:
-    TcpClientImpl(const std::string& url, u16 port)
+    TcpClientImpl(const std::string& url, u16 port, TcpReadCallback readerCallback)
         : url_(url),
           port_(port),
           logger_("TcpClientImpl"),
           resolver_(ioService_),
-          socket_(ioService_)
+          socket_(ioService_),
+          readerCallback_(readerCallback)
     {
-        logger_.info() << "created";
     }
 
     ~TcpClientImpl()
     {
         stop();
-        logger_.info() << "destroyed";
     }
 
     void start()
     {
-        logger_.info() << "Start";
         connect();
 
         thread_ = std::thread{[this]() {
@@ -192,7 +79,6 @@ private:
         {
             thread_.join();
         }
-        logger_.info() << "Client successfuly killed";
     }
 
     void connect()
@@ -203,7 +89,7 @@ private:
         if (!error)
         {
             logger_.info() << "Connected to " << url_ << ":" << port_;
-            session_ = std::make_unique<ClientSession>(std::move(socket_));
+            session_ = std::make_unique<TcpSession>(std::move(socket_), readerCallback_);
             session_->start();
         }
         else
@@ -218,7 +104,7 @@ private:
         stop();
     }
 
-    std::unique_ptr<ClientSession> session_;
+    std::unique_ptr<TcpSession> session_;
     std::string url_;
     u16 port_;
     logger::Logger logger_;
@@ -226,11 +112,12 @@ private:
     tcp::resolver resolver_;
     tcp::socket socket_;
     std::thread thread_;
+    TcpReadCallback readerCallback_;
 };
 
 
-TcpClient::TcpClient(const std::string& url, u16 port)
-    : tcpClientImpl_(new TcpClientImpl(url, port))
+TcpClient::TcpClient(const std::string& url, u16 port, TcpReadCallback readerCallback)
+    : tcpClientImpl_(new TcpClientImpl(url, port, readerCallback))
 {
 }
 

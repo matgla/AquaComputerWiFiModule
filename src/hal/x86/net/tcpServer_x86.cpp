@@ -3,11 +3,12 @@
 #include <functional>
 #include <memory>
 #include <thread>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include <boost/asio.hpp>
 
+#include "hal/x86/net/tcpSession.hpp"
 #include "logger/logger.hpp"
 
 using namespace boost::asio;
@@ -17,89 +18,22 @@ namespace hal
 {
 namespace net
 {
-
-const std::size_t BUF_SIZE = 1024;
-
-
-class Session
-{
-public:
-    Session(tcp::socket socket)
-        : socket_(std::move(socket)),
-          logger_("Session")
-    {
-        logger_.debug() << "Session started";
-    }
-
-    ~Session()
-    {
-        logger_.debug() << "Session killing";
-        if (socket_.is_open())
-        {
-            boost::system::error_code ec;
-            socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
-            socket_.cancel();
-            socket_.close();
-        }
-        logger_.debug() << "Session killed";
-    }
-
-    void start()
-    {
-        doRead();
-    }
-
-    tcp::socket& getSocket()
-    {
-        return socket_;
-    }
-
-private:
-    void doRead()
-    {
-        socket_.async_read_some(buffer(buffer_, BUF_SIZE),
-                                [this](boost::system::error_code error, std::size_t tranferred_bytes) {
-                                    if (error == boost::asio::error::eof)
-                                    {
-                                        logger_.debug() << "Client from ["
-                                                        << socket_.remote_endpoint().address().to_string()
-                                                        << "] disconnected";
-                                        return;
-                                    }
-
-                                    if (!error)
-                                    {
-                                        buffer_[tranferred_bytes + 1] = 0;
-                                        logger_.info() << buffer_;
-                                        doRead();
-                                    }
-                                    else
-                                    {
-                                        logger_.err() << "Reading failed: " << error.message();
-                                    }
-                                });
-    }
-
-    u8 buffer_[BUF_SIZE];
-    tcp::socket socket_;
-    logger::Logger logger_;
-};
-
 class TcpServer::TcpServerImpl
 {
 public:
-    TcpServerImpl(u16 port)
+    TcpServerImpl(u16 port, TcpReadCallback readerCallback)
         : logger_("TcpServerImpl"),
           socket_(ioService_),
-          acceptor_(ioService_, tcp::endpoint(tcp::v4(), port))
+          acceptor_(ioService_, tcp::endpoint(tcp::v4(), port)),
+          readerCallback_(readerCallback)
     {
     }
-  
+
     ~TcpServerImpl()
     {
         stop();
     }
-  
+
     void start()
     {
         doAccept();
@@ -111,31 +45,23 @@ public:
 
     void stop()
     {
-        logger_.debug() << "TcpServerImpl destroing...";
         sessions_.clear();
-      //         for (auto& session : sessions_)
-//         {
-//             session.release();
-//         }
-      
+
         ioService_.stop();
         if (thread_.joinable())
         {
-            thread_.join();  
+            thread_.join();
         }
-        logger_.debug() << "TcpServerImpl destroyed!";
     }
 
 private:
     void doAccept()
     {
-        logger_.info() << "Starting session";
-
         acceptor_.async_accept(socket_,
                                [this](boost::system::error_code error) {
                                    if (!error)
                                    {
-                                       sessions_.push_back(std::make_unique<Session>(std::move(socket_)));
+                                       sessions_.push_back(std::make_unique<TcpSession>(std::move(socket_), readerCallback_));
                                        sessions_.back()->start();
                                    }
 
@@ -147,13 +73,14 @@ private:
     io_service ioService_;
     tcp::socket socket_;
     tcp::acceptor acceptor_;
-    std::vector<std::unique_ptr<Session>> sessions_;
+    std::vector<std::unique_ptr<TcpSession>> sessions_;
     std::thread thread_;
+    TcpReadCallback readerCallback_;
 };
 
 
-TcpServer::TcpServer(u16 port)
-    : tcpServerImpl_(new TcpServerImpl(port))
+TcpServer::TcpServer(u16 port, TcpReadCallback readerCallback)
+    : tcpServerImpl_(new TcpServerImpl(port, readerCallback))
 {
 }
 
@@ -168,12 +95,6 @@ void TcpServer::stop()
 {
     tcpServerImpl_->stop();
 }
-
-void TcpServer::setHandler(HandlerCallback handler)
-{
-    handler_ = handler;
-}
-
 
 } // namespace net
 } // namespace hal

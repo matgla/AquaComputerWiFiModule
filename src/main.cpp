@@ -303,6 +303,7 @@ int main()
 #include "hal/net/http/asyncHttpResponse.hpp"
 #include "hal/net/http/asyncHttpServer.hpp"
 #include "hal/net/tcpClient.hpp"
+#include "hal/net/tcpHandler.hpp"
 #include "hal/net/tcpServer.hpp"
 #include "hal/net/websocket.hpp"
 
@@ -314,6 +315,7 @@ int main()
 #include "logger/stdOutLogger.hpp"
 
 #include <chrono>
+#include <cstring>
 #include <iostream>
 #include <thread>
 
@@ -385,27 +387,39 @@ void setup()
     // server.begin();
     logger.debug() << "begin end";
     // ws.start();
-
-
 }
 
 void loop()
 {
-  hal::net::TcpServer serv(1234);
+    hal::net::TcpServer serv(1234, [](const u8* buf, std::size_t len, hal::net::TcpWriterCallback write) {
+        logger::Logger logger("Server");
+        char message[1000];
+        memcpy(message, buf, len);
+        message[len + 1] = 0;
+        logger.info() << "Read: " << buf;
+        const char* msg = "No witam";
+        write(reinterpret_cast<const u8*>(msg), 8);
+    });
     serv.start();
 
     auto logger = logger::Logger("main");
-  {      
-  hal::net::TcpClient client("127.0.0.1", 1234);
-   hal::net::TcpClient client2("127.0.0.1", 1234);
+    {
+        hal::net::TcpClient client("127.0.0.1", 1234, [](const u8* buf, std::size_t len, hal::net::TcpWriterCallback write) {
+            logger::Logger logger("Client1");
+            char message[1000];
+            memcpy(message, buf, len);
+            message[len + 1] = 0;
+            logger.info() << "Read: " << message;
+        });
+        hal::net::TcpClient client2("127.0.0.1", 1234);
         client.start();
         client.write("Welcome my friend");
-        client.write(69);
-  client2.start();
+        //client.write(69);
+        client2.start();
         client2.write("client 2 sie lonczy");
-       client.write("dalej dzialam");
-  client2.write("i ja tez");
+        // client.write("dalej dzialam\0");
+        // client2.write("i ja tez\0");
+        net::http::waitForBreak();
     }
-    net::http::waitForBreak();
     logger.info() << "exiting..";
 }

@@ -5,7 +5,7 @@
 namespace logger
 {
 
-std::mutex logMutex;
+static std::mutex logMutex;
 
 Logger::Logger(const std::string& name, bool insertNewlineWhenDestruct)
     : name_(name),
@@ -18,8 +18,8 @@ Logger::~Logger()
     if (insertNewlineWhenDestruct_)
     {
         operator<<("\n");
+        logMutex.unlock();
     }
-    logMutex.unlock();
 }
 
 Logger Logger::debug()

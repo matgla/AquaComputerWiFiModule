@@ -6,6 +6,7 @@ set(common_srcs
     ${COMMON_SRC_DIR}/logger/loggerConf.cpp
     ${COMMON_SRC_DIR}/logger/socketLogger.cpp
     ${COMMON_SRC_DIR}/logger/stdOutLogger.cpp
+    ${COMMON_SRC_DIR}/hal/net/tcpHandler.cpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.cpp
     ${COMMON_SRC_DIR}/stream/socketStream.cpp
     ${COMMON_SRC_DIR}/main.cpp
@@ -16,6 +17,7 @@ set(common_incs
     ${COMMON_SRC_DIR}/hal/net/tcpServer.hpp
     ${COMMON_SRC_DIR}/hal/net/tcpClient.hpp
     ${COMMON_SRC_DIR}/hal/net/websocket.hpp
+    ${COMMON_SRC_DIR}/hal/net/tcpHandler.hpp
     ${COMMON_SRC_DIR}/hal/net/http/asyncHttpRequest.hpp
     ${COMMON_SRC_DIR}/hal/net/http/asyncHttpServer.hpp
     ${COMMON_SRC_DIR}/hal/net/http/fwd.hpp
