@@ -1,4 +1,4 @@
-#include "hal/net/websocket.hpp"
+#include "hal/net/socket/websocket.hpp"
 
 #include <memory>
 #include <string>
@@ -12,12 +12,16 @@
 
 #include "logger/logger.hpp"
 
-namespace http = boost::beast::http;           // from <beast/http.hpp>
+namespace http = boost::beast::http; // from <beast/http.hpp>
 namespace websocket = boost::beast::websocket; // from <beast/websocket.hpp>
-namespace ip = boost::asio::ip;                // from <boost/asio.hpp>
-using tcp = boost::asio::ip::tcp;              // from <boost/asio.hpp>
+namespace ip = boost::asio::ip; // from <boost/asio.hpp>
+using tcp = boost::asio::ip::tcp; // from <boost/asio.hpp>
 
+namespace hal
+{
 namespace net
+{
+namespace socket
 {
 logger::Logger logger("WS");
 
@@ -39,12 +43,12 @@ public:
     class connection : public std::enable_shared_from_this<connection>
     {
         tcp::endpoint ep_; // The remote endpoing
-        stream_type ws_;   // The websocket stream
+        stream_type ws_; // The websocket stream
 
         boost::asio::io_service::strand strand_; // Needed when threads > 1
-        boost::beast::multi_buffer buffer_;      // Stores the current message
-        boost::beast::drain_buffer drain_;       // Helps discard data on close
-        std::size_t id_;                         // A small unique id
+        boost::beast::multi_buffer buffer_; // Stores the current message
+        boost::beast::drain_buffer drain_; // Helps discard data on close
+        std::size_t id_; // A small unique id
 
     public:
         /// Constructor
@@ -52,7 +56,7 @@ public:
             WebSocketWrapper& parent,
             tcp::endpoint const& ep,
             tcp::socket&& sock)
-            : ep_(ep), ws_(std::move(sock)), strand_(ws_.get_io_service()), id_([] {
+            : parent_(parent), ep_(ep), ws_(std::move(sock)), strand_(ws_.get_io_service()), id_([] {
                   static std::atomic<std::size_t> n{0};
                   return ++n;
               }())
@@ -115,14 +119,15 @@ public:
             // Write the received message back
             std::stringstream ss;
             ss << boost::beast::buffers(buffer_.data());
-            logger.info() << "Got data: " << ss.str();
 
-            ws_.binary(ws_.got_binary());
-            ws_.async_write(buffer_.data(),
-                            strand_.wrap(std::bind(
-                                &connection::on_write,
-                                shared_from_this(),
-                                std::placeholders::_1)));
+            parent_.handler_(reinterpret_cast<const u8*>(ss.str().c_str()), ss.str().length(), [this](const u8* data, std::size_t length) {
+                //  ws_.binary(ws_.got_binary());
+                ws_.async_write(boost::asio::buffer(data, length),
+                                strand_.wrap(std::bind(
+                                    &connection::on_write,
+                                    shared_from_this(),
+                                    std::placeholders::_1)));
+            });
         }
 
         // Called after the message write completes
@@ -144,15 +149,22 @@ public:
         {
             logger.err() << "WebSocket failed " << ec.message();
         }
+
+        WebSocketWrapper& parent_;
     };
 
-    WebSocketWrapper(const std::string& uri, u16 port)
-        : uri_(uri), port_(port), sock_(ios_), acceptor_(ios_), work_(ios_)
+    WebSocketWrapper(const std::string& uri, u16 port, handler::ReaderCallback handler)
+        : uri_(uri), port_(port), sock_(ios_), acceptor_(ios_), work_(ios_), handler_(handler)
     {
         thread_.reserve(1);
 
         thread_.emplace_back(
             [&] { ios_.run(); });
+    }
+
+    void setHandler(handler::ReaderCallback reader)
+    {
+        handler_ = reader;
     }
 
     void fail(std::string what, error_code ec)
@@ -240,13 +252,14 @@ public:
     }
 
 protected:
-    std::ostream* log_;                       // Used for diagnostic output, may be null
-    boost::asio::io_service ios_;             // The io_service, required
-    tcp::socket sock_;                        // Holds accepted connections
-    tcp::endpoint ep_;                        // The remote endpoint during accept
-    std::vector<std::thread> thread_;         // Threads for the io_service
+    handler::ReaderCallback handler_;
+    std::ostream* log_; // Used for diagnostic output, may be null
+    boost::asio::io_service ios_; // The io_service, required
+    tcp::socket sock_; // Holds accepted connections
+    tcp::endpoint ep_; // The remote endpoint during accept
+    std::vector<std::thread> thread_; // Threads for the io_service
     boost::asio::ip::tcp::acceptor acceptor_; // The listening socket
-    std::function<void(stream_type&)> mod_;   // Called on new stream
+    std::function<void(stream_type&)> mod_; // Called on new stream
     boost::optional<
         boost::asio::io_service::work>
         work_; // Keeps io_service::run from returning
@@ -289,9 +302,8 @@ public:
 };
 
 
-WebSocket::WebSocket(const std::string& uri, u16 port)
-    : webSocketWrapper_(new WebSocketWrapper(uri, port)),
-      handler_([](std::unique_ptr<Message>) {})
+WebSocket::WebSocket(const std::string& uri, u16 port, handler::ReaderCallback handler)
+    : webSocketWrapper_(new WebSocketWrapper(uri, port, handler))
 {
     websocket::permessage_deflate pmd;
     pmd.client_enable = true;
@@ -302,9 +314,9 @@ WebSocket::WebSocket(const std::string& uri, u16 port)
 
 WebSocket::~WebSocket() = default;
 
-void WebSocket::setHandler(HandlerCallback handler)
+void WebSocket::setHandler(handler::ReaderCallback handler)
 {
-    handler_ = handler;
+    webSocketWrapper_->setHandler(handler);
 }
 
 void WebSocket::start()
@@ -313,3 +325,5 @@ void WebSocket::start()
 }
 
 } // namespace net
+} // namespace hal
+} // namespace socket

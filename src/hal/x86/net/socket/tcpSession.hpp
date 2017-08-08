@@ -1,11 +1,12 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <string>
 
 #include <boost/asio.hpp>
 
-#include "hal/net/tcpHandler.hpp"
+#include "handler/handlers.hpp"
 #include "logger/logger.hpp"
 #include "utils/types.hpp"
 
@@ -13,13 +14,14 @@ namespace hal
 {
 namespace net
 {
-
+namespace socket
+{
 const std::size_t BUF_SIZE = 1024;
 
 class TcpSession
 {
 public:
-    TcpSession(boost::asio::ip::tcp::socket socket, TcpReadCallback reader = defaultReader);
+    TcpSession(boost::asio::ip::tcp::socket socket, handler::ReaderCallback reader = handler::defaultReader);
     ~TcpSession();
 
     void start();
@@ -31,6 +33,7 @@ public:
 
     void disconnect();
     bool connected();
+    void setHandler(handler::ReaderCallback reader);
 
 private:
     void doRead();
@@ -38,8 +41,10 @@ private:
     u8 buffer_[BUF_SIZE];
     boost::asio::ip::tcp::socket socket_;
     logger::Logger logger_;
-    TcpReadCallback readerCallback_;
+    handler::ReaderCallback readerCallback_;
+    std::mutex readerCallbackMutex_;
 };
 
 } // namespace net
 } // namespace hal
+} // namespace socket

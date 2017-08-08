@@ -1,4 +1,4 @@
-#include "hal/x86/net/tcpSession.hpp"
+#include "hal/x86/net/socket/tcpSession.hpp"
 
 #include <cstring>
 #include <functional>
@@ -10,8 +10,9 @@ namespace hal
 {
 namespace net
 {
-
-TcpSession::TcpSession(tcp::socket socket, TcpReadCallback reader)
+namespace socket
+{
+TcpSession::TcpSession(tcp::socket socket, handler::ReaderCallback reader)
     : socket_(std::move(socket)),
       logger_("TcpSession"),
       readerCallback_(reader)
@@ -99,8 +100,9 @@ void TcpSession::doRead()
 
                                 if (!error)
                                 {
+                                    std::lock_guard<std::mutex> safeCallback(readerCallbackMutex_);
                                     readerCallback_(buffer_, tranferred_bytes, [this](const u8* buf, std::size_t len) { doWrite(buf, len); });
-                                    doRead();
+                                    return doRead();
                                 }
                                 else
                                 {
@@ -109,5 +111,12 @@ void TcpSession::doRead()
                             });
 }
 
+void TcpSession::setHandler(handler::ReaderCallback reader)
+{
+    std::lock_guard<std::mutex> safeCallback(readerCallbackMutex_);
+    readerCallback_ = reader;
+}
+
 } // namespace net
 } // namespace hal
+} // namespace socket

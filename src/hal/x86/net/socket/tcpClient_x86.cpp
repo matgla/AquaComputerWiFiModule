@@ -1,4 +1,4 @@
-#include "hal/net/tcpClient.hpp"
+#include "hal/net/socket/tcpClient.hpp"
 
 #include <array>
 #include <functional>
@@ -8,7 +8,7 @@
 
 #include <boost/asio.hpp>
 
-#include "hal/x86/net/tcpSession.hpp"
+#include "hal/x86/net/socket/tcpSession.hpp"
 #include "logger/logger.hpp"
 
 using namespace boost::asio;
@@ -18,11 +18,12 @@ namespace hal
 {
 namespace net
 {
-
+namespace socket
+{
 class TcpClient::TcpClientImpl
 {
 public:
-    TcpClientImpl(const std::string& url, u16 port, TcpReadCallback readerCallback)
+    TcpClientImpl(const std::string& url, u16 port, handler::ReaderCallback readerCallback)
         : url_(url),
           port_(port),
           logger_("TcpClientImpl"),
@@ -65,6 +66,15 @@ public:
     bool connected()
     {
         return session_ ? session_->connected() : false;
+    }
+
+    void setHandler(handler::ReaderCallback reader)
+    {
+        readerCallback_ = reader;
+        if (session_)
+        {
+            session_->setHandler(reader);
+        }
     }
 
 private:
@@ -112,11 +122,11 @@ private:
     tcp::resolver resolver_;
     tcp::socket socket_;
     std::thread thread_;
-    TcpReadCallback readerCallback_;
+    handler::ReaderCallback readerCallback_;
 };
 
 
-TcpClient::TcpClient(const std::string& url, u16 port, TcpReadCallback readerCallback)
+TcpClient::TcpClient(const std::string& url, u16 port, handler::ReaderCallback readerCallback)
     : tcpClientImpl_(new TcpClientImpl(url, port, readerCallback))
 {
 }
@@ -157,5 +167,11 @@ void TcpClient::write(u8 byte)
     }
 }
 
+void TcpClient::setHandler(handler::ReaderCallback reader)
+{
+    tcpClientImpl_->setHandler(reader);
+}
+
 } // namespace net
 } // namespace hal
+} // namespace socket

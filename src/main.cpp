@@ -302,10 +302,10 @@ int main()
 #include "hal/net/http/asyncHttpRequest.hpp"
 #include "hal/net/http/asyncHttpResponse.hpp"
 #include "hal/net/http/asyncHttpServer.hpp"
-#include "hal/net/tcpClient.hpp"
-#include "hal/net/tcpHandler.hpp"
-#include "hal/net/tcpServer.hpp"
-#include "hal/net/websocket.hpp"
+#include "hal/net/socket/tcpClient.hpp"
+#include "hal/net/socket/tcpServer.hpp"
+#include "hal/net/socket/websocket.hpp"
+#include "handler/handlers.hpp"
 
 #include "hal/serial/serialPort.hpp"
 #include "hal/time/sleep.hpp"
@@ -320,7 +320,7 @@ int main()
 #include <thread>
 
 net::http::AsyncHttpServer server(80);
-net::WebSocket ws("/ws", 9002);
+hal::net::socket::WebSocket ws("/ws", 9002);
 
 void setup()
 {
@@ -391,7 +391,7 @@ void setup()
 
 void loop()
 {
-    hal::net::TcpServer serv(1234, [](const u8* buf, std::size_t len, hal::net::TcpWriterCallback write) {
+    hal::net::socket::TcpServer serv(1234, [](const u8* buf, std::size_t len, handler::WriterCallback write) {
         logger::Logger logger("Server");
         char message[1000];
         memcpy(message, buf, len);
@@ -404,14 +404,14 @@ void loop()
 
     auto logger = logger::Logger("main");
     {
-        hal::net::TcpClient client("127.0.0.1", 1234, [](const u8* buf, std::size_t len, hal::net::TcpWriterCallback write) {
+        hal::net::socket::TcpClient client("127.0.0.1", 1234, [](const u8* buf, std::size_t len, handler::WriterCallback write) {
             logger::Logger logger("Client1");
             char message[1000];
             memcpy(message, buf, len);
             message[len + 1] = 0;
             logger.info() << "Read: " << message;
         });
-        hal::net::TcpClient client2("127.0.0.1", 1234);
+        hal::net::socket::TcpClient client2("127.0.0.1", 1234);
         client.start();
         client.write("Welcome my friend");
         //client.write(69);

@@ -1,4 +1,4 @@
-#include "hal/net/tcpServer.hpp"
+#include "hal/net/socket/tcpServer.hpp"
 
 #include <functional>
 #include <memory>
@@ -8,7 +8,7 @@
 
 #include <boost/asio.hpp>
 
-#include "hal/x86/net/tcpSession.hpp"
+#include "hal/x86/net/socket/tcpSession.hpp"
 #include "logger/logger.hpp"
 
 using namespace boost::asio;
@@ -18,10 +18,12 @@ namespace hal
 {
 namespace net
 {
+namespace socket
+{
 class TcpServer::TcpServerImpl
 {
 public:
-    TcpServerImpl(u16 port, TcpReadCallback readerCallback)
+    TcpServerImpl(u16 port, handler::ReaderCallback readerCallback)
         : logger_("TcpServerImpl"),
           socket_(ioService_),
           acceptor_(ioService_, tcp::endpoint(tcp::v4(), port)),
@@ -54,6 +56,18 @@ public:
         }
     }
 
+    void setHandler(handler::ReaderCallback reader)
+    {
+        for (auto& session : sessions_)
+        {
+            if (session)
+            {
+                session->setHandler(reader);
+            }
+        }
+        readerCallback_ = reader;
+    }
+
 private:
     void doAccept()
     {
@@ -75,11 +89,11 @@ private:
     tcp::acceptor acceptor_;
     std::vector<std::unique_ptr<TcpSession>> sessions_;
     std::thread thread_;
-    TcpReadCallback readerCallback_;
+    handler::ReaderCallback readerCallback_;
 };
 
 
-TcpServer::TcpServer(u16 port, TcpReadCallback readerCallback)
+TcpServer::TcpServer(u16 port, handler::ReaderCallback readerCallback)
     : tcpServerImpl_(new TcpServerImpl(port, readerCallback))
 {
 }
@@ -96,5 +110,11 @@ void TcpServer::stop()
     tcpServerImpl_->stop();
 }
 
+void TcpServer::setHandler(handler::ReaderCallback reader)
+{
+    tcpServerImpl_->setHandler(reader);
+}
+
 } // namespace net
 } // namespace hal
+} // namespace socket

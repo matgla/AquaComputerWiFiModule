@@ -5,7 +5,7 @@
 #include <streambuf>
 #include <string>
 
-#include "hal/net/tcpClient.hpp"
+#include "hal/net/socket/tcpClient.hpp"
 
 namespace stream
 {
@@ -17,7 +17,7 @@ public:
     virtual std::streambuf::int_type overflow(std::streambuf::int_type c) override;
 
 private:
-    hal::net::TcpClient socket_;
+    hal::net::socket::TcpClient socket_;
 };
 
 } // namespace stream
