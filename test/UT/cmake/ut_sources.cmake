@@ -6,4 +6,5 @@ set(ut_srcs
 
 set(ut_incs
     ${UT_SRC_DIR}/matcher/arrayCompare.hpp
+    ${UT_SRC_DIR}/mock/writerHandlerMock.hpp
 )
