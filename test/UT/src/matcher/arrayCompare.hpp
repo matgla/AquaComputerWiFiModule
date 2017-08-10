@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 MATCHER_P2(ArrayCompare, a, b, "")
@@ -14,7 +15,7 @@ MATCHER_P2(ArrayCompare, a, b, "")
             *result_listener << "0x" << static_cast<int>(a[pos]);
             if (pos < b - 1)
             {
-                *result_listener << ", ";
+                *result_listener << ",\t";
             }
         }
         *result_listener << "],\n\t Received: [";
@@ -23,7 +24,7 @@ MATCHER_P2(ArrayCompare, a, b, "")
             *result_listener << "0x" << static_cast<int>(arg[pos]);
             if (pos < b - 1)
             {
-                *result_listener << ", ";
+                *result_listener << ",\t";
             }
         }
         *result_listener << "]";

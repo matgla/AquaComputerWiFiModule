@@ -2,14 +2,28 @@
 
 #include <mutex>
 
+#ifndef X86_ARCH
+namespace std
+{
+struct mutex
+{
+    void lock()
+    {
+    }
+    void unlock()
+    {
+    }
+};
+}
+#endif
+
 namespace logger
 {
 
 static std::mutex logMutex;
 
 Logger::Logger(const std::string& name, bool insertNewlineWhenDestruct)
-    : name_(name),
-      insertNewlineWhenDestruct_(insertNewlineWhenDestruct)
+    : name_(name), insertNewlineWhenDestruct_(insertNewlineWhenDestruct)
 {
 }
 

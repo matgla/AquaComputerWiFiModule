@@ -64,7 +64,8 @@
 //     ArduinoOTA.onError([](ota_error_t error) {
 //         Serial.println("OTA Error");
 //         //if (error == OTA_AUTH_ERROR)
-//         //else if (error == OTA_BEGIN_ERROR) else if (error == OTA_CONNECT_ERROR) else if (error == OTA_RECEIVE_ERROR) else if (error == OTA_END_ERROR)
+//         //else if (error == OTA_BEGIN_ERROR) else if (error == OTA_CONNECT_ERROR) else if (error
+//         == OTA_RECEIVE_ERROR) else if (error == OTA_END_ERROR)
 //     });
 //     ArduinoOTA.setHostname(hostName);
 //     ArduinoOTA.begin();
@@ -111,7 +112,8 @@
 
 //     server.on("/", HTTP_ANY, [](AsyncWebServerRequest* request) {
 //         Serial.printf("Received get: %s\n", request->url().c_str());
-//         AsyncWebServerResponse* response = request->beginChunkedResponse("text/html", [request](uint8_t* buffer, size_t maxLen, size_t index) {
+//         AsyncWebServerResponse* response = request->beginChunkedResponse("text/html",
+//         [request](uint8_t* buffer, size_t maxLen, size_t index) {
 //             // sd::File file = SD.open(path);
 //             // file.seek(index);
 //             // size_t readedSize = file.read(buffer, maxLen);
@@ -124,7 +126,8 @@
 
 //     server.on("/index", HTTP_ANY, [](AsyncWebServerRequest* request) {
 //         Serial.printf("Received get: %s\n", request->url().c_str());
-//         AsyncWebServerResponse* response = request->beginChunkedResponse("text/html", std::bind(&handleGetIndexServer,
+//         AsyncWebServerResponse* response = request->beginChunkedResponse("text/html",
+//         std::bind(&handleGetIndexServer,
 //                                                                                                 request->url(), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
 //         request->send(response);
@@ -132,15 +135,20 @@
 
 //     server.on("/css", HTTP_ANY, [](AsyncWebServerRequest* request) {
 //         Serial.printf("Received get: %s\n", request->url().c_str());
-//         AsyncWebServerResponse* response = request->beginChunkedResponse("text/css", std::bind(&handleGetFileServer,
-//                                                                                                request->url(), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+//         AsyncWebServerResponse* response = request->beginChunkedResponse("text/css",
+//         std::bind(&handleGetFileServer,
+//                                                                                                request->url(),
+//                                                                                                std::placeholders::_1,
+//                                                                                                std::placeholders::_2,
+//                                                                                                std::placeholders::_3));
 
 //         request->send(response);
 //     });
 
 //     server.on("/js", HTTP_ANY, [](AsyncWebServerRequest* request) {
 //         Serial.printf("Received get: %s\n", request->url().c_str());
-//         AsyncWebServerResponse* response = request->beginChunkedResponse("text/script", std::bind(&handleGetFileServer,
+//         AsyncWebServerResponse* response = request->beginChunkedResponse("text/script",
+//         std::bind(&handleGetFileServer,
 //                                                                                                   request->url(), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
 //         request->send(response);
@@ -195,7 +203,8 @@
 //             AsyncWebParameter* p = request->getParam(i);
 //             if (p->isFile())
 //             {
-//                 Serial.printf("_FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
+//                 Serial.printf("_FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(),
+//                 p->size());
 //             }
 //             else if (p->isPost())
 //             {
@@ -209,14 +218,16 @@
 
 //         request->send(404);
 //     });
-//     server.onFileUpload([](AsyncWebServerRequest* request, const String& filename, size_t index, uint8_t* data, size_t len, bool final) {
+//     server.onFileUpload([](AsyncWebServerRequest* request, const String& filename, size_t index,
+//     uint8_t* data, size_t len, bool final) {
 //         if (!index)
 //             Serial.printf("UploadStart: %s\n", filename.c_str());
 //         Serial.printf("%s", (const char*)data);
 //         if (final)
 //             Serial.printf("UploadEnd: %s (%u)\n", filename.c_str(), index + len);
 //     });
-//     server.onRequestBody([](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) {
+//     server.onRequestBody([](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t
+//     index, size_t total) {
 //         if (!index)
 //             Serial.printf("BodyStart: %u\n", total);
 //         Serial.printf("%s", (const char*)data);
@@ -298,34 +309,34 @@ int main()
 
 #endif
 
-#include "hal/fs/file.hpp"
-#include "hal/net/http/asyncHttpRequest.hpp"
-#include "hal/net/http/asyncHttpResponse.hpp"
-#include "hal/net/http/asyncHttpServer.hpp"
-#include "hal/net/socket/tcpClient.hpp"
-#include "hal/net/socket/tcpServer.hpp"
-#include "hal/net/socket/websocket.hpp"
-#include "handler/handlers.hpp"
+// #include "hal/fs/file.hpp"
+// #include "hal/net/http/asyncHttpRequest.hpp"
+// #include "hal/net/http/asyncHttpResponse.hpp"
+// #include "hal/net/http/asyncHttpServer.hpp"
+// #include "hal/net/socket/tcpClient.hpp"
+// #include "hal/net/socket/tcpServer.hpp"
+// #include "hal/net/socket/websocket.hpp"
+// #include "handler/handlers.hpp"
 
-#include "hal/serial/serialPort.hpp"
-#include "hal/time/sleep.hpp"
-#include "logger/logger.hpp"
-#include "logger/loggerConf.hpp"
-#include "logger/socketLogger.hpp"
-#include "logger/stdOutLogger.hpp"
+// #include "hal/serial/serialPort.hpp"
+// #include "hal/time/sleep.hpp"
+// #include "logger/logger.hpp"
+// #include "logger/loggerConf.hpp"
+// #include "logger/socketLogger.hpp"
+// #include "logger/stdOutLogger.hpp"
 
-#include <chrono>
-#include <cstring>
-#include <iostream>
-#include <thread>
+// #include <chrono>
+// #include <cstring>
+// #include <iostream>
+// #include <thread>
 
-net::http::AsyncHttpServer server(80);
-hal::net::socket::WebSocket ws("/ws", 9002);
+// net::http::AsyncHttpServer server(80);
+// hal::net::socket::WebSocket ws("/ws", 9002);
 
 void setup()
 {
-    logger::LoggerConf::get().add(logger::StdOutLogger{});
-    auto logger = logger::Logger("main");
+    // logger::LoggerConf::get().add(logger::StdOutLogger{});
+    // auto logger = logger::Logger("main");
     //    logger.add(logger::SocketLogger("127.0.0.1", 1234, "main"));
     // logger.info() << "Test"
     //               << " Proba mikrofonu";
@@ -366,7 +377,8 @@ void setup()
     //                                               return std::size_t(0);
     //                                           }
     //                                           file.seek(index);
-    //                                           size_t readedSize = file.read(reinterpret_cast<char*>(buffer),
+    //                                           size_t readedSize =
+    //                                           file.read(reinterpret_cast<char*>(buffer),
     //                                                                         maxLen);
     //                                           file.close();
     //                                           return readedSize;
@@ -385,41 +397,44 @@ void setup()
     // });
 
     // server.begin();
-    logger.debug() << "begin end";
+    // logger.debug() << "begin end";
     // ws.start();
 }
 
 void loop()
 {
-    hal::net::socket::TcpServer serv(1234, [](const u8* buf, std::size_t len, handler::WriterCallback write) {
-        logger::Logger logger("Server");
-        char message[1000];
-        memcpy(message, buf, len);
-        message[len + 1] = 0;
-        logger.info() << "Read: " << buf;
-        const char* msg = "No witam";
-        write(reinterpret_cast<const u8*>(msg), 8);
-    });
-    serv.start();
+    // hal::net::socket::TcpServer serv(
+    //     1234, [](const u8* buf, std::size_t len, handler::WriterCallback write) {
+    //         logger::Logger logger("Server");
+    //         char message[1000];
+    //         memcpy(message, buf, len);
+    //         message[len + 1] = 0;
+    //         logger.info() << "Read: " << buf;
+    //         const char* msg = "No witam";
+    //         write(reinterpret_cast<const u8*>(msg), 8);
+    //     });
+    // serv.start();
 
-    auto logger = logger::Logger("main");
-    {
-        hal::net::socket::TcpClient client("127.0.0.1", 1234, [](const u8* buf, std::size_t len, handler::WriterCallback write) {
-            logger::Logger logger("Client1");
-            char message[1000];
-            memcpy(message, buf, len);
-            message[len + 1] = 0;
-            logger.info() << "Read: " << message;
-        });
-        hal::net::socket::TcpClient client2("127.0.0.1", 1234);
-        client.start();
-        client.write("Welcome my friend");
-        //client.write(69);
-        client2.start();
-        client2.write("client 2 sie lonczy");
-        // client.write("dalej dzialam\0");
-        // client2.write("i ja tez\0");
-        net::http::waitForBreak();
-    }
-    logger.info() << "exiting..";
+    // auto logger = logger::Logger("main");
+    // {
+    //     hal::net::socket::TcpClient client(
+    //         "127.0.0.1", 1234, [](const u8* buf, std::size_t len, handler::WriterCallback write)
+    //         {
+    //             logger::Logger logger("Client1");
+    //             char message[1000];
+    //             memcpy(message, buf, len);
+    //             message[len + 1] = 0;
+    //             logger.info() << "Read: " << message;
+    //         });
+    //     hal::net::socket::TcpClient client2("127.0.0.1", 1234);
+    //     client.start();
+    //     client.write("Welcome my friend");
+    //     // client.write(69);
+    //     client2.start();
+    //     client2.write("client 2 sie lonczy");
+    //     // client.write("dalej dzialam\0");
+    //     // client2.write("i ja tez\0");
+    //     net::http::waitForBreak();
+    // }
+    // logger.info() << "exiting..";
 }

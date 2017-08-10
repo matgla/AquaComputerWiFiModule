@@ -1,14 +1,19 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(AquaLampServer C CXX ASM)
-
+set(ARCH "X86" CACHE STRING "Target architecture (X86|ESP8266)")
 set(BUILD_TESTS OFF CACHE STRING "Build all available tests")
 set(BUILD_TARGET OFF CACHE STRING "Build target")
-set(ARCH "X86" CACHE STRING "Target architecture (X86|ESP8266)")
 
 set(ASAN_ENABLED OFF CACHE STRING "Enable address sanitizer")
 set(LSAN_ENABLED OFF CACHE STRING "Enable leak sanitizer")
 set(TSAN_ENABLED OFF CACHE STRING "Enable thread sanitizer")
+
+if (${ARCH} STREQUAL "ESP8266")
+    message("-- Include toolchain for ESP8266")
+    include("cmake/toolchain.ESP8266.cmake")
+endif (${ARCH} STREQUAL "ESP8266")
+
+project(AquaLampServer C CXX ASM)
 
 if (ASAN_ENABLED)
     if (${ARCH} STREQUAL "ESP8266")
@@ -36,7 +41,22 @@ endif (TSAN_ENABLED)
 
 if (BUILD_TARGET)
     if (${ARCH} STREQUAL "ESP8266")
-        message(FATAL_ERROR "ESP8266 isn't supported currently")
+        add_subdirectory(arduino)
+        # if (EXISTS "${ARDUINO_ESP8266_DIR}/platform.txt")
+        #     file(STRINGS "${ARDUINO_ESP8266_DIR}/platform.txt" VERSION_LINES REGEX "^version=")
+        #     if (VERSION_LINES)
+        #         string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+" ARDUINO_VERSION ${VERSION_LINES})
+        #     endif ()
+        # endif ()
+
+        # message("-- Detected Arduino version: ${ARDUINO_VERSION}")
+
+
+        # set(CPACK_GENERATOR "ZIP")
+        # set(CPACK_PACKAGE_FILE_NAME Arduino-${ARDUINO_VERSION})
+        # set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY FALSE)
+
+        # include(CPack)
     endif (${ARCH} STREQUAL "ESP8266")
     add_subdirectory(lib)
     add_subdirectory(src)
