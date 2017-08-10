@@ -41,3 +41,13 @@ set(target_name AquaLampServer)
 add_executable(${target_name} ${production_srcs})
 
 target_link_libraries(${target_name} ${target_libs} ${common_libs})
+
+if (${ARCH} STREQUAL "ESP8266")
+    add_custom_target(
+        firmware_binary ALL
+        COMMAND ${ESP8266_ESPTOOL} -eo ${ARDUINO_ESP8266_DIR}/bootloaders/eboot/eboot.elf -bo firmware.bin -bf 40 -bz ${ESP8266_FLASH_SIZE} -bs .text -bp 4096 -ec -eo $<TARGET_FILE:AquaLampServer> -bs .irom0.text -bs .text -bs .data -bs .rodata -bc -ec
+    )
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES firmware.bin)
+
+    add_dependencies(firmware_binary AquaLampServer)
+endif (${ARCH} STREQUAL "ESP8266")
