@@ -41,7 +41,8 @@ endif (TSAN_ENABLED)
 
 if (BUILD_TARGET)
     if (${ARCH} STREQUAL "ESP8266")
-        add_subdirectory(arduino)
+
+      #  add_subdirectory(arduino)
         # if (EXISTS "${ARDUINO_ESP8266_DIR}/platform.txt")
         #     file(STRINGS "${ARDUINO_ESP8266_DIR}/platform.txt" VERSION_LINES REGEX "^version=")
         #     if (VERSION_LINES)

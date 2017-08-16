@@ -3,7 +3,13 @@ if (${ARCH} STREQUAL "X86")
 endif (${ARCH} STREQUAL "X86")
 
 if (${ARCH} STREQUAL "ESP8266")
-
+    #add_subdirectory(arduino_main)
+    add_subdirectory(arduino)
+    #add_subdirectory(ESP8266WiFi)
+    #add_subdirectory(ESP8266WebServer)
+    #add_subdirectory(SPI)
+    #add_subdirectory(Wire)
+    # add_subdirectory(ESPAsyncTCP)
 endif (${ARCH} STREQUAL "ESP8266")
 
 add_subdirectory(json)

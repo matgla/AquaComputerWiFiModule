@@ -5,6 +5,7 @@
 
 #include <ESPAsyncTCP.h>
 
+#include "hal/time/sleep.hpp"
 #include "logger/logger.hpp"
 
 namespace hal
@@ -18,10 +19,7 @@ class TcpClient::TcpClientImpl
 {
 public:
     TcpClientImpl(const std::string& url, u16 port, handler::ReaderCallback readerCallback)
-        : url_(url),
-          port_(port),
-          logger_("TcpClientImpl"),
-          readerCallback_(readerCallback)
+        : url_(url), port_(port), logger_("TcpClientImpl"), readerCallback_(readerCallback)
     {
     }
 
@@ -33,30 +31,29 @@ public:
     void start()
     {
         connect();
-        client_.onData([this](void* data, AsyncClient* client, std::size_t length)
-        {
-            readerCallback_(reinterpret_cast<const u8*>(data), length, [this](const u8* buf, std::size_t len)
-            {
-                client->write(reinterpret_cast<const char*>(buf), len);
-            });
+        client_.onData([this](void*, AsyncClient* client, void* data, std::size_t length) {
+            readerCallback_(reinterpret_cast<const u8*>(data), length,
+                            [this, client](const u8* buf, std::size_t len) {
+                                client->write(reinterpret_cast<const char*>(buf), len);
+                            });
         });
     }
 
 
     void write(const std::string& data)
     {
-        client_->write(data.c_str(), data.length());
+        client_.write(data.c_str(), data.length());
     }
 
     void write(const u8* buf, std::size_t length)
     {
-        client_->write(reinterpret_cast<const u8*>(buf), length);
+        client_.write(reinterpret_cast<const char*>(buf), length);
     }
 
     void write(u8 byte)
     {
         char data[] = {static_cast<char>(byte)};
-        client_->write(data, 1);
+        client_.write(data, 1);
     }
 
     bool connected()
@@ -67,10 +64,6 @@ public:
     void setHandler(handler::ReaderCallback reader)
     {
         readerCallback_ = reader;
-        if (session_)
-        {
-            session_->setHandler(reader);
-        }
     }
 
 private:
@@ -82,9 +75,9 @@ private:
     void connect()
     {
         client_.connect(url_.c_str(), port_);
-        while(client_.connected() && !client_.disconnecting())
+        while (client_.connected() && !client_.disconnecting())
         {
-            delay(1);
+            hal::time::sleep(1);
         }
     }
 

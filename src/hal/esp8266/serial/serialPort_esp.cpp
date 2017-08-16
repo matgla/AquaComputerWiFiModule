@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+namespace hal
+{
 namespace serial
 {
 
@@ -13,8 +15,7 @@ public:
     int baudrate_;
 };
 
-SerialPort::SerialWrapper::SerialWrapper(const std::string&, int baudrate) :
-    baudrate_(baudrate)
+SerialPort::SerialWrapper::SerialWrapper(const std::string&, int baudrate) : baudrate_(baudrate)
 {
     Serial.begin(baudrate_);
 }
@@ -25,9 +26,10 @@ SerialPort::SerialWrapper::~SerialWrapper()
 }
 
 
-SerialPort::SerialPort(const std::string& port, int baudrate) :
-    serialWrapper_(new SerialWrapper(port, baudrate))
-{}
+SerialPort::SerialPort(const std::string& port, int baudrate)
+    : serialWrapper_(new SerialWrapper(port, baudrate))
+{
+}
 
 SerialPort::~SerialPort() = default;
 
@@ -61,4 +63,5 @@ u8 SerialPort::readByte()
     return Serial.read();
 }
 
-}  // namespace serial
+} // namespace serial
+} // namespace hal

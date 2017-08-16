@@ -1,0 +1,90 @@
+set(ARDUINO_SOURCES
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/Esp.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/FS.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/HardwareSerial.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/IPAddress.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/MD5Builder.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/Print.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/Schedule.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/Stream.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/StreamString.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/Tone.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/Updater.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/WMath.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/WString.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/abi.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/base64.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/cbuf.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/cont.s
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/cont_util.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_eboot_command.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_flash_utils.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_i2s.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_main.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_noniso.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_phy.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_postmortem.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_si2c.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_timer.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_wiring.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_wiring_analog.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_wiring_digital.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_wiring_pulse.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_wiring_pwm.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_wiring_shift.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/debug.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/heap.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/libb64/cdecode.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/libb64/cencode.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/libc_replacements.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/pgmspace.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/spiffs/spiffs_cache.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/spiffs/spiffs_check.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/spiffs/spiffs_gc.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/spiffs/spiffs_hydrogen.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/spiffs/spiffs_nucleus.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/spiffs_api.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/spiffs_hal.cpp
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/time.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/uart.c
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/umm_malloc/umm_malloc.c
+ )
+
+message("Arduino sources: ${ARDUINO_SOURCES}")
+
+add_library(arduino STATIC
+    ${ARDUINO_SOURCES}
+)
+
+target_include_directories(arduino PUBLIC
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266
+    ${ARDUINO_ESP8266_DIR}/tools/sdk/include
+    ${ARDUINO_ESP8266_DIR}/tools/sdk/lwip/include
+    ${ARDUINO_ESP8266_DIR}/variants/nodemcu
+)
+
+link_directories(${ARDUINO_ESP8266_DIR}/tools/sdk/lib)
+
+# target_link_libraries(arduino   PUBLIC at
+#                                 axtls
+#                                 crypto
+#                                 espnow
+#                                 hal
+#                                 json
+#                                 lwip_gcc
+#                                 main
+#                                 net80211
+#                                 phy
+#                                 pp
+#                                 pwm
+#                                 smartconfig
+#                                 ssl
+#                                 upgrade
+#                                 wpa
+#                                 wps
+#                                 stdc++
+#                                 m
+#                                 c
+#                                 gcc
+
+# )
