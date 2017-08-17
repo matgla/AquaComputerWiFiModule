@@ -10,7 +10,7 @@ set(TSAN_ENABLED OFF CACHE STRING "Enable thread sanitizer")
 
 if (${ARCH} STREQUAL "ESP8266")
     message("-- Include toolchain for ESP8266")
-    include("cmake/toolchain.ESP8266.cmake")
+    include("cmake/ESP8266Toolchain.cmake")
 endif (${ARCH} STREQUAL "ESP8266")
 
 project(AquaLampServer C CXX ASM)
@@ -40,25 +40,6 @@ if (TSAN_ENABLED)
 endif (TSAN_ENABLED)
 
 if (BUILD_TARGET)
-    if (${ARCH} STREQUAL "ESP8266")
-
-      #  add_subdirectory(arduino)
-        # if (EXISTS "${ARDUINO_ESP8266_DIR}/platform.txt")
-        #     file(STRINGS "${ARDUINO_ESP8266_DIR}/platform.txt" VERSION_LINES REGEX "^version=")
-        #     if (VERSION_LINES)
-        #         string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+" ARDUINO_VERSION ${VERSION_LINES})
-        #     endif ()
-        # endif ()
-
-        # message("-- Detected Arduino version: ${ARDUINO_VERSION}")
-
-
-        # set(CPACK_GENERATOR "ZIP")
-        # set(CPACK_PACKAGE_FILE_NAME Arduino-${ARDUINO_VERSION})
-        # set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY FALSE)
-
-        # include(CPack)
-    endif (${ARCH} STREQUAL "ESP8266")
     add_subdirectory(lib)
     add_subdirectory(src)
 endif (BUILD_TARGET)

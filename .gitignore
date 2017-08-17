@@ -2,7 +2,7 @@
 .piolibdeps
 .clang_complete
 .gcc-flags.json
-bin/
+bin*/
 platformio.ini
 .vscode/browse.vc.db*
 .vscode/*

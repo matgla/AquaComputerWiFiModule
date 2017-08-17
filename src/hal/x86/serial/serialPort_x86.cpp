@@ -16,6 +16,8 @@
 using namespace boost;
 using namespace boost::asio;
 
+namespace hal
+{
 namespace serial
 {
 
@@ -116,3 +118,4 @@ u8 SerialPort::readByte()
 }
 
 } // namespace serial
+} // namespace hal

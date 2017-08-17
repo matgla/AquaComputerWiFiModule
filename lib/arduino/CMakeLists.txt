@@ -15,7 +15,7 @@ set(ARDUINO_SOURCES
     ${ARDUINO_ESP8266_DIR}/cores/esp8266/abi.cpp
     ${ARDUINO_ESP8266_DIR}/cores/esp8266/base64.cpp
     ${ARDUINO_ESP8266_DIR}/cores/esp8266/cbuf.cpp
-    ${ARDUINO_ESP8266_DIR}/cores/esp8266/cont.s
+    ${ARDUINO_ESP8266_DIR}/cores/esp8266/cont.S
     ${ARDUINO_ESP8266_DIR}/cores/esp8266/cont_util.c
     ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_eboot_command.c
     ${ARDUINO_ESP8266_DIR}/cores/esp8266/core_esp8266_flash_utils.c
@@ -50,8 +50,6 @@ set(ARDUINO_SOURCES
     ${ARDUINO_ESP8266_DIR}/cores/esp8266/umm_malloc/umm_malloc.c
  )
 
-message("Arduino sources: ${ARDUINO_SOURCES}")
-
 add_library(arduino STATIC
     ${ARDUINO_SOURCES}
 )
@@ -64,27 +62,3 @@ target_include_directories(arduino PUBLIC
 )
 
 link_directories(${ARDUINO_ESP8266_DIR}/tools/sdk/lib)
-
-# target_link_libraries(arduino   PUBLIC at
-#                                 axtls
-#                                 crypto
-#                                 espnow
-#                                 hal
-#                                 json
-#                                 lwip_gcc
-#                                 main
-#                                 net80211
-#                                 phy
-#                                 pp
-#                                 pwm
-#                                 smartconfig
-#                                 ssl
-#                                 upgrade
-#                                 wpa
-#                                 wps
-#                                 stdc++
-#                                 m
-#                                 c
-#                                 gcc
-
-# )
