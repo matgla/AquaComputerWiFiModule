@@ -4,16 +4,15 @@
 #include <ostream>
 #include <string>
 
-#include "logger/ILogger.hpp"
+#include "logger/ILoggerBase.hpp"
 
 namespace logger
 {
 
-class LoggerBase : public ILogger
+class LoggerBase : public ILoggerBase
 {
 public:
     LoggerBase();
-    explicit LoggerBase(const std::string& name);
     virtual ~LoggerBase() = default;
 
     template <typename T>
@@ -23,15 +22,15 @@ public:
         return *this;
     }
 
-    LoggerBase& info() override;
-    LoggerBase& err() override;
-    LoggerBase& warn() override;
+    LoggerBase& debug(const std::string& componentName) override;
+    LoggerBase& info(const std::string& componentName) override;
+    LoggerBase& err(const std::string& componentName) override;
+    LoggerBase& warn(const std::string& componentName) override;
 
 protected:
     std::string getFormatedDateAndTime();
 
     std::shared_ptr<std::ostream> stream_;
-    std::string name_;
 };
 
 } // namespace logger

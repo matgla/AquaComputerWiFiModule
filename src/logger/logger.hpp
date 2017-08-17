@@ -1,34 +1,40 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "ILogger.hpp"
 #include "loggerBase.hpp"
+#include "loggerConf.hpp"
 
 namespace logger
 {
 
-class Logger : public ILogger
+class Logger
 {
 public:
+    Logger(const std::string& name = "", bool insertNewlineWhenDestruct = false);
+    ~Logger();
     void add(LoggerBase logger);
 
     template <typename T>
     Logger& operator<<(const T& data)
     {
-        for (auto& logger : loggers_)
+        for (auto& logger : LoggerConf::get().getLoggers())
         {
             logger << data;
         }
         return *this;
     }
 
-    Logger& info() override;
-    Logger& warn() override;
-    Logger& err() override;
+    Logger debug();
+    Logger info();
+    Logger warn();
+    Logger err();
 
 protected:
-    std::vector<LoggerBase> loggers_;
+    std::string name_;
+    bool insertNewlineWhenDestruct_;
 };
 
 } // namespace logger

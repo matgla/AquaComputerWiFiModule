@@ -12,20 +12,25 @@ namespace net
 namespace http
 {
 
+using RequestHandler = std::function<void(AsyncHttpRequest*)>;
+
 class AsyncHttpServer
 {
-  public:
+public:
     AsyncHttpServer(u16 port);
     ~AsyncHttpServer();
-    void get(const std::string& uri, std::function<void(AsyncHttpRequest*)> request);
+    void get(const std::string& uri, RequestHandler req);
+    void post(const std::string& uri, RequestHandler req);
     void begin();
 
-  private:
+private:
     u16 port_;
 
     class AsyncHttpWrapper;
     std::unique_ptr<AsyncHttpWrapper> asyncHttpWrapper_;
 };
+
+void waitForBreak();
 
 } // namespace http
 } // namespace net

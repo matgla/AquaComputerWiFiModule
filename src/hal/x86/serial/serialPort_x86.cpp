@@ -11,11 +11,13 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/system/error_code.hpp>
 
-#include "buffer.hpp"
+#include "container/buffer.hpp"
 
 using namespace boost;
 using namespace boost::asio;
 
+namespace hal
+{
 namespace serial
 {
 
@@ -29,7 +31,7 @@ public:
     std::string port_;
     int baudrate_;
     u8 rawBuffer_[1024];
-    containers::Buffer<2048> buffer_;
+    container::Buffer<2048> buffer_;
 
 private:
     void loop();
@@ -46,13 +48,12 @@ SerialPort::SerialWrapper::SerialWrapper(const std::string& port, int baudrate)
     {
         serialPort_.open(port);
         serialPort_.set_option(asio::serial_port_base::baud_rate(baudrate_));
-        std::thread t([this]() {while(true) {ioService_.run();} });
-        t.detach();
+        std::thread{[this]() {while(true) {ioService_.run();} }}.detach();
         loop();
     }
     catch (boost::system::system_error& e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
+        throw boost::system::system_error{e};
     }
 }
 
@@ -65,8 +66,6 @@ void SerialPort::SerialWrapper::loop()
 {
     serialPort_.async_read_some(boost::asio::buffer(rawBuffer_),
                                 boost::bind(&SerialPort::SerialWrapper::readCallback, this, _1, _2));
-
-    //boost::shared_ptr<asio::io_service::work> work(new asio::io_service::work(ioService_));
 }
 
 void SerialPort::SerialWrapper::readCallback(const boost::system::error_code& error,
@@ -119,3 +118,4 @@ u8 SerialPort::readByte()
 }
 
 } // namespace serial
+} // namespace hal

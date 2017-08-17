@@ -5,6 +5,8 @@
 
 #include "utils/types.hpp"
 
+namespace hal
+{
 namespace serial
 {
 
@@ -20,9 +22,11 @@ public:
     std::size_t isDataToRecive();
     std::size_t read(u8* buf, std::size_t length);
     u8 readByte();
+
 protected:
     class SerialWrapper;
     std::unique_ptr<SerialWrapper> serialWrapper_;
 };
 
-}
+} // namespace serial
+} // namespace hal

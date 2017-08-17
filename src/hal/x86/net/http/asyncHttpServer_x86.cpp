@@ -1,13 +1,21 @@
 #include "hal/net/http/asyncHttpServer.hpp"
 
-#include <beast/core.hpp>
-#include <beast/http.hpp>
-#include <beast/version.hpp>
 #include <boost/asio.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <boost/beast/version.hpp>
 
 #include <chrono>
+#include <iostream>
+#include <map>
 #include <memory>
 #include <string>
+#include <thread>
+
+#include "hal/net/http/asyncHttpRequest.hpp"
+#include "hal/x86/net/http/httpConnection_x86.hpp"
+
+#include "logger/logger.hpp"
 
 using namespace boost;
 using namespace boost::asio;
@@ -17,67 +25,9 @@ namespace net
 namespace http
 {
 
-class http_connection : public std::enable_shared_from_this<http_connection>
-{
-public:
-    http_connection(ip::tcp::socket socket)
-        : socket_(std::move(socket))
-    {
-    }
+auto logger = logger::Logger("HttpServer");
 
-    // Initiate the asynchronous operations associated with the connection.
-    void
-        start()
-    {
-    }
-
-private:
-    // The socket for the currently connected client.
-    ip::tcp::socket socket_;
-
-    // The buffer for performing reads.
-    beast::flat_buffer buffer_{8192};
-
-    // The request message.
-    beast::http::request<beast::http::dynamic_body> request_;
-
-    // The response message.
-    beast::http::response<beast::http::dynamic_body> response_;
-
-    // The timer for putting a deadline on connection processing.
-    boost::asio::basic_waitable_timer<std::chrono::steady_clock> deadline_{
-        socket_.get_io_service(), std::chrono::seconds(60)};
-
-    // Asynchronously receive a complete request message.
-    void
-        read_request()
-    {
-    }
-
-    // Determine what needs to be done with the request message.
-    void
-        process_request()
-    {
-    }
-
-    // Construct a response message based on the program state.
-    void
-        create_response()
-    {
-    }
-
-    // Asynchronously transmit the response message.
-    void
-        write_response()
-    {
-    }
-
-    // Check whether we have spent enough time on this connection.
-    void
-        check_deadline()
-    {
-    }
-};
+using Handlers = std::map<std::string, RequestHandler>;
 
 class AsyncHttpServer::AsyncHttpWrapper
 {
@@ -87,6 +37,10 @@ public:
           socket_(ioService_)
     {
     }
+    void begin();
+
+    std::map<std::string, RequestHandler> getHandlers_;
+    std::map<std::string, RequestHandler> postHandlers_;
 
 private:
     io_service ioService_;
@@ -96,6 +50,20 @@ private:
     ip::tcp::socket socket_;
 };
 
+void AsyncHttpServer::AsyncHttpWrapper::begin()
+{
+    std::thread{std::bind(&AsyncHttpServer::AsyncHttpWrapper::loop, this)}.detach();
+}
+
+void AsyncHttpServer::AsyncHttpWrapper::loop()
+{
+    while (true)
+    {
+        acceptor_.accept(socket_);
+        std::make_shared<HttpConnection>(std::move(socket_), getHandlers_, postHandlers_)->start();
+    }
+}
+
 AsyncHttpServer::AsyncHttpServer(u16 port)
     : port_(port), asyncHttpWrapper_(new AsyncHttpWrapper("127.0.0.1", port))
 {
@@ -103,20 +71,31 @@ AsyncHttpServer::AsyncHttpServer(u16 port)
 
 AsyncHttpServer::~AsyncHttpServer() = default;
 
-void AsyncHttpServer::get(const std::string& uri, std::function<void(AsyncHttpRequest*)> request)
+
+void AsyncHttpServer::get(const std::string& uri, RequestHandler handler)
 {
+    asyncHttpWrapper_->getHandlers_[uri] = handler;
 }
 
-void AsyncHttpServer::AsyncHttpWrapper::loop()
+void AsyncHttpServer::post(const std::string& uri, RequestHandler handler)
 {
-    acceptor_.async_accept(socket_, [&](beast::error_code ec) {
-        if (!ec)
-        {
-            std::make_shared<http_connection>(std::move(socket_))->start();
-        }
-        loop();
-    });
+    asyncHttpWrapper_->postHandlers_[uri] = handler;
 }
+
+void AsyncHttpServer::begin()
+{
+    logger.info() << "Starting....";
+    asyncHttpWrapper_->begin();
+}
+
+void waitForBreak()
+{
+    boost::asio::io_service ios{1};
+    boost::asio::signal_set signals(ios, SIGINT, SIGTERM);
+    signals.async_wait([&](boost::system::error_code const&, int) {});
+    ios.run();
+}
+
 
 } // namespace http
 } // namespace net

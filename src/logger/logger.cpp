@@ -1,38 +1,79 @@
 #include "logger.hpp"
 
+#include <mutex>
+
+#ifndef X86_ARCH
+namespace std
+{
+struct mutex
+{
+    void lock()
+    {
+    }
+    void unlock()
+    {
+    }
+};
+}
+#endif
+
 namespace logger
 {
 
-void Logger::add(LoggerBase logger)
+static std::mutex logMutex;
+
+Logger::Logger(const std::string& name, bool insertNewlineWhenDestruct)
+    : name_(name), insertNewlineWhenDestruct_(insertNewlineWhenDestruct)
 {
-    loggers_.push_back(logger);
 }
 
-Logger& Logger::info()
+Logger::~Logger()
 {
-    for (auto& logger : loggers_)
+    if (insertNewlineWhenDestruct_)
     {
-        logger.info();
+        operator<<("\n");
+        logMutex.unlock();
     }
-    return *this;
 }
 
-Logger& Logger::warn()
+Logger Logger::debug()
 {
-    for (auto& logger : loggers_)
+    logMutex.lock();
+    for (auto& logger : LoggerConf::get().getLoggers())
     {
-        logger.warn();
+        logger.debug(name_);
     }
-    return *this;
+    return Logger(name_, true);
 }
 
-Logger& Logger::err()
+Logger Logger::info()
 {
-    for (auto& logger : loggers_)
+    logMutex.lock();
+    for (auto& logger : LoggerConf::get().getLoggers())
     {
-        logger.err();
+        logger.info(name_);
     }
-    return *this;
+    return Logger(name_, true);
 }
 
-}  // namespace logger
+Logger Logger::warn()
+{
+    logMutex.lock();
+    for (auto& logger : LoggerConf::get().getLoggers())
+    {
+        logger.warn(name_);
+    }
+    return Logger(name_, true);
+}
+
+Logger Logger::err()
+{
+    logMutex.lock();
+    for (auto& logger : LoggerConf::get().getLoggers())
+    {
+        logger.err(name_);
+    }
+    return Logger(name_, true);
+}
+
+} // namespace logger
