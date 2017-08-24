@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include <fs.h>
+#include <FS.h>
 
 #include "logger/logger.hpp"
 
@@ -27,6 +27,14 @@ public:
     bool isOpen_;
     SPIFFSFile file_;
 };
+
+File::File() : fileWrapper_(new FileWrapper())
+{
+}
+
+File::~File()
+{
+}
 
 void File::open(const std::string& path)
 {

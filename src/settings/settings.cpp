@@ -11,7 +11,7 @@ Settings& Settings::get()
     return settings;
 }
 
-nlohmann::json& Settings::db()
+JsonObject& Settings::db()
 {
     return Settings::get().getDb();
 }
@@ -20,14 +20,14 @@ Settings::Settings()
 {
     hal::fs::File settingsFile;
     settingsFile.open(SETTINGS_PATH);
-    std::vector<u8> jsonData;
+    std::vector<char> jsonData;
     jsonData.resize(settingsFile.size());
-    settingsFile.read(reinterpret_cast<char*>(jsonData.data()), settingsFile.size());
+    settingsFile.read(jsonData.data(), settingsFile.size());
     settingsFile.close();
-    data_ = nlohmann::json::parse(jsonData);
+    data_ = buffer_.parseObject(jsonData.data());
 }
 
-nlohmann::json& Settings::getDb()
+JsonObject& Settings::getDb()
 {
     return data_;
 }

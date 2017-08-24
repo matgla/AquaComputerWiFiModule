@@ -15,7 +15,7 @@ int main()
 }
 
 #elif ESP8266_ARCH
-#include <Arduino.h>
+#include "ArduinoFixed.hpp"
 #endif // X86_ARCH
 
 /************************ [MAIN] **************************/
@@ -38,8 +38,8 @@ namespace
 void setup()
 {
     logger::Logger logger("Main");
-    std::cout << settings::Settings::db()["Loggers"] << std::endl;
-    for (auto& loggerType : settings::Settings::db()["Loggers"])
+    // std::cout << settings::Settings::db()["Loggers"] << std::endl;
+    for (auto& loggerType : settings::Settings::db()["Loggers"].as<JsonArray>())
     {
         if ("stdout" == loggerType)
         {

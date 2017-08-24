@@ -1,6 +1,6 @@
 #include "hal/serial/serialPort.hpp"
 
-#include <Arduino.h>
+#include "ArduinoFixed.hpp"
 
 namespace hal
 {

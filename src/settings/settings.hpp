@@ -1,8 +1,10 @@
 #pragma once
 
+//#include<algorithm>
 #include <string>
+#include <vector>
 
-#include <json.hpp>
+#include <ArduinoJson.h>
 
 #ifdef X86_ARCH
 #include <experimental/filesystem>
@@ -24,7 +26,7 @@ class Settings
 {
 public:
     static Settings& get();
-    static nlohmann::json& db();
+    static JsonObject& db();
 
 private:
     Settings();
@@ -34,9 +36,10 @@ private:
     Settings(const Settings&&) = delete;
     Settings& operator=(Settings&) = delete;
 
-    nlohmann::json& getDb();
+    JsonObject& getDb();
 
-    nlohmann::json data_;
+    DynamicJsonBuffer buffer_;
+    JsonVariant data_;
 };
 
 } // namespace settings

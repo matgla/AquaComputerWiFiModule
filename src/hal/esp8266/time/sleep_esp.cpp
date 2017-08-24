@@ -1,6 +1,6 @@
 #include "hal/time/sleep.hpp"
 
-#include <Arduino.h>
+#include "ArduinoFixed.hpp"
 
 namespace hal
 {

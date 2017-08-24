@@ -2,12 +2,11 @@ include(cmake/common_sources.cmake)
 
 set(production_srcs ${common_srcs} ${common_incs} main.cpp)
 
-include_directories(${NLOHMANN_JSON_SOURCE_DIR})
 include_directories("${PROJECT_SOURCE_DIR}/src")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 
-set(target_libs ${target_libs} nlohmann_json)
+set(target_libs ${target_libs} ArduinoJson)
 set(target_name AquaLampServer)
 set(target_name_lib firmware)
 

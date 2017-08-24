@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <Arduino.h>
+#include "ArduinoFixed.hpp"
 #include <ESP8266WiFi.h>
 
 namespace net
@@ -30,4 +30,4 @@ void TcpSocket::write(const std::string& data)
     socketWrapper_->client_.print(String(data.c_str()));
 }
 
-}  // namespace net
+} // namespace net
