@@ -15,7 +15,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z")
 find_package(Boost 1.58 COMPONENTS system program_options REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${Beast_INCLUDE_DIR})
-set(target_libs ${target_libs} ${Boost_LIBRARIES} beast)
+set(target_libs ${target_libs} ${Boost_LIBRARIES} beast ArduinoJson stdc++fs)
 
 add_definitions(-DX86_ARCH)
 
@@ -24,9 +24,6 @@ if (WIN32)
 elseif (UNIX)
     set(target_libs ${target_libs} pthread)
 endif (WIN32)
-
-include_directories(${NLOHMANN_JSON_SOURCE_DIR})
-set(target_libs ${target_libs} nlohmann_json)
 
 add_executable(AquaLampServerUTs ${ut_srcs}
                                  ${ut_incs}

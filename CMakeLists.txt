@@ -40,7 +40,6 @@ if (TSAN_ENABLED)
 endif (TSAN_ENABLED)
 
 if (BUILD_TARGET)
-    add_subdirectory(lib)
     add_subdirectory(src)
 endif (BUILD_TARGET)
 
@@ -52,3 +51,5 @@ if (BUILD_TESTS)
 
     add_subdirectory(test)
 endif (BUILD_TESTS)
+
+add_subdirectory(lib)

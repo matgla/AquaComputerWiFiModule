@@ -1,9 +1,9 @@
 set(COMMON_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 
 set(common_srcs
-     #${COMMON_SRC_DIR}/handler/handlers.cpp
-     #${COMMON_SRC_DIR}/handler/baseHandler.cpp
-     #${COMMON_SRC_DIR}/handler/dispatcher.cpp
+    ${COMMON_SRC_DIR}/handler/handlers.cpp
+    ${COMMON_SRC_DIR}/handler/baseHandler.cpp
+    ${COMMON_SRC_DIR}/handler/dispatcher.cpp
     ${COMMON_SRC_DIR}/settings/settings.cpp
     ${COMMON_SRC_DIR}/logger/logger.cpp
     ${COMMON_SRC_DIR}/logger/loggerBase.cpp

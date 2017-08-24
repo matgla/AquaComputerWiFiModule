@@ -21,6 +21,7 @@ int main()
 /************************ [MAIN] **************************/
 
 #include "hal/fs/file.hpp"
+#include "hal/net/socket/tcpServer.hpp"
 #include "hal/serial/serialPort.hpp"
 #include "hal/time/sleep.hpp"
 #include "logger/logger.hpp"
@@ -33,6 +34,7 @@ int main()
 namespace
 {
 // hal::serial::SerialPort serial("");
+hal::net::socket::TcpServer messageServer(1010);
 }
 
 void setup()

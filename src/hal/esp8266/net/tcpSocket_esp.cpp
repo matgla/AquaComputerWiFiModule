@@ -1,33 +1,33 @@
-#include "hal/net/tcpSocket.hpp"
+// #include "hal/net/socket/"
 
-#include <string>
+// #include <string>
 
-#include "ArduinoFixed.hpp"
-#include <ESP8266WiFi.h>
+// #include "ArduinoFixed.hpp"
+// #include <ESP8266WiFi.h>
 
-namespace net
-{
+// namespace net
+// {
 
-class TcpSocket::SocketWrapper
-{
-public:
-    WiFiClient client_;
-};
+// class TcpSocket::SocketWrapper
+// {
+// public:
+//     WiFiClient client_;
+// };
 
-TcpSocket::TcpSocket() : socketWrapper_(new SocketWrapper())
-{
-}
+// TcpSocket::TcpSocket() : socketWrapper_(new SocketWrapper())
+// {
+// }
 
-TcpSocket::~TcpSocket() = default;
+// TcpSocket::~TcpSocket() = default;
 
-void TcpSocket::connect(const std::string& host, u16 port)
-{
-    socketWrapper_->client_.connect(host.c_str(), static_cast<int>(port));
-}
+// void TcpSocket::connect(const std::string& host, u16 port)
+// {
+//     socketWrapper_->client_.connect(host.c_str(), static_cast<int>(port));
+// }
 
-void TcpSocket::write(const std::string& data)
-{
-    socketWrapper_->client_.print(String(data.c_str()));
-}
+// void TcpSocket::write(const std::string& data)
+// {
+//     socketWrapper_->client_.print(String(data.c_str()));
+// }
 
-} // namespace net
+// } // namespace net

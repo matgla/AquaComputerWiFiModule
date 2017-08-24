@@ -8,3 +8,9 @@
 [submodule "lib/json/json"]
 	path = lib/json/json
 	url = https://github.com/bblanchon/ArduinoJson.git
+[submodule "lib/boost/sml"]
+	path = lib/boost/sml
+	url = https://github.com/boost-experimental/sml.git
+[submodule "lib/nanopb"]
+	path = lib/nanopb
+	url = https://github.com/nanopb/nanopb.git
