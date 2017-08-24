@@ -10,13 +10,13 @@ message("-- Xtensa toolchain: ${XTENSA_TOOLCHAIN_PATH}")
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
 
 if (WIN32)
-    set(CMAKE_ASM_COMPILER ${XTENSA_TOOLCHAIN_PATH}/bin/xtensa-lx106-elf-gcc.exe)
-    set(CMAKE_C_COMPILER ${XTENSA_TOOLCHAIN_PATH}/bin/xtensa-lx106-elf-gcc.exe)
-    set(CMAKE_CXX_COMPILER ${XTENSA_TOOLCHAIN_PATH}/bin/xtensa-lx106-elf-g++.exe)
+    set(CMAKE_ASM_COMPILER ${XTENSA_TOOLCHAIN_PATH}/xtensa-lx106-elf-gcc.exe)
+    set(CMAKE_C_COMPILER ${XTENSA_TOOLCHAIN_PATH}/xtensa-lx106-elf-gcc.exe)
+    set(CMAKE_CXX_COMPILER ${XTENSA_TOOLCHAIN_PATH}/xtensa-lx106-elf-g++.exe)
 elseif(UNIX)
-    set(CMAKE_ASM_COMPILER ${XTENSA_TOOLCHAIN_PATH}/bin/xtensa-lx106-elf-gcc)
-    set(CMAKE_C_COMPILER ${XTENSA_TOOLCHAIN_PATH}/bin/xtensa-lx106-elf-gcc)
-    set(CMAKE_CXX_COMPILER ${XTENSA_TOOLCHAIN_PATH}/bin/xtensa-lx106-elf-g++)
+    set(CMAKE_ASM_COMPILER ${XTENSA_TOOLCHAIN_PATH}/xtensa-lx106-elf-gcc)
+    set(CMAKE_C_COMPILER ${XTENSA_TOOLCHAIN_PATH}/xtensa-lx106-elf-gcc)
+    set(CMAKE_CXX_COMPILER ${XTENSA_TOOLCHAIN_PATH}/xtensa-lx106-elf-g++)
 endif (WIN32)
 
 file(TO_CMAKE_PATH $ENV{ARDUINO_ESP8266_ROOT} ARDUINO_ESP8266_ROOT_CONVERTED)
@@ -48,7 +48,7 @@ set(CMAKE_EXE_LINKER_FLAGS "-Os -nostdlib -Wl,--no-check-sections -u call_user_s
 link_directories(
     ${ARDUINO_ESP8266_DIR}/tools/sdk/lib
     ${ARDUINO_ESP8266_DIR}/tools/sdk/ld
-  #  ${ARDUINO_ESP8266_DIR}/tools/sdk/libc/xtensa-lx106-elf/lib
+    ${ARDUINO_ESP8266_DIR}/tools/sdk/libc/xtensa-lx106-elf/lib
 )
 set(ESP8266_SDK_LIBRARIES "-lmesh -lwpa2 -lsmartconfig -lespnow -lpp -lmain -lwpa -llwip_gcc -lnet80211 -lwps -lcrypto -lphy -lhal -laxtls -lgcc -lm -lc -lstdc++")
 
@@ -68,13 +68,10 @@ add_definitions(
 
 
 include_directories(
-    ${XTENSA_TOOLCHAIN_PATH}/xtensa-lx106-elf/include
-    ${XTENSA_TOOLCHAIN_PATH}/xtensa-lx106-elf/include/c++/5.2.0
     ${ARDUINO_ESP8266_DIR}/tools/sdk/include
     ${ARDUINO_ESP8266_DIR}/tools/sdk/lwip/include
-    
-    #${ARDUINO_ESP8266_DIR}/tools/sdk/libc/xtensa-lx106-elf
-    #${ARDUINO_ESP8266_DIR}/tools/sdk/libc/xtensa-lx106-elf/include
+    ${ARDUINO_ESP8266_DIR}/tools/sdk/libc/xtensa-lx106-elf
+    ${ARDUINO_ESP8266_DIR}/tools/sdk/libc/xtensa-lx106-elf/include
 )
 
 set(CMAKE_EXECUTABLE_SUFFIX .elf)
