@@ -1,0 +1,6 @@
+{
+    "SerialPort": "COM1",
+    "Loggers": [
+        "stdout"
+    ]
+}

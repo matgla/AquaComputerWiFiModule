@@ -83,7 +83,7 @@ private:
 
     void handleConnectionLost()
     {
-        logger_.err() << "Couldn't connect to " << url_ << ":" << port_;
+        logger_.error() << "Couldn't connect to " << url_ << ":" << port_;
         stop();
     }
 

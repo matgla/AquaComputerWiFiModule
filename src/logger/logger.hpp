@@ -30,7 +30,7 @@ public:
     Logger debug();
     Logger info();
     Logger warn();
-    Logger err();
+    Logger error();
 
 protected:
     std::string name_;

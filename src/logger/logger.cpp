@@ -66,12 +66,12 @@ Logger Logger::warn()
     return Logger(name_, true);
 }
 
-Logger Logger::err()
+Logger Logger::error()
 {
     logMutex.lock();
     for (auto& logger : LoggerConf::get().getLoggers())
     {
-        logger.err(name_);
+        logger.error(name_);
     }
     return Logger(name_, true);
 }

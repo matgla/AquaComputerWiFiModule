@@ -1,19 +1,25 @@
 #include "hal/fs/file.hpp"
 
+#include <exception>
 #include <fstream>
 #include <iostream>
 
+namespace hal
+{
 namespace fs
 {
 
 class File::FileWrapper
 {
 public:
+    FileWrapper() : size_(0)
+    {
+    }
     std::fstream fs_;
+    std::size_t size_;
 };
 
-File::File()
-    : fileWrapper_(new FileWrapper())
+File::File() : fileWrapper_(new FileWrapper())
 {
 }
 
@@ -22,6 +28,15 @@ File::~File() = default;
 void File::open(const std::string& path)
 {
     fileWrapper_->fs_.open(path, std::fstream::in | std::fstream::out);
+    if (!isOpen())
+    {
+        throw std::runtime_error("File " + path + " opening failed...");
+    }
+    std::streampos size = 0;
+    fileWrapper_->fs_.tellg();
+    fileWrapper_->fs_.seekg(0, std::ios::end);
+    fileWrapper_->size_ = fileWrapper_->fs_.tellg() - size;
+    fileWrapper_->fs_.seekg(0);
 }
 
 void File::write(const std::string& data)
@@ -59,4 +74,10 @@ bool File::isOpen()
     return fileWrapper_->fs_.is_open();
 }
 
+std::size_t File::size()
+{
+    return fileWrapper_->size_;
+}
+
 } // namespace fs
+} // namespace hal

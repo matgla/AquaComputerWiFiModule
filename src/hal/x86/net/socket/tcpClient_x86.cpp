@@ -24,12 +24,8 @@ class TcpClient::TcpClientImpl
 {
 public:
     TcpClientImpl(const std::string& url, u16 port, handler::ReaderCallback readerCallback)
-        : url_(url),
-          port_(port),
-          logger_("TcpClientImpl"),
-          resolver_(ioService_),
-          socket_(ioService_),
-          readerCallback_(readerCallback)
+        : url_(url), port_(port), logger_("TcpClientImpl"), resolver_(ioService_),
+          socket_(ioService_), readerCallback_(readerCallback)
     {
     }
 
@@ -42,9 +38,7 @@ public:
     {
         connect();
 
-        thread_ = std::thread{[this]() {
-            ioService_.run();
-        }};
+        thread_ = std::thread{[this]() { ioService_.run(); }};
     }
 
 
@@ -110,7 +104,7 @@ private:
 
     void handleConnectionLost()
     {
-        logger_.err() << "Couldn't connect to " << url_ << ":" << port_;
+        logger_.error() << "Couldn't connect to " << url_ << ":" << port_;
         stop();
     }
 

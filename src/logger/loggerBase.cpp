@@ -5,8 +5,7 @@
 namespace logger
 {
 
-LoggerBase::LoggerBase()
-    : stream_(nullptr)
+LoggerBase::LoggerBase() : stream_(nullptr)
 {
 }
 
@@ -22,7 +21,7 @@ LoggerBase& LoggerBase::info(const std::string& componentName)
     return *this;
 }
 
-LoggerBase& LoggerBase::err(const std::string& componentName)
+LoggerBase& LoggerBase::error(const std::string& componentName)
 {
     (*stream_) << "<" << getFormatedDateAndTime() << "> ERR/" << componentName << ": ";
     return *this;

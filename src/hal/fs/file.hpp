@@ -5,6 +5,8 @@
 
 #include "utils/types.hpp"
 
+namespace hal
+{
 namespace fs
 {
 
@@ -20,6 +22,7 @@ public:
     void write(const std::string& data);
     void close();
     bool isOpen();
+    std::size_t size();
 
 private:
     class FileWrapper;
@@ -27,3 +30,4 @@ private:
 };
 
 } // namespace fs
+} // namespace hal

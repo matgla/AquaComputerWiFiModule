@@ -147,7 +147,7 @@ public:
         // Pretty-print an error to the log
         void fail(std::string what, error_code ec)
         {
-            logger.err() << "WebSocket failed " << ec.message();
+            logger.error() << "WebSocket failed " << ec.message();
         }
 
         WebSocketWrapper& parent_;
@@ -169,7 +169,7 @@ public:
 
     void fail(std::string what, error_code ec)
     {
-        logger.err() << "duplo";
+        logger.error() << "duplo";
     }
 
     void do_accept()

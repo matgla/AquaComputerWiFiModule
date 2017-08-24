@@ -9,7 +9,7 @@ if (${ARCH} STREQUAL "ESP8266")
     #add_subdirectory(ESP8266WebServer)
     #add_subdirectory(SPI)
     #add_subdirectory(Wire)
-    # add_subdirectory(ESPAsyncTCP)
+    add_subdirectory(ESPAsyncTCP)
 endif (${ARCH} STREQUAL "ESP8266")
 
 add_subdirectory(json)

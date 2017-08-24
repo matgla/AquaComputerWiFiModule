@@ -15,7 +15,7 @@ target_include_directories(
     ${ARDUINO_ESP8266_DIR}/cores/esp8266
     ${ARDUINO_ESP8266_DIR}/variants/nodemcu
     ${ARDUINO_ESP8266_DIR}/libraries/ESP8266WiFi/src
-    ${CMAKE_SOURCE_DIR}/lib/ESPAsyncTCP/ESPAsyncTCP/src
+    ${PROJECT_SOURCE_DIR}/lib/ESPAsyncTCP/ESPAsyncTCP/src
 )
 target_link_libraries(espasynctcp PUBLIC arduino lwip_gcc)
 

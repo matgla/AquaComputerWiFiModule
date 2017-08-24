@@ -7,7 +7,7 @@ include_directories("${PROJECT_SOURCE_DIR}/src")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 
-#set(target_libs ${target_libs} )
+set(target_libs ${target_libs} nlohmann_json)
 set(target_name AquaLampServer)
 set(target_name_lib firmware)
 
@@ -18,7 +18,7 @@ if (${ARCH} STREQUAL "X86")
     include_directories(${Beast_INCLUDE_DIR})
     set(production_srcs ${production_srcs} ${x86_srcs} ${x86_incs})
 
-    set(target_libs ${target_libs} ${Boost_LIBRARIES} beast)
+    set(target_libs ${target_libs} ${Boost_LIBRARIES} beast stdc++fs)
 
     add_definitions(-DX86_ARCH)
 
@@ -31,7 +31,7 @@ elseif (${ARCH} STREQUAL "ESP8266")
     add_definitions(-DESP8266_ARCH)
     include(cmake/esp8266_sources.cmake)
     set(production_srcs ${production_srcs} ${esp8266_srcs} ${esp8266_incs})
-    set(target_libs ${target_libs} arduino)
+    set(target_libs ${target_libs} arduino espasynctcp)
     include_directories(
         ${ARDUINO_ESP8266_DIR}/cores/esp8266
         ${ARDUINO_ESP8266_DIR}/tools/sdk/include
@@ -40,15 +40,12 @@ elseif (${ARCH} STREQUAL "ESP8266")
 
 endif (${ARCH} STREQUAL "X86")
 
-message("Linking: ${target_name_lib} PUBLIC ${target_libs} ${common_libs}")
-
 add_library(${target_name_lib} STATIC ${production_srcs})
 target_link_libraries(${target_name_lib} PUBLIC ${target_libs} ${common_libs})
 
 file(WRITE ${PROJECT_BINARY_DIR}/null.cpp "")
 add_executable(${target_name} ${PROJECT_BINARY_DIR}/null.cpp)
 target_link_libraries(${target_name} PUBLIC ${target_name_lib})
-message("Linking exe: ${target_name} PUBLIC ${target_name_lib}")
 
 if (${ARCH} STREQUAL "ESP8266")
     add_custom_command(TARGET ${target_name}
@@ -64,6 +61,4 @@ if (${ARCH} STREQUAL "ESP8266")
     add_dependencies(firmware_binary ${target_name})
     add_custom_target(flash COMMAND ${ESP8266_ESPTOOL} -vv -cd nodemcu -cb 460800 -cp ${ESP8266_ESPTOOL_COM_PORT} -cf ${target_name}.bin)
     add_dependencies(flash firmware_binary)
-
-
 endif (${ARCH} STREQUAL "ESP8266")

@@ -13,9 +13,7 @@ namespace net
 namespace socket
 {
 TcpSession::TcpSession(tcp::socket socket, handler::ReaderCallback reader)
-    : socket_(std::move(socket)),
-      logger_("TcpSession"),
-      readerCallback_(reader)
+    : socket_(std::move(socket)), logger_("TcpSession"), readerCallback_(reader)
 {
 }
 
@@ -36,13 +34,12 @@ tcp::socket& TcpSession::getSocket()
 
 void TcpSession::doWrite(std::string data)
 {
-    async_write(socket_, buffer(data),
-                [this](boost::system::error_code error, std::size_t size) {
-                    if (error)
-                    {
-                        logger_.err() << "Write failed: " << error.message();
-                    }
-                });
+    async_write(socket_, buffer(data), [this](boost::system::error_code error, std::size_t size) {
+        if (error)
+        {
+            logger_.error() << "Write failed: " << error.message();
+        }
+    });
 }
 
 void TcpSession::doWrite(const u8* buf, std::size_t length)
@@ -54,7 +51,7 @@ void TcpSession::doWrite(const u8* buf, std::size_t length)
                 [this](boost::system::error_code error, std::size_t size) {
                     if (error)
                     {
-                        logger_.err() << "Write failed: " << error.message();
+                        logger_.error() << "Write failed: " << error.message();
                     }
                 });
 }
@@ -62,13 +59,12 @@ void TcpSession::doWrite(const u8* buf, std::size_t length)
 void TcpSession::doWrite(u8 byte)
 {
     std::array<u8, 1> buf = {byte};
-    async_write(socket_, buffer(buf, 1),
-                [this](boost::system::error_code error, std::size_t size) {
-                    if (error)
-                    {
-                        logger_.err() << "Write failed: " << error.message();
-                    }
-                });
+    async_write(socket_, buffer(buf, 1), [this](boost::system::error_code error, std::size_t size) {
+        if (error)
+        {
+            logger_.error() << "Write failed: " << error.message();
+        }
+    });
 }
 
 void TcpSession::disconnect()
@@ -89,26 +85,27 @@ bool TcpSession::connected()
 
 void TcpSession::doRead()
 {
-    socket_.async_read_some(buffer(buffer_, BUF_SIZE),
-                            [this](boost::system::error_code error, std::size_t tranferred_bytes) {
-                                if (error == boost::asio::error::eof)
-                                {
-                                    logger_.debug() << "Connection lost to "
-                                                    << socket_.remote_endpoint().address().to_string();
-                                    return;
-                                }
+    socket_.async_read_some(buffer(buffer_, BUF_SIZE), [this](boost::system::error_code error,
+                                                              std::size_t tranferred_bytes) {
+        if (error == boost::asio::error::eof)
+        {
+            logger_.debug() << "Connection lost to "
+                            << socket_.remote_endpoint().address().to_string();
+            return;
+        }
 
-                                if (!error)
-                                {
-                                    std::lock_guard<std::mutex> safeCallback(readerCallbackMutex_);
-                                    readerCallback_(buffer_, tranferred_bytes, [this](const u8* buf, std::size_t len) { doWrite(buf, len); });
-                                    return doRead();
-                                }
-                                else
-                                {
-                                    logger_.err() << "Reading failed: " << error.message();
-                                }
-                            });
+        if (!error)
+        {
+            std::lock_guard<std::mutex> safeCallback(readerCallbackMutex_);
+            readerCallback_(buffer_, tranferred_bytes,
+                            [this](const u8* buf, std::size_t len) { doWrite(buf, len); });
+            return doRead();
+        }
+        else
+        {
+            logger_.error() << "Reading failed: " << error.message();
+        }
+    });
 }
 
 void TcpSession::setHandler(handler::ReaderCallback reader)

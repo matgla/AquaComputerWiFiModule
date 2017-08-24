@@ -24,7 +24,7 @@ public:
 
     LoggerBase& debug(const std::string& componentName) override;
     LoggerBase& info(const std::string& componentName) override;
-    LoggerBase& err(const std::string& componentName) override;
+    LoggerBase& error(const std::string& componentName) override;
     LoggerBase& warn(const std::string& componentName) override;
 
 protected:
