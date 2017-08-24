@@ -3,7 +3,6 @@ set(UT_SRC_DIR "${PROJECT_SOURCE_DIR}/test/UT/src")
 set(ut_srcs
     ${UT_SRC_DIR}/test/handler/baseHandlerTests.cpp
     ${UT_SRC_DIR}/test/serializer/serializerTests.cpp
-
 )
 
 set(ut_incs

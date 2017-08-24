@@ -36,8 +36,8 @@ set(common_incs
     ${COMMON_SRC_DIR}/logger/loggerConf.hpp
     ${COMMON_SRC_DIR}/logger/socketLogger.hpp
     ${COMMON_SRC_DIR}/logger/stdOutLogger.hpp
-    ${COMMON_SRC_DIR}/message/messages.hpp
     ${COMMON_SRC_DIR}/serializer/serializer.hpp
+    ${COMMON_SRC_DIR}/message/messages.hpp
     ${COMMON_SRC_DIR}/settings/settings.hpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.hpp
     ${COMMON_SRC_DIR}/stream/socketStream.hpp

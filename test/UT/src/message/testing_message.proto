@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+message TestingMessage {
+    required int32 integerVar = 1;
+    required uint32 unsignedVar = 2;
+    required string strVar = 3;
+    required float floatingVar = 4;
+}

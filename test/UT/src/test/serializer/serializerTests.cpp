@@ -45,7 +45,7 @@ TEST(SerializerShould, SerializeU16)
 TEST(SerializerShould, SerializeU32)
 {
     const u32 dataToSerialize = 0xbeeffeeb;
-    const u8 expectedSerializedBuffer[] = {0xeb, 0xef, 0xef, 0xbe};
+    const u8 expectedSerializedBuffer[] = {0xeb, 0xfe, 0xef, 0xbe};
 
     u8 buffer[4];
     serialize(buffer, dataToSerialize);
@@ -71,29 +71,5 @@ TEST(SerializerShould, SerializeChar)
     serialize(buffer, dataToSerialize);
     EXPECT_THAT(buffer, ArrayCompare(expectedSerializedBuffer, sizeof(expectedSerializedBuffer)));
 }
-
-struct StructForTest
-{
-    int a;
-    char b;
-    std::string str;
-};
-
-TEST(SerializerShould, SerializeStruct)
-{
-    // StructForTest dataToSerialize;
-    // dataToSerialize.a = 0x00000015;
-    // dataToSerialize.b = 'a';
-    // dataToSerialize.str = "I am working?";
-
-    // const u8 expectedSerializedBuffer[] = {0x00, 0x00, 0x00, 0x15, 0x61, 0x49, 0x20, 0x61, 0x6d,
-    //                                        0x20, 0x77, 0x6f, 0x72, 0x6b, 0x69, 0x6e, 0x67, 0x3f};
-
-    // u8 buffer[1];
-    // serialize(buffer, dataToSerialize);
-    // EXPECT_THAT(buffer, ArrayCompare(expectedSerializedBuffer,
-    // sizeof(expectedSerializedBuffer)));
-}
-
 
 } // namespace serializer

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true" buildAllGenerated="true">
+    <generated>
+      <config projectName="AquaLampServer" targetName="flash" />
+      <config projectName="AquaLampServer" targetName="AquaLampServer" />
+      <config projectName="AquaLampServer" targetName="AquaLampServerUTs" />
+      <config projectName="AquaLampServer" targetName="gtest" />
+      <config projectName="AquaLampServer" targetName="messages" />
+      <config projectName="AquaLampServer" targetName="firmware" />
+      <config projectName="AquaLampServer" targetName="firmware_binary" />
+      <config projectName="AquaLampServer" targetName="ArduinoJson" />
+      <config projectName="AquaLampServer" targetName="gmock" />
+      <config projectName="AquaLampServer" targetName="gtest_main" />
+      <config projectName="AquaLampServer" targetName="arduino" />
+      <config projectName="AquaLampServer" targetName="espasynctcp" />
+      <config projectName="AquaLampServer" targetName="testing_messages" />
+      <config projectName="AquaLampServer" targetName="gmock_main" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration CONFIG_NAME="TargetX86" GENERATION_OPTIONS="-DBUILD_TARGET=ON" />
+      <configuration CONFIG_NAME="TargetEsp8266" GENERATION_OPTIONS="-DBUILD_TARGET=ON -DARCH=ESP8266" />
+      <configuration CONFIG_NAME="Tests" GENERATION_OPTIONS="-DBUILD_TESTS=ON" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3d56df96-10d0-4457-840b-f1ec0e1ca083" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/message" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/lib/nanopb" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitmodules" afterPath="$PROJECT_DIR$/.gitmodules" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/CMakeLists.txt" afterPath="$PROJECT_DIR$/lib/CMakeLists.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/cmake/common_sources.cmake" afterPath="$PROJECT_DIR$/src/cmake/common_sources.cmake" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/handler/baseHandler.cpp" afterPath="$PROJECT_DIR$/src/handler/baseHandler.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/serializer/serializer.hpp" afterPath="$PROJECT_DIR$/src/serializer/serializer.hpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/UT/CMakeLists.txt" afterPath="$PROJECT_DIR$/test/UT/CMakeLists.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/UT/cmake/ut_sources.cmake" afterPath="$PROJECT_DIR$/test/UT/cmake/ut_sources.cmake" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/UT/src/test/handler/baseHandlerTests.cpp" afterPath="$PROJECT_DIR$/test/UT/src/test/handler/baseHandlerTests.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/UT/src/test/serializer/serializerTests.cpp" afterPath="$PROJECT_DIR$/test/UT/src/test/serializer/serializerTests.cpp" />
+    </list>
+    <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
+    <ignored path="$PROJECT_DIR$/cmake-build-default/" />
+    <ignored path="$PROJECT_DIR$/cmake-build-default-1/" />
+    <ignored path="$PROJECT_DIR$/cmake-build-tests/" />
+    <ignored path="$PROJECT_DIR$/cmake-build-esp8266/" />
+    <ignored path="$PROJECT_DIR$/cmake-build-targetx86/" />
+    <ignored path="$PROJECT_DIR$/cmake-build-targetesp8266/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="260" />
+    <option name="y" value="20" />
+    <option name="width" value="1400" />
+    <option name="height" value="1000" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="AquaLampServer" type="dad4c3:CidrFilesViewHelper$MyProjectTreeStructure$1" />
+              <item name="aquacomputerserver" type="47feb1d3:ProjectViewModuleNode" />
+            </path>
+            <path>
+              <item name="AquaLampServer" type="dad4c3:CidrFilesViewHelper$MyProjectTreeStructure$1" />
+              <item name="aquacomputerserver" type="47feb1d3:ProjectViewModuleNode" />
+              <item name="aquacomputerserver" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="settings.editor.selected.configurable" value="CMakeSettings" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.ArduinoJson">
+    <configuration name="AquaLampServer" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="AquaLampServer" CONFIG_NAME="TargetX86" RUN_TARGET_PROJECT_NAME="AquaLampServer" RUN_TARGET_NAME="AquaLampServer">
+      <envs />
+    </configuration>
+    <configuration name="AquaLampServerUTs" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="AquaLampServerUTs" CONFIG_NAME="Tests" RUN_TARGET_PROJECT_NAME="AquaLampServer" RUN_TARGET_NAME="AquaLampServerUTs" TEST_MODE="SUITE_TEST">
+      <envs />
+    </configuration>
+    <configuration name="ArduinoJson" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="ArduinoJson" CONFIG_NAME="TargetX86">
+      <envs />
+    </configuration>
+    <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="TargetEsp8266" EXPLICIT_BUILD_TARGET_NAME="all">
+      <envs />
+    </configuration>
+    <configuration name="arduino" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="arduino" CONFIG_NAME="TargetEsp8266">
+      <envs />
+    </configuration>
+    <configuration name="espasynctcp" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="espasynctcp" CONFIG_NAME="TargetEsp8266">
+      <envs />
+    </configuration>
+    <configuration name="firmware" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="firmware" CONFIG_NAME="TargetX86">
+      <envs />
+    </configuration>
+    <configuration name="firmware_binary" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="firmware_binary" CONFIG_NAME="TargetEsp8266">
+      <envs />
+    </configuration>
+    <configuration name="flash" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="flash" CONFIG_NAME="TargetEsp8266">
+      <envs />
+    </configuration>
+    <configuration name="gmock" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="gmock" CONFIG_NAME="Tests">
+      <envs />
+    </configuration>
+    <configuration name="gmock_main" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="gmock_main" CONFIG_NAME="Tests">
+      <envs />
+    </configuration>
+    <configuration name="gtest" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="gtest" CONFIG_NAME="Tests">
+      <envs />
+    </configuration>
+    <configuration name="gtest_main" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="gtest_main" CONFIG_NAME="Tests">
+      <envs />
+    </configuration>
+    <configuration name="messages" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="messages" CONFIG_NAME="TargetX86">
+      <envs />
+    </configuration>
+    <configuration name="testing_messages" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="AquaLampServer" TARGET_NAME="testing_messages" CONFIG_NAME="Tests">
+      <envs />
+    </configuration>
+    <list size="15">
+      <item index="0" class="java.lang.String" itemvalue="Application.Build All" />
+      <item index="1" class="java.lang.String" itemvalue="Application.arduino" />
+      <item index="2" class="java.lang.String" itemvalue="Application.espasynctcp" />
+      <item index="3" class="java.lang.String" itemvalue="Application.ArduinoJson" />
+      <item index="4" class="java.lang.String" itemvalue="Application.messages" />
+      <item index="5" class="java.lang.String" itemvalue="Application.AquaLampServer" />
+      <item index="6" class="java.lang.String" itemvalue="Application.firmware" />
+      <item index="7" class="java.lang.String" itemvalue="Application.firmware_binary" />
+      <item index="8" class="java.lang.String" itemvalue="Application.flash" />
+      <item index="9" class="java.lang.String" itemvalue="Application.gmock" />
+      <item index="10" class="java.lang.String" itemvalue="Application.gmock_main" />
+      <item index="11" class="java.lang.String" itemvalue="Application.gtest" />
+      <item index="12" class="java.lang.String" itemvalue="Application.gtest_main" />
+      <item index="13" class="java.lang.String" itemvalue="Google Test.AquaLampServerUTs" />
+      <item index="14" class="java.lang.String" itemvalue="Application.testing_messages" />
+    </list>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3d56df96-10d0-4457-840b-f1ec0e1ca083" name="Default" comment="" />
+      <created>1503609757456</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1503609757456</updated>
+      <workItem from="1503609760268" duration="281000" />
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="281000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <layout>
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18020834" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+</project>

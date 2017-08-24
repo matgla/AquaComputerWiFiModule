@@ -7,6 +7,8 @@
 namespace handler
 {
 
+const u8 LENGTH_SIZE = 8; // bytes
+
 BaseHandler::BaseHandler(ReceiverPtr receiver)
     : receiver_(std::move(receiver)), transmissionStarted_(false), allDataArrived_(false),
       lengthToBeReceived_(0)
@@ -52,15 +54,14 @@ u64 BaseHandler::lengthToBeReceived()
 
 void BaseHandler::receiveMessageLength(u8 data)
 {
+    messageLengthToBeReceived_ |= static_cast<u64>(data) << 8 * (LENGTH_SIZE - lengthToBeReceived_);
     --lengthToBeReceived_;
-    messageLengthToBeReceived_ |= static_cast<u64>(data) << 8 * lengthToBeReceived_;
 
     if (0 == lengthToBeReceived_)
     {
         messageLengthReceived_ = true;
     }
 }
-
 
 u8 BaseHandler::initializeTransmission(u8 data)
 {
@@ -69,7 +70,7 @@ u8 BaseHandler::initializeTransmission(u8 data)
         transmissionStarted_ = true;
         allDataArrived_ = false;
         messageLengthReceived_ = false;
-        lengthToBeReceived_ = 8;
+        lengthToBeReceived_ = LENGTH_SIZE;
         messageLengthToBeReceived_ = 0;
 
         return message::TransmissionMessage::Ack;

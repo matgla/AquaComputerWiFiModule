@@ -11,3 +11,4 @@ platformio.ini
 .piolibdeps
 build
 *node_modules*
+cmake-build-*

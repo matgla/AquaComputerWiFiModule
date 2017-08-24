@@ -3,9 +3,15 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <pb_decode.h>
+#include <pb_encode.h>
+
 #include "matcher/arrayCompare.hpp"
 #include "message/messages.hpp"
 #include "mock/writerHandlerMock.hpp"
+#include "serializer/serializer.hpp"
+
+#include "testing_message.pb.h"
 
 using namespace testing;
 
@@ -76,40 +82,73 @@ TEST_F(BaseHandlerShould, NackWhenNotStartedAndNotAckReceived)
     EXPECT_FALSE(handler_.transmissionStarted());
 }
 
-template <typename T>
-void serialize(u8* buffer, const T& data)
+TEST_F(BaseHandlerShould, SendMessageLength)
 {
-    for (std::size_t i = 0; i < sizeof(T); ++i)
-    {
-        const u8* byte = reinterpret_cast<const u8*>(&data);
-        buffer[i] = *byte;
-        ++byte;
-    }
+    EXPECT_FALSE(handler_.transmissionStarted());
+
+    const u8 expectedAnswer[] = {message::TransmissionMessage::Nack};
+    const u8 someMessageDifferentThatStart = ~message::TransmissionMessage::Start;
+    const u8 msg[] = {someMessageDifferentThatStart};
+
+    test::mock::WriterHandlerMock writerMock;
+
+    EXPECT_CALL(writerMock, doWrite(ArrayCompare(expectedAnswer, sizeof(expectedAnswer)), 1));
+
+    receiver_->readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
+        writerMock.doWrite(buf, len);
+    });
+
+    EXPECT_FALSE(handler_.transmissionStarted());
 }
 
-// TEST_F(BaseHandlerShould, ReceiveMessageLengthCorrectly)
-// {
-//     EXPECT_FALSE(handler_.transmissionStarted());
+TEST_F(BaseHandlerShould, ReceiveMessageLengthCorrectly)
+{
+    EXPECT_FALSE(handler_.transmissionStarted());
 
-//     const u8 expectedAnswer[] = {message::TransmissionMessage::Ack};
+    const u8 expectedAnswer[] = {message::TransmissionMessage::Ack};
 
-//     u64 messageLength = 0xbeef12345678baca;
-//     // beef12345678baca
-//     // ffffffffcacacaca
-//     u8 msg[9] = {message::TransmissionMessage::Start};
-//     serialize(&msg[1], messageLength);
+    const u64 messageLength = 0xbeef12345678baca;
 
-//     test::mock::WriterHandlerMock writerMock;
+    u8 msg[9] = {message::TransmissionMessage::Start};
+    serializer::serialize(&msg[1], messageLength);
 
-//     EXPECT_EQ(0, handler_.lengthToBeReceived());
-//     EXPECT_CALL(writerMock, doWrite(ArrayCompare(expectedAnswer, sizeof(expectedAnswer)), 1));
+    test::mock::WriterHandlerMock writerMock;
 
-//     receiver_->readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
-//         writerMock.doWrite(buf, len);
-//     });
+    EXPECT_EQ(0, handler_.lengthToBeReceived());
+    EXPECT_CALL(writerMock, doWrite(ArrayCompare(expectedAnswer, sizeof(expectedAnswer)), 1));
 
-//     EXPECT_EQ(messageLength, handler_.lengthToBeReceived());
-//     EXPECT_TRUE(handler_.transmissionStarted());
-// }
+    receiver_->readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
+        writerMock.doWrite(buf, len);
+    });
+
+    EXPECT_EQ(messageLength, handler_.lengthToBeReceived());
+    EXPECT_TRUE(handler_.transmissionStarted());
+}
+
+TEST_F(BaseHandlerShould, ReceiveMessageCorrectly)
+{
+    EXPECT_FALSE(handler_.transmissionStarted());
+
+    const u8 expectedAnswer[] = {message::TransmissionMessage::Ack};
+    const u64 messageLength = 0xbeef12345678baca;
+
+    TestingMessage testingMessage;
+    testingMessage.
+
+        u8 msg[9] = {message::TransmissionMessage::Start};
+    serializer::serialize(&msg[1], messageLength);
+
+    test::mock::WriterHandlerMock writerMock;
+
+    EXPECT_EQ(0, handler_.lengthToBeReceived());
+    EXPECT_CALL(writerMock, doWrite(ArrayCompare(expectedAnswer, sizeof(expectedAnswer)), 1));
+
+    receiver_->readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
+        writerMock.doWrite(buf, len);
+    });
+
+    EXPECT_EQ(messageLength, handler_.lengthToBeReceived());
+    EXPECT_TRUE(handler_.transmissionStarted());
+}
 
 } // namespace handler
