@@ -14,4 +14,3 @@ endif (${ARCH} STREQUAL "ESP8266")
 
 add_subdirectory(json)
 add_subdirectory(boost)
-add_subdirectory(messages)

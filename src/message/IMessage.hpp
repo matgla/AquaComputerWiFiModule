@@ -5,11 +5,11 @@
 namespace message
 {
 
-enum TransmissionId : u8
+class IMessage
 {
-    Start = 0x00,
-    Ack = 0x10,
-    Nack
+public:
+    u32 id() const = 0;
+    std::vector<u8> serialize() const = 0;
 };
 
 } // namespace message

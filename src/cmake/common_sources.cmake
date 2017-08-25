@@ -2,7 +2,7 @@ set(COMMON_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 
 set(common_srcs
     ${COMMON_SRC_DIR}/handler/handlers.cpp
-    ${COMMON_SRC_DIR}/handler/baseHandler.cpp
+    ${COMMON_SRC_DIR}/handler/messageReceiver.cpp
     ${COMMON_SRC_DIR}/handler/dispatcher.cpp
     ${COMMON_SRC_DIR}/settings/settings.cpp
     ${COMMON_SRC_DIR}/logger/logger.cpp
@@ -26,7 +26,7 @@ set(common_incs
     ${COMMON_SRC_DIR}/hal/net/socket/websocket.hpp
     ${COMMON_SRC_DIR}/hal/serial/serialPort.hpp
     ${COMMON_SRC_DIR}/hal/time/sleep.hpp
-    ${COMMON_SRC_DIR}/handler/baseHandler.hpp
+    ${COMMON_SRC_DIR}/handler/messageReceiver.hpp
     ${COMMON_SRC_DIR}/handler/dispatcher.hpp
     ${COMMON_SRC_DIR}/handler/IDataReceiver.hpp
     ${COMMON_SRC_DIR}/handler/handlers.hpp
@@ -38,6 +38,7 @@ set(common_incs
     ${COMMON_SRC_DIR}/logger/stdOutLogger.hpp
     ${COMMON_SRC_DIR}/serializer/serializer.hpp
     ${COMMON_SRC_DIR}/message/messages.hpp
+    ${COMMON_SRC_DIR}/message/IMessage.hpp
     ${COMMON_SRC_DIR}/settings/settings.hpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.hpp
     ${COMMON_SRC_DIR}/stream/socketStream.hpp

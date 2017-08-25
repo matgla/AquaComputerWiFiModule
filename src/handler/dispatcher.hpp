@@ -3,14 +3,14 @@
 #include <memory>
 #include <vector>
 
-#include "handler/baseHandler.hpp"
+#include "handler/messageReceiver.hpp"
 
 namespace handler
 {
 class Dispatcher : public std::enable_shared_from_this<Dispatcher>
 {
 public:
-    using HandlerPtr = std::unique_ptr<BaseHandler>;
+    using HandlerPtr = std::unique_ptr<MessageReceiver>;
     using HandlerContainer = std::vector<HandlerPtr>;
 
     void addReceiver(HandlerPtr receiver);

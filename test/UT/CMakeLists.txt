@@ -1,5 +1,3 @@
-add_subdirectory(src/message)
-
 enable_testing()
 
 include(cmake/ut_sources.cmake)
@@ -34,6 +32,6 @@ add_executable(AquaLampServerUTs ${ut_srcs}
                                  ${x86_incs}
 )
 
-set(testing_libs ${testing_libs} gmock gtest gtest_main pthread testing_messages)
+set(testing_libs ${testing_libs} gmock gtest gtest_main pthread)
 
 target_link_libraries(AquaLampServerUTs ${target_libs} ${common_libs} ${testing_libs})
