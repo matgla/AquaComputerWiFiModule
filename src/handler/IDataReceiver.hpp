@@ -10,6 +10,8 @@ namespace handler
 class IDataReceiver
 {
 public:
+    using RawDataReceiverPtr = std::shared_ptr<IDataReceiver>;
+
     virtual ~IDataReceiver() = default;
 
     virtual void setHandler(ReaderCallback readerCallback) = 0;

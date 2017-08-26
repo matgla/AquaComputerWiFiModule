@@ -1,23 +1,45 @@
 #pragma once
 
+#include <map>
 #include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
-#include "handler/messageReceiver.hpp"
+#include "handler/IDataReceiver.hpp"
+#include "handler/IFrameReceiver.hpp"
+#include "logger/logger.hpp"
 
 namespace handler
 {
-class Dispatcher : public std::enable_shared_from_this<Dispatcher>
+class Dispatcher
 {
 public:
-    using HandlerPtr = std::unique_ptr<MessageReceiver>;
-    using HandlerContainer = std::vector<HandlerPtr>;
+    using FrameReceiverContainer = std::map<std::string, IFrameReceiver::ReceiverPtr>;
+    using RawDataReceiverContainer = std::map<std::string, IDataReceiver::RawDataReceiverPtr>;
 
-    void addReceiver(HandlerPtr receiver);
+    Dispatcher();
+
+    void addFrameReceiver(IFrameReceiver::ReceiverPtr receiver, const std::string& name);
+    void removeFrameReceiver(const std::string& name);
+
+    void addRawDataReceiver(IDataReceiver::RawDataReceiverPtr dataReceiver,
+                            const std::string& name);
+    void removeRawDataReceiver(const std::string& name);
+
+    void connectReceivers(const std::string& rawDataReceiverName,
+                          const std::string& frameReceiverName);
 
 protected:
-    void onRead(const u8* buffer, std::size_t length, WriterCallback write);
-    HandlerContainer receivers_;
+    logger::Logger logger_;
+
+    FrameReceiverContainer frameReceivers_;
+    RawDataReceiverContainer rawDataReceivers_;
+
+    using Connection = std::pair<std::string, std::string>;
+    using ConnectionContainer = std::vector<Connection>;
+
+    ConnectionContainer rawAndFrameReceiverConnections_;
 };
 
 } // namespace handler

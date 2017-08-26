@@ -44,14 +44,14 @@ struct MessageReceiverShould : public testing::Test
 
     handler::MessageReceiver receiver_;
     MessageHandler handler_;
-    ReceiverForTest* dataReceiver_;
+    ReceiverForTest dataReceiver_;
 };
 
 MessageReceiverShould::MessageReceiverShould()
-    : receiver_(std::make_unique<ReceiverForTest>(),
-                std::bind(MessageHandler::handle, &handler_, std::placeholders::_1))
+    : receiver_(std::bind(MessageHandler::handle, &handler_, std::placeholders::_1))
 {
-    dataReceiver_ = static_cast<ReceiverForTest*>(receiver_.getReceiver());
+    dataReceiver_.setHandler(std::bind(&MessageReceiver::onRead, &receiver_, std::placeholders::_1,
+                                       std::placeholders::_2, std::placeholders::_3));
 }
 
 TEST_F(MessageReceiverShould, InitializeMembers)
@@ -70,7 +70,7 @@ TEST_F(MessageReceiverShould, StartTransmissionAndSendAck)
 
     EXPECT_CALL(writerMock, doWrite(ArrayCompare(expectedAnswer, sizeof(expectedAnswer)), 1));
 
-    dataReceiver_->readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
+    dataReceiver_.readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
         writerMock.doWrite(buf, len);
     });
 
@@ -89,7 +89,7 @@ TEST_F(MessageReceiverShould, NackWhenNotStartedAndDataArrived)
 
     EXPECT_CALL(writerMock, doWrite(ArrayCompare(expectedAnswer, sizeof(expectedAnswer)), 1));
 
-    dataReceiver_->readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
+    dataReceiver_.readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
         writerMock.doWrite(buf, len);
     });
 
@@ -108,7 +108,7 @@ TEST_F(MessageReceiverShould, SendMessageLength)
 
     EXPECT_CALL(writerMock, doWrite(ArrayCompare(expectedAnswer, sizeof(expectedAnswer)), 1));
 
-    dataReceiver_->readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
+    dataReceiver_.readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
         writerMock.doWrite(buf, len);
     });
 
@@ -131,7 +131,7 @@ TEST_F(MessageReceiverShould, ReceiveMessageLengthCorrectly)
     EXPECT_EQ(0, receiver_.lengthToBeReceived());
     EXPECT_CALL(writerMock, doWrite(ArrayCompare(expectedAnswer, sizeof(expectedAnswer)), 1));
 
-    dataReceiver_->readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
+    dataReceiver_.readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
         writerMock.doWrite(buf, len);
     });
 
@@ -167,7 +167,7 @@ TEST_F(MessageReceiverShould, ReceiveMessageCorrectly)
     EXPECT_CALL(writerMock, doWrite(ArrayCompare(expectedAnswer, sizeof(expectedAnswer)), 1));
 
     // send protocol data
-    dataReceiver_->readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
+    dataReceiver_.readerCallback_(msg, sizeof(msg), [&writerMock](const auto* buf, auto len) {
         writerMock.doWrite(buf, len);
     });
 
@@ -176,9 +176,9 @@ TEST_F(MessageReceiverShould, ReceiveMessageCorrectly)
 
     std::size_t dataSplit = serializedMessage.length() / 2;
 
-    dataReceiver_->readerCallback_(reinterpret_cast<const u8*>(serializedMessage.c_str()),
-                                   dataSplit, [](const u8* buf, std::size_t len) {});
-    dataReceiver_->readerCallback_(
+    dataReceiver_.readerCallback_(reinterpret_cast<const u8*>(serializedMessage.c_str()), dataSplit,
+                                  [](const u8* buf, std::size_t len) {});
+    dataReceiver_.readerCallback_(
         reinterpret_cast<const u8*>(serializedMessage.c_str() + dataSplit),
         serializedMessage.length() - dataSplit, [](const u8* buf, std::size_t len) {});
 
@@ -219,7 +219,7 @@ TEST_F(MessageReceiverShould, ReceiveParts)
 
 
     // send protocol data
-    dataReceiver_->readerCallback_(
+    dataReceiver_.readerCallback_(
         reinterpret_cast<const u8*>(transmission1.data()), transmission1.size(),
         [&writerMock](const auto* buf, auto len) { writerMock.doWrite(buf, len); });
 
@@ -230,7 +230,7 @@ TEST_F(MessageReceiverShould, ReceiveParts)
     EXPECT_EQ(0, receiver_.lengthToBeReceived());
     EXPECT_TRUE(receiver_.transmissionStarted());
 
-    dataReceiver_->readerCallback_(
+    dataReceiver_.readerCallback_(
         reinterpret_cast<const u8*>(transmission2.data()), transmission2.size(),
         [&writerMock](const auto* buf, auto len) { writerMock.doWrite(buf, len); });
 

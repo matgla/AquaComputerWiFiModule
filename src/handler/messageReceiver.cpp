@@ -9,22 +9,10 @@ namespace handler
 
 const u8 LENGTH_SIZE = 8; // bytes
 
-MessageReceiver::MessageReceiver(ReceiverPtr receiver, DataHandler handler)
-    : receiver_(std::move(receiver)), handler_(handler), transmissionStarted_(false),
-      lengthToBeReceived_(0), messageLengthReceived_(false), messageLengthToBeReceived_(0)
+MessageReceiver::MessageReceiver(DataHandler handler)
+    : handler_(handler), transmissionStarted_(false), lengthToBeReceived_(0),
+      messageLengthReceived_(false), messageLengthToBeReceived_(0)
 {
-    receiver_->setHandler(std::bind(&MessageReceiver::onRead, this, std::placeholders::_1,
-                                    std::placeholders::_2, std::placeholders::_3));
-}
-
-IDataReceiver* MessageReceiver::getReceiver()
-{
-    return receiver_.get();
-}
-
-std::vector<u8>& MessageReceiver::getBuffer()
-{
-    return buffer_;
 }
 
 bool MessageReceiver::transmissionStarted()

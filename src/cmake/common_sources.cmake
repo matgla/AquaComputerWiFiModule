@@ -29,6 +29,7 @@ set(common_incs
     ${COMMON_SRC_DIR}/handler/messageReceiver.hpp
     ${COMMON_SRC_DIR}/handler/dispatcher.hpp
     ${COMMON_SRC_DIR}/handler/IDataReceiver.hpp
+    ${COMMON_SRC_DIR}/handler/IFrameReceiver.hpp
     ${COMMON_SRC_DIR}/handler/handlers.hpp
     ${COMMON_SRC_DIR}/logger/ILogger.hpp
     ${COMMON_SRC_DIR}/logger/logger.hpp
