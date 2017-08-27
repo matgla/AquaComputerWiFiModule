@@ -20,6 +20,8 @@ int main()
 
 /************************ [MAIN] **************************/
 
+#include <ArduinoJson.h>
+
 #include "hal/fs/file.hpp"
 #include "hal/net/socket/tcpServer.hpp"
 #include "hal/serial/serialPort.hpp"
@@ -28,8 +30,6 @@ int main()
 #include "logger/loggerConf.hpp"
 #include "logger/stdOutLogger.hpp"
 #include "settings/settings.hpp"
-
-#include <iostream>
 
 namespace
 {

@@ -10,6 +10,7 @@ set(common_srcs
     ${COMMON_SRC_DIR}/logger/loggerConf.cpp
     ${COMMON_SRC_DIR}/logger/socketLogger.cpp
     ${COMMON_SRC_DIR}/logger/stdOutLogger.cpp
+    ${COMMON_SRC_DIR}/logger/stdErrLogger.cpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.cpp
     ${COMMON_SRC_DIR}/stream/socketStream.cpp
 )
@@ -26,20 +27,23 @@ set(common_incs
     ${COMMON_SRC_DIR}/hal/net/socket/websocket.hpp
     ${COMMON_SRC_DIR}/hal/serial/serialPort.hpp
     ${COMMON_SRC_DIR}/hal/time/sleep.hpp
-    ${COMMON_SRC_DIR}/handler/messageReceiver.hpp
     ${COMMON_SRC_DIR}/handler/dispatcher.hpp
+    ${COMMON_SRC_DIR}/handler/handlers.hpp
     ${COMMON_SRC_DIR}/handler/IDataReceiver.hpp
     ${COMMON_SRC_DIR}/handler/IFrameReceiver.hpp
-    ${COMMON_SRC_DIR}/handler/handlers.hpp
+    ${COMMON_SRC_DIR}/handler/IFrameHandler.hpp
+    ${COMMON_SRC_DIR}/handler/messageReceiver.hpp
+    ${COMMON_SRC_DIR}/handler/stmMessageReceiver.hpp
     ${COMMON_SRC_DIR}/logger/ILogger.hpp
     ${COMMON_SRC_DIR}/logger/logger.hpp
     ${COMMON_SRC_DIR}/logger/loggerBase.hpp
     ${COMMON_SRC_DIR}/logger/loggerConf.hpp
     ${COMMON_SRC_DIR}/logger/socketLogger.hpp
     ${COMMON_SRC_DIR}/logger/stdOutLogger.hpp
-    ${COMMON_SRC_DIR}/serializer/serializer.hpp
-    ${COMMON_SRC_DIR}/message/messages.hpp
+    ${COMMON_SRC_DIR}/logger/stdErrLogger.hpp
     ${COMMON_SRC_DIR}/message/IMessage.hpp
+    ${COMMON_SRC_DIR}/message/messages.hpp
+    ${COMMON_SRC_DIR}/serializer/serializer.hpp
     ${COMMON_SRC_DIR}/settings/settings.hpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.hpp
     ${COMMON_SRC_DIR}/stream/socketStream.hpp

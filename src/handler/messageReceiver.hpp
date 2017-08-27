@@ -11,11 +11,12 @@ namespace handler
 class MessageReceiver : public IFrameReceiver
 {
 public:
-    MessageReceiver(DataHandler handler);
+    MessageReceiver(DataHandler handler = IFrameReceiver::DefaultHandler);
 
     bool transmissionStarted();
     u64 lengthToBeReceived();
     void onRead(const u8* buffer, std::size_t length, WriterCallback write) override;
+    void setHandler(DataHandler handler) override;
 
 protected:
     u8 initializeTransmission(u8 data);

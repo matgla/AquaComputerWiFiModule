@@ -86,4 +86,9 @@ void MessageReceiver::reply(const u8 answer, WriterCallback& write) const
     write(answerMessage, sizeof(answerMessage));
 }
 
+void MessageReceiver::setHandler(DataHandler handler)
+{
+    handler_ = handler;
+}
+
 } // namespace handler

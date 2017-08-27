@@ -48,7 +48,7 @@ struct MessageReceiverShould : public testing::Test
 };
 
 MessageReceiverShould::MessageReceiverShould()
-    : receiver_(std::bind(MessageHandler::handle, &handler_, std::placeholders::_1))
+    : receiver_(std::bind(&MessageHandler::handle, &handler_, std::placeholders::_1))
 {
     dataReceiver_.setHandler(std::bind(&MessageReceiver::onRead, &receiver_, std::placeholders::_1,
                                        std::placeholders::_2, std::placeholders::_3));
