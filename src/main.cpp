@@ -19,6 +19,7 @@ int main()
 #endif // X86_ARCH
 
 /************************ [MAIN] **************************/
+#include <memory>
 
 #include <ArduinoJson.h>
 
@@ -26,6 +27,9 @@ int main()
 #include "hal/net/socket/tcpServer.hpp"
 #include "hal/serial/serialPort.hpp"
 #include "hal/time/sleep.hpp"
+#include "handler/dispatcher.hpp"
+#include "handler/jsonHandler.hpp"
+#include "handler/messageReceiver.hpp"
 #include "logger/logger.hpp"
 #include "logger/loggerConf.hpp"
 #include "logger/stdOutLogger.hpp"
@@ -34,7 +38,14 @@ int main()
 namespace
 {
 // hal::serial::SerialPort serial("");
-hal::net::socket::TcpServer messageServer(1010);
+std::shared_ptr<hal::net::socket::TcpServer> messageServer(new hal::net::socket::TcpServer(1010));
+handler::Dispatcher dispatcher;
+auto receiver = std::make_shared<handler::MessageReceiver>();
+auto jsonHandler = std::make_shared<handler::JsonHandler>();
+
+const std::string& receiverName = "MessageFrameReceiver";
+const std::string& handlerName = "JsonHandler";
+const std::string& dataReceiverName = "TcpReceiver";
 }
 
 void setup()
@@ -49,6 +60,13 @@ void setup()
         }
     }
     logger.info() << "System booting up";
+    dispatcher.addRawDataReceiver(messageServer, dataReceiverName);
+    dispatcher.addFrameReceiver(receiver, receiverName);
+    dispatcher.addHandler(jsonHandler, handlerName);
+
+    dispatcher.connectReceivers(dataReceiverName, receiverName);
+    dispatcher.connectHandler(receiverName, handlerName);
+    logger.info() << "Handlers setup finished";
 }
 
 void loop()

@@ -4,6 +4,7 @@ set(common_srcs
     ${COMMON_SRC_DIR}/handler/handlers.cpp
     ${COMMON_SRC_DIR}/handler/messageReceiver.cpp
     ${COMMON_SRC_DIR}/handler/dispatcher.cpp
+    ${COMMON_SRC_DIR}/handler/jsonHandler.cpp    
     ${COMMON_SRC_DIR}/settings/settings.cpp
     ${COMMON_SRC_DIR}/logger/logger.cpp
     ${COMMON_SRC_DIR}/logger/loggerBase.cpp
@@ -28,7 +29,9 @@ set(common_incs
     ${COMMON_SRC_DIR}/hal/serial/serialPort.hpp
     ${COMMON_SRC_DIR}/hal/time/sleep.hpp
     ${COMMON_SRC_DIR}/handler/dispatcher.hpp
+    ${COMMON_SRC_DIR}/handler/jsonHandler.hpp
     ${COMMON_SRC_DIR}/handler/handlers.hpp
+    ${COMMON_SRC_DIR}/handler/IMessageHandler.hpp
     ${COMMON_SRC_DIR}/handler/IDataReceiver.hpp
     ${COMMON_SRC_DIR}/handler/IFrameReceiver.hpp
     ${COMMON_SRC_DIR}/handler/IFrameHandler.hpp

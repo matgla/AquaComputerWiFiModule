@@ -2,6 +2,7 @@
 
 var expect = require("chai").expect;
 var sleep = require("sleep").sleep;
+var net = require("net");
 
 var BinaryManager = require("../framework/binaryManager").BinaryManager;
 
