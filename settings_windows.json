@@ -1,6 +1,8 @@
 {
-    "SerialPort": "COM1",
-    "Loggers": [
+    "loggers": [
         "stdout"
-    ]
+    ],
+    "serial": {
+        "port": "COM1"
+    }
 }

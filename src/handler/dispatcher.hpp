@@ -8,7 +8,6 @@
 
 #include "handler/IDataReceiver.hpp"
 #include "handler/IFrameHandler.hpp"
-#include "handler/IFrameReceiver.hpp"
 #include "logger/logger.hpp"
 
 namespace handler
@@ -16,46 +15,34 @@ namespace handler
 class Dispatcher
 {
 public:
-    using FrameReceiverContainer = std::map<std::string, IFrameReceiver::ReceiverPtr>;
-    using RawDataReceiverContainer = std::map<std::string, IDataReceiver::RawDataReceiverPtr>;
-    using FrameHandlerContainer = std::map<std::string, IFrameHandler::HandlerPtr>;
+    using HandlerContainer = std::map<std::string, IFrameHandler::HandlerPtr>;
+    using ReceiverContainer = std::map<std::string, IDataReceiver::RawDataReceiverPtr>;
 
     using Connection = std::pair<std::string, std::string>;
     using ConnectionContainer = std::vector<Connection>;
 
     Dispatcher();
 
-    void addFrameReceiver(IFrameReceiver::ReceiverPtr receiver, const std::string& name);
-    void removeFrameReceiver(const std::string& name);
-
-    void addRawDataReceiver(IDataReceiver::RawDataReceiverPtr dataReceiver,
-                            const std::string& name);
-    void removeRawDataReceiver(const std::string& name);
-
-    void connectReceivers(const std::string& rawDataReceiverName,
-                          const std::string& frameReceiverName);
-
-    void addHandler(IFrameHandler::HandlerPtr handler, const std::string& name);
+    void addHandler(IFrameHandler::HandlerPtr receiver, const std::string& name);
     void removeHandler(const std::string& name);
 
-    void connectHandler(const std::string& frameReceiverName, const std::string& handlerName);
+    void addReceiver(IDataReceiver::RawDataReceiverPtr dataReceiver, const std::string& name);
+    void removeReceiver(const std::string& name);
 
-    const FrameReceiverContainer& getFrameReceivers() const;
-    const RawDataReceiverContainer& getRawDataReceivers() const;
-    const FrameHandlerContainer& getFrameHandlers() const;
+    void connect(const std::string& receiverName, const std::string& handlerName);
 
-    const ConnectionContainer& getRawAndFrameConnections() const;
-    const ConnectionContainer& getFrameAndHandlerConnections() const;
+    const HandlerContainer& getHandlers() const;
+    const ReceiverContainer& getReceivers() const;
+
+    const ConnectionContainer& getConnections() const;
 
 protected:
     logger::Logger logger_;
 
-    FrameReceiverContainer frameReceivers_;
-    RawDataReceiverContainer rawDataReceivers_;
-    FrameHandlerContainer handlers_;
+    ReceiverContainer receivers_;
+    HandlerContainer handlers_;
 
-    ConnectionContainer rawAndFrameReceiverConnections_;
-    ConnectionContainer frameAndHandlerConnections_;
+    ConnectionContainer connections_;
 };
 
 } // namespace handler

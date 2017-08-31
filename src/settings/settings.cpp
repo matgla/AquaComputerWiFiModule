@@ -20,11 +20,11 @@ Settings::Settings()
 {
     hal::fs::File settingsFile;
     settingsFile.open(SETTINGS_PATH);
-    std::vector<char> jsonData;
-    jsonData.resize(settingsFile.size());
-    settingsFile.read(jsonData.data(), settingsFile.size());
+    jsonData_.resize(settingsFile.size() + 1);
+    settingsFile.read(jsonData_.data(), settingsFile.size());
     settingsFile.close();
-    data_ = buffer_.parseObject(jsonData.data());
+    jsonData_.push_back(0);
+    data_ = buffer_.parseObject(jsonData_.data());
 }
 
 JsonObject& Settings::getDb()

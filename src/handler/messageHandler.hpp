@@ -2,21 +2,26 @@
 
 #include <vector>
 
-#include "handler/IFrameReceiver.hpp"
+#include "handler/IDataHandler.hpp"
+#include "handler/IFrameHandler.hpp"
+#include "handler/handlers.hpp"
 #include "utils/types.hpp"
 
 namespace handler
 {
 
-class MessageReceiver : public IFrameReceiver
+class MessageHandler : public IFrameHandler
 {
 public:
-    MessageReceiver(DataHandler handler = IFrameReceiver::DefaultHandler);
+    MessageHandler();
+    virtual ~MessageHandler() = default;
 
     bool transmissionStarted();
     u64 lengthToBeReceived();
     void onRead(const u8* buffer, std::size_t length, WriterCallback write) override;
-    void setHandler(DataHandler handler) override;
+    void send(const DataBuffer& data);
+
+    virtual void handleData(const DataBuffer& data) = 0;
 
 protected:
     u8 initializeTransmission(u8 data);
@@ -25,8 +30,7 @@ protected:
 
     bool messageLengthReceived_;
     bool transmissionStarted_;
-    DataHandler handler_;
-    std::vector<u8> buffer_;
+    DataBuffer buffer_;
     u64 messageLengthToBeReceived_;
     u64 lengthToBeReceived_;
 };

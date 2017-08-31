@@ -7,8 +7,8 @@ namespace message
 
 enum TransmissionId : u8
 {
-    Start = 0x00,
-    Ack = 0x10,
+    Start = 0x10,
+    Ack = 0x20,
     Nack
 };
 

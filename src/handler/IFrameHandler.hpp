@@ -5,16 +5,21 @@
 
 #include "utils/types.hpp"
 
+#include "handler/IDataHandler.hpp"
+#include "handler/handlers.hpp"
+
 namespace handler
 {
 
 class IFrameHandler
 {
 public:
-    using HandlerPtr = std::shared_ptr<IFrameHandler>;
+    using HandlerPtr = std::unique_ptr<IFrameHandler>;
 
     virtual ~IFrameHandler() = default;
-    virtual void onRead(std::vector<u8> data) = 0;
+    virtual void onRead(const u8* buffer, std::size_t length, WriterCallback write) = 0;
+
+    virtual void send(const DataBuffer& data) = 0;
 };
 
 } // namespace handler

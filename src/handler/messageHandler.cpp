@@ -1,4 +1,4 @@
-#include "handler/messageReceiver.hpp"
+#include "handler/MessageHandler.hpp"
 
 #include <functional>
 
@@ -9,23 +9,23 @@ namespace handler
 
 const u8 LENGTH_SIZE = 8; // bytes
 
-MessageReceiver::MessageReceiver(DataHandler handler)
-    : handler_(handler), transmissionStarted_(false), lengthToBeReceived_(0),
-      messageLengthReceived_(false), messageLengthToBeReceived_(0)
+MessageHandler::MessageHandler()
+    : transmissionStarted_(false), lengthToBeReceived_(0), messageLengthReceived_(false),
+      messageLengthToBeReceived_(0)
 {
 }
 
-bool MessageReceiver::transmissionStarted()
+bool MessageHandler::transmissionStarted()
 {
     return transmissionStarted_;
 }
 
-u64 MessageReceiver::lengthToBeReceived()
+u64 MessageHandler::lengthToBeReceived()
 {
     return messageLengthToBeReceived_;
 }
 
-void MessageReceiver::receiveMessageLength(u8 data)
+void MessageHandler::receiveMessageLength(u8 data)
 {
     messageLengthToBeReceived_ |= static_cast<u64>(data) << 8 * (LENGTH_SIZE - lengthToBeReceived_);
     --lengthToBeReceived_;
@@ -36,9 +36,9 @@ void MessageReceiver::receiveMessageLength(u8 data)
     }
 }
 
-u8 MessageReceiver::initializeTransmission(u8 data)
+u8 MessageHandler::initializeTransmission(u8 data)
 {
-    if (data == message::TransmissionId::Start)
+    if (message::TransmissionId::Start == data)
     {
         transmissionStarted_ = true;
         messageLengthReceived_ = false;
@@ -47,13 +47,16 @@ u8 MessageReceiver::initializeTransmission(u8 data)
 
         return message::TransmissionId::Ack;
     }
-    else
+
+    if (message::TransmissionId::Ack == data) // transmission accepted, send queued message
     {
-        return message::TransmissionId::Nack;
+        // handler_
     }
+
+    return message::TransmissionId::Nack;
 }
 
-void MessageReceiver::onRead(const u8* buffer, std::size_t length, WriterCallback write)
+void MessageHandler::onRead(const u8* buffer, std::size_t length, WriterCallback write)
 {
     for (std::size_t i = 0; i < length; ++i)
     {
@@ -73,22 +76,22 @@ void MessageReceiver::onRead(const u8* buffer, std::size_t length, WriterCallbac
         if (0 == --messageLengthToBeReceived_)
         {
             // Received whole message
-            handler_(buffer_);
+            handleData(buffer_);
             buffer_.clear();
             transmissionStarted_ = false;
         }
     }
 }
 
-void MessageReceiver::reply(const u8 answer, WriterCallback& write) const
+void MessageHandler::reply(const u8 answer, WriterCallback& write) const
 {
     u8 answerMessage[] = {answer};
     write(answerMessage, sizeof(answerMessage));
 }
 
-void MessageReceiver::setHandler(DataHandler handler)
+void MessageHandler::send(const DataBuffer& data)
 {
-    handler_ = handler;
+    // TODO: implement me
 }
 
 } // namespace handler

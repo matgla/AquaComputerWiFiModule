@@ -4,13 +4,15 @@
   "description": "System level tests for aqua computer server.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests --recursive"
+    "test": "node_modules/.bin/mocha tests --recursive"
   },
   "author": "",
   "license": "GPL-3.0",
   "dependencies": {
     "chai": "latest",
     "eslint": "latest",
-    "sleep": "^5.1.1"
+    "serialport": "^5.0.0",
+    "sleep": "^5.1.1",
+    "mocha": "latest"
   }
 }

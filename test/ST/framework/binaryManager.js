@@ -1,21 +1,21 @@
 const child_process = require("child_process")
+const chai = require('chai')
 
 class BinaryManager {
     constructor() {
 
     }
     startBinary() {
-        this.binary = child_process.spawn("../../../build/src/AquaLampServer.exe");
+        this.binary = child_process.spawn("../../bin/src/AquaLampServer.exe");
+        this.binary.on('close', (code) => {
+            if (code) {
+                chai.assert.fail(0, code, "Binary crashed!");
+            }
+        });
     }
 
     stopBinary() {
-        console.log(process.platform);
-        if ("win32" === process.platform) {
-            console.log("my kill");
-            child_process.spawn("taskkill", ["/pid", this.binary.pid, "/f", "/t"]);
-        } else {
-            this.binary.kill();
-        }
+        this.binary.kill();
     }
 }
 

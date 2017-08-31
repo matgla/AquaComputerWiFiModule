@@ -8,235 +8,153 @@
 
 #include "mock/frameHandlerMock.hpp"
 #include "mock/frameReceiverMock.hpp"
+#include "mock/messageHandlerMock.hpp"
 #include "mock/rawDataReceiverMock.hpp"
 
 using namespace testing;
 
 namespace handler
 {
+
 class DispatcherShould : public Test
 {
 public:
     DispatcherShould()
+        : firstHandlerName_("FirstHandler"), secondHandlerName_("SecondHandler"),
+          firstReceiverName_("FirstReceiver"), secondReceiverName_("SecondReceiver"),
+          handlers_(dispatcher_.getHandlers()), receivers_(dispatcher_.getReceivers())
     {
+    }
+
+    void SetUp() override
+    {
+        firstHandler_.reset(new mock::FrameHandlerMock());
+        secondHandler_.reset(new mock::FrameHandlerMock());
+        firstReceiver_.reset(new mock::RawDataReceiverMock());
+        secondReceiver_.reset(new mock::RawDataReceiverMock());
+
+        firstHandlerPtr_ = firstHandler_.get();
+        secondHandlerPtr_ = secondHandler_.get();
+        firstReceiverPtr_ = static_cast<mock::RawDataReceiverMock*>(firstReceiver_.get());
+        secondReceiverPtr_ = static_cast<mock::RawDataReceiverMock*>(secondReceiver_.get());
     }
 
 protected:
     handler::Dispatcher dispatcher_;
+
+    const std::string firstHandlerName_;
+    const std::string secondHandlerName_;
+    const std::string firstReceiverName_;
+    const std::string secondReceiverName_;
+
+    IFrameHandler::HandlerPtr firstHandler_;
+    IFrameHandler::HandlerPtr secondHandler_;
+    IDataReceiver::RawDataReceiverPtr firstReceiver_;
+    IDataReceiver::RawDataReceiverPtr secondReceiver_;
+
+    IFrameHandler* firstHandlerPtr_;
+    IFrameHandler* secondHandlerPtr_;
+    mock::RawDataReceiverMock* firstReceiverPtr_;
+    mock::RawDataReceiverMock* secondReceiverPtr_;
+
+    const Dispatcher::HandlerContainer& handlers_;
+    const Dispatcher::ReceiverContainer& receivers_;
 };
-
-TEST_F(DispatcherShould, AddFrameReceiver)
-{
-    const std::string& frameReceiverName = "FrameReceiver";
-    const std::string& secondFrameReceiverName = "SecondFrameReceiver";
-
-    const auto& receivers = dispatcher_.getFrameReceivers();
-    EXPECT_EQ(0, receivers.size());
-    auto frameReceiver = std::make_shared<mock::FrameReceiverMock>();
-    auto secondFrameReceiver = std::make_shared<mock::FrameReceiverMock>();
-
-    dispatcher_.addFrameReceiver(frameReceiver, frameReceiverName);
-    EXPECT_EQ(1, receivers.count(frameReceiverName));
-    EXPECT_EQ(frameReceiver, receivers.at(frameReceiverName));
-
-    dispatcher_.addFrameReceiver(secondFrameReceiver, secondFrameReceiverName);
-    EXPECT_EQ(1, receivers.count(secondFrameReceiverName));
-    EXPECT_EQ(secondFrameReceiver, receivers.at(secondFrameReceiverName));
-    EXPECT_EQ(2, receivers.size());
-}
-
-TEST_F(DispatcherShould, RemoveFrameReceiver)
-{
-    const std::string& frameReceiverName = "FrameReceiver";
-    const std::string& secondFrameReceiverName = "SecondFrameReceiver";
-
-    const auto& receivers = dispatcher_.getFrameReceivers();
-    auto frameReceiver = std::make_shared<mock::FrameReceiverMock>();
-    auto secondFrameReceiver = std::make_shared<mock::FrameReceiverMock>();
-
-    dispatcher_.addFrameReceiver(frameReceiver, frameReceiverName);
-    EXPECT_EQ(1, receivers.count(frameReceiverName));
-    EXPECT_EQ(frameReceiver, receivers.at(frameReceiverName));
-
-    dispatcher_.addFrameReceiver(secondFrameReceiver, secondFrameReceiverName);
-    EXPECT_EQ(1, receivers.count(secondFrameReceiverName));
-    EXPECT_EQ(secondFrameReceiver, receivers.at(secondFrameReceiverName));
-    EXPECT_EQ(2, receivers.size());
-
-    dispatcher_.removeFrameReceiver("NotExist");
-    EXPECT_EQ(2, receivers.size());
-
-    dispatcher_.removeFrameReceiver(frameReceiverName);
-    EXPECT_EQ(0, receivers.count(frameReceiverName));
-    dispatcher_.removeFrameReceiver(secondFrameReceiverName);
-    EXPECT_EQ(0, receivers.count(secondFrameReceiverName));
-}
-
-TEST_F(DispatcherShould, AddRawDataReceiver)
-{
-    const std::string& firstDataReceiverName = "FirstReceiver";
-    const std::string& secondDataReceiverName = "SecondReceiver";
-    auto firstReceiver = std::make_shared<mock::RawDataReceiverMock>();
-    auto secondReceiver = std::make_shared<mock::RawDataReceiverMock>();
-
-    const auto& receivers = dispatcher_.getRawDataReceivers();
-
-    dispatcher_.addRawDataReceiver(firstReceiver, firstDataReceiverName);
-    EXPECT_EQ(1, receivers.count(firstDataReceiverName));
-    EXPECT_EQ(firstReceiver, receivers.at(firstDataReceiverName));
-    dispatcher_.addRawDataReceiver(secondReceiver, secondDataReceiverName);
-    EXPECT_EQ(1, receivers.count(secondDataReceiverName));
-    EXPECT_EQ(secondReceiver, receivers.at(secondDataReceiverName));
-}
-
-TEST_F(DispatcherShould, RemoveRawDataReceiver)
-{
-    const std::string& firstDataReceiverName = "FirstReceiver";
-    const std::string& secondDataReceiverName = "SecondReceiver";
-    auto firstReceiver = std::make_shared<mock::RawDataReceiverMock>();
-    auto secondReceiver = std::make_shared<mock::RawDataReceiverMock>();
-
-    const auto& receivers = dispatcher_.getRawDataReceivers();
-
-    dispatcher_.addRawDataReceiver(firstReceiver, firstDataReceiverName);
-    dispatcher_.addRawDataReceiver(secondReceiver, secondDataReceiverName);
-    EXPECT_EQ(1, receivers.count(firstDataReceiverName));
-    EXPECT_EQ(1, receivers.count(secondDataReceiverName));
-
-    EXPECT_EQ(2, receivers.size());
-    dispatcher_.removeRawDataReceiver("notexist");
-    EXPECT_EQ(2, receivers.size());
-
-    dispatcher_.removeRawDataReceiver(firstDataReceiverName);
-    EXPECT_EQ(0, receivers.count(firstDataReceiverName));
-    dispatcher_.removeRawDataReceiver(secondDataReceiverName);
-    EXPECT_EQ(0, receivers.count(secondDataReceiverName));
-}
 
 TEST_F(DispatcherShould, AddHandler)
 {
-    const std::string& firstHandlerName = "FirstHandler";
-    const std::string& secondHandlerName = "SecondHandler";
-    auto firstHandler = std::make_shared<mock::FrameHandlerMock>();
-    auto secondHandler = std::make_shared<mock::FrameHandlerMock>();
+    EXPECT_EQ(0, handlers_.size());
 
-    const auto& handlers = dispatcher_.getFrameHandlers();
+    dispatcher_.addHandler(std::move(firstHandler_), firstHandlerName_);
+    EXPECT_EQ(1, handlers_.count(firstHandlerName_));
+    EXPECT_EQ(firstHandlerPtr_, handlers_.at(firstHandlerName_).get());
 
-    dispatcher_.addHandler(firstHandler, firstHandlerName);
-    EXPECT_EQ(1, handlers.count(firstHandlerName));
-    EXPECT_EQ(firstHandler, handlers.at(firstHandlerName));
-    dispatcher_.addHandler(secondHandler, secondHandlerName);
-    EXPECT_EQ(1, handlers.count(secondHandlerName));
-    EXPECT_EQ(secondHandler, handlers.at(secondHandlerName));
+    dispatcher_.addHandler(std::move(secondHandler_), secondHandlerName_);
+    EXPECT_EQ(1, handlers_.count(secondHandlerName_));
+    EXPECT_EQ(secondHandlerPtr_, handlers_.at(secondHandlerName_).get());
+    EXPECT_EQ(2, handlers_.size());
 }
 
 TEST_F(DispatcherShould, RemoveHandler)
 {
-    const std::string& firstHandlerName = "FirstHandler";
-    const std::string& secondHandlerName = "SecondHandler";
-    auto firstHandler = std::make_shared<mock::FrameHandlerMock>();
-    auto secondHandler = std::make_shared<mock::FrameHandlerMock>();
+    dispatcher_.addHandler(std::move(firstHandler_), firstHandlerName_);
+    EXPECT_EQ(1, handlers_.count(firstHandlerName_));
+    EXPECT_EQ(firstHandlerPtr_, handlers_.at(firstHandlerName_).get());
 
-    const auto& handlers = dispatcher_.getFrameHandlers();
+    dispatcher_.addHandler(std::move(secondHandler_), secondHandlerName_);
+    EXPECT_EQ(1, handlers_.count(secondHandlerName_));
+    EXPECT_EQ(secondHandlerPtr_, handlers_.at(secondHandlerName_).get());
+    EXPECT_EQ(2, handlers_.size());
 
-    dispatcher_.addHandler(firstHandler, firstHandlerName);
-    dispatcher_.addHandler(secondHandler, secondHandlerName);
-    EXPECT_EQ(1, handlers.count(firstHandlerName));
-    EXPECT_EQ(1, handlers.count(secondHandlerName));
+    dispatcher_.removeHandler("NotExist");
+    EXPECT_EQ(2, handlers_.size());
 
-    EXPECT_EQ(2, handlers.size());
-    dispatcher_.removeHandler("notexist");
-    EXPECT_EQ(2, handlers.size());
-
-    dispatcher_.removeHandler(firstHandlerName);
-    EXPECT_EQ(0, handlers.count(firstHandlerName));
-    dispatcher_.removeHandler(secondHandlerName);
-    EXPECT_EQ(0, handlers.count(secondHandlerName));
+    dispatcher_.removeHandler(firstHandlerName_);
+    EXPECT_EQ(0, handlers_.count(firstHandlerName_));
+    dispatcher_.removeHandler(secondHandlerName_);
+    EXPECT_EQ(0, handlers_.count(secondHandlerName_));
 }
 
-TEST_F(DispatcherShould, ManageConnectionBetweenRawAndFrameReceiver)
+TEST_F(DispatcherShould, AddReceiver)
 {
-    const std::string& firstDataReceiverName = "FirstReceiver";
-    const std::string& secondDataReceiverName = "SecondReceiver";
-    const std::string& firstFrameReceiverName = "FrameReceiver";
-    const std::string& secondFrameReceiverName = "SecondFrameReceiver";
+    dispatcher_.addReceiver(firstReceiver_, firstReceiverName_);
+    EXPECT_EQ(1, receivers_.count(firstReceiverName_));
+    EXPECT_EQ(firstReceiverPtr_, receivers_.at(firstReceiverName_).get());
+    dispatcher_.addReceiver(secondReceiver_, secondReceiverName_);
+    EXPECT_EQ(1, receivers_.count(secondReceiverName_));
+    EXPECT_EQ(secondReceiverPtr_, receivers_.at(secondReceiverName_).get());
+}
 
-    auto firstDataReceiver = std::make_shared<mock::RawDataReceiverMock>();
-    auto secondDataReceiver = std::make_shared<mock::RawDataReceiverMock>();
-    auto firstFrameReceiver = std::make_shared<mock::FrameReceiverMock>();
-    auto secondFrameReceiver = std::make_shared<mock::FrameReceiverMock>();
+TEST_F(DispatcherShould, RemoveReceiver)
+{
+    dispatcher_.addReceiver(firstReceiver_, firstReceiverName_);
+    dispatcher_.addReceiver(secondReceiver_, secondReceiverName_);
+    EXPECT_EQ(1, receivers_.count(firstReceiverName_));
+    EXPECT_EQ(1, receivers_.count(secondReceiverName_));
 
-    dispatcher_.addFrameReceiver(firstFrameReceiver, firstFrameReceiverName);
-    dispatcher_.addFrameReceiver(secondFrameReceiver, secondFrameReceiverName);
-    dispatcher_.addRawDataReceiver(firstDataReceiver, firstDataReceiverName);
-    dispatcher_.addRawDataReceiver(secondDataReceiver, secondDataReceiverName);
+    EXPECT_EQ(2, receivers_.size());
+    dispatcher_.removeReceiver("notexist");
+    EXPECT_EQ(2, receivers_.size());
 
-    const auto& connections = dispatcher_.getRawAndFrameConnections();
+    dispatcher_.removeReceiver(firstReceiverName_);
+    EXPECT_EQ(0, receivers_.count(firstReceiverName_));
+    dispatcher_.removeReceiver(secondReceiverName_);
+    EXPECT_EQ(0, receivers_.count(secondReceiverName_));
+}
+
+TEST_F(DispatcherShould, ManageConnection)
+{
+    dispatcher_.addHandler(std::move(firstHandler_), firstHandlerName_);
+    dispatcher_.addHandler(std::move(secondHandler_), secondHandlerName_);
+    dispatcher_.addReceiver(firstReceiver_, firstReceiverName_);
+    dispatcher_.addReceiver(secondReceiver_, secondReceiverName_);
+
+    const auto& connections = dispatcher_.getConnections();
 
     {
-        EXPECT_CALL(*firstDataReceiver, setHandler(_)).Times(1);
-        dispatcher_.connectReceivers(firstDataReceiverName, firstFrameReceiverName);
+        EXPECT_CALL(*firstReceiverPtr_, setHandler(_)).Times(1);
+        dispatcher_.connect(firstReceiverName_, firstHandlerName_);
     }
 
     EXPECT_EQ(1, connections.size());
-    EXPECT_EQ(std::make_pair(firstDataReceiverName, firstFrameReceiverName), connections.front());
+    EXPECT_EQ(std::make_pair(firstReceiverName_, firstHandlerName_), connections.front());
 
-    EXPECT_CALL(*secondDataReceiver, setHandler(_)).Times(1);
-    dispatcher_.connectReceivers(secondDataReceiverName, secondFrameReceiverName);
+    EXPECT_CALL(*secondReceiverPtr_, setHandler(_)).Times(1);
+    dispatcher_.connect(secondReceiverName_, secondHandlerName_);
 
     EXPECT_EQ(2, connections.size());
-    EXPECT_EQ(std::make_pair(secondDataReceiverName, secondFrameReceiverName), connections.back());
+    EXPECT_EQ(std::make_pair(secondReceiverName_, secondHandlerName_), connections.back());
 
-    EXPECT_CALL(*firstDataReceiver, setHandler(_)).Times(1);
-    dispatcher_.removeFrameReceiver(firstFrameReceiverName);
+    EXPECT_CALL(*firstReceiverPtr_, setHandler(_)).Times(1);
+    dispatcher_.removeHandler(firstHandlerName_);
 
     EXPECT_EQ(1, connections.size());
-    EXPECT_EQ(std::make_pair(secondDataReceiverName, secondFrameReceiverName), connections.front());
+    EXPECT_EQ(std::make_pair(secondReceiverName_, secondHandlerName_), connections.front());
 
-    EXPECT_CALL(*secondDataReceiver, setHandler(_)).Times(1);
-    dispatcher_.removeFrameReceiver(secondFrameReceiverName);
+    EXPECT_CALL(*secondReceiverPtr_, setHandler(_)).Times(1);
+    dispatcher_.removeHandler(secondHandlerName_);
 
     EXPECT_EQ(0, connections.size());
-}
-
-TEST_F(DispatcherShould, ManageConnectionBetweenFrameReceiverAndHandler)
-{
-    const std::string& firstHandlerName = "FirstHandler";
-    const std::string& secondHandlerName = "SecondHandler";
-    const std::string& firstFrameReceiverName = "FrameReceiver";
-    const std::string& secondFrameReceiverName = "SecondFrameReceiver";
-
-    auto firstHandler = std::make_shared<mock::FrameHandlerMock>();
-    auto secondHandler = std::make_shared<mock::FrameHandlerMock>();
-    auto firstFrameReceiver = std::make_shared<mock::FrameReceiverMock>();
-    auto secondFrameReceiver = std::make_shared<mock::FrameReceiverMock>();
-
-    dispatcher_.addFrameReceiver(firstFrameReceiver, firstFrameReceiverName);
-    dispatcher_.addFrameReceiver(secondFrameReceiver, secondFrameReceiverName);
-    dispatcher_.addHandler(firstHandler, firstHandlerName);
-    dispatcher_.addHandler(secondHandler, secondHandlerName);
-
-    const auto& handlers = dispatcher_.getFrameAndHandlerConnections();
-
-    EXPECT_CALL(*firstFrameReceiver, setHandler(_)).Times(1);
-    dispatcher_.connectHandler(firstFrameReceiverName, firstHandlerName);
-
-    EXPECT_EQ(1, handlers.size());
-    EXPECT_EQ(std::make_pair(firstFrameReceiverName, firstHandlerName), handlers.front());
-
-    EXPECT_CALL(*secondFrameReceiver, setHandler(_)).Times(1);
-    dispatcher_.connectHandler(secondFrameReceiverName, secondHandlerName);
-    EXPECT_EQ(2, handlers.size());
-    EXPECT_EQ(std::make_pair(secondFrameReceiverName, secondHandlerName), handlers.back());
-
-    EXPECT_CALL(*firstFrameReceiver, setHandler(_)).Times(1);
-    dispatcher_.removeHandler(firstHandlerName);
-    EXPECT_EQ(1, handlers.size());
-    EXPECT_EQ(std::make_pair(secondFrameReceiverName, secondHandlerName), handlers.front());
-
-    EXPECT_CALL(*secondFrameReceiver, setHandler(_)).Times(1);
-    dispatcher_.removeHandler(secondHandlerName);
-    EXPECT_EQ(0, handlers.size());
 }
 
 } // namespace handler

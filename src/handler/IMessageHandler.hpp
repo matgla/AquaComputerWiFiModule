@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ArduinoJson.h>
+class JsonObject;
 
 namespace handler
 {
@@ -14,7 +14,7 @@ public:
 
     virtual ~IMessageHandler() = default;
 
-    virtual void onData(JsonObject& data) = 0;
+    virtual void onData(const JsonObject& data) = 0;
 };
 
 } // namespace handler

@@ -42,6 +42,8 @@ std::shared_ptr<hal::net::socket::TcpServer> messageServer(new hal::net::socket:
 handler::Dispatcher dispatcher;
 auto receiver = std::make_shared<handler::MessageReceiver>();
 auto jsonHandler = std::make_shared<handler::JsonHandler>();
+auto serialPort = std::make_shared<hal::serial::SerialPort>(
+    settings::Settings::db()["serial"]["port"].as<std::string>(), 9600);
 
 const std::string& receiverName = "MessageFrameReceiver";
 const std::string& handlerName = "JsonHandler";
@@ -50,18 +52,19 @@ const std::string& dataReceiverName = "TcpReceiver";
 
 void setup()
 {
+    serialPort->write("Hejo :)\n");
     logger::Logger logger("Main");
-    // std::cout << settings::Settings::db()["Loggers"] << std::endl;
-    for (auto& loggerType : settings::Settings::db()["Loggers"].as<JsonArray>())
+    for (auto& loggerType : settings::Settings::db()["loggers"].as<JsonArray>())
     {
         if ("stdout" == loggerType)
         {
             logger::LoggerConf::get().add(logger::StdOutLogger{});
         }
     }
+
     logger.info() << "System booting up";
     dispatcher.addRawDataReceiver(messageServer, dataReceiverName);
-    dispatcher.addFrameReceiver(receiver, receiverName);
+    dispatcher.addHandler(receiver, receiverName);
     dispatcher.addHandler(jsonHandler, handlerName);
 
     dispatcher.connectReceivers(dataReceiverName, receiverName);

@@ -40,6 +40,8 @@ private:
 
     DynamicJsonBuffer buffer_;
     JsonVariant data_;
+
+    std::vector<char> jsonData_;
 };
 
 } // namespace settings
