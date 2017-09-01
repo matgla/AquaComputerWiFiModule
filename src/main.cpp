@@ -40,10 +40,10 @@ namespace
 // hal::serial::SerialPort serial("");
 std::shared_ptr<hal::net::socket::TcpServer> messageServer(new hal::net::socket::TcpServer(1010));
 handler::Dispatcher dispatcher;
-auto jsonHandler = std::make_unique<handler::JsonHandler>();
+std::unique_ptr<handler::JsonHandler> jsonHandler(new handler::JsonHandler());
 
 auto serialPort = std::make_shared<hal::serial::SerialPort>(
-    settings::Settings::db()["serial"]["port"].as<std::string>(), 9600);
+    settings::Settings::db()["serial"]["port"].as<char*>(), 9600);
 
 const std::string& handlerName = "SerialHandler";
 }

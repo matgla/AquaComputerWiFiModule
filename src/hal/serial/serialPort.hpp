@@ -24,6 +24,7 @@ public:
     void setHandler(handler::ReaderCallback readerCallback) override;
 
     std::size_t isDataToRecive();
+    void process();
     // void read(u8* buf, std::size_t length);
     // u8 readByte();
 

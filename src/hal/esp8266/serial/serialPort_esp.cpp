@@ -38,29 +38,34 @@ std::size_t SerialPort::isDataToRecive()
     return Serial.available();
 }
 
-std::size_t SerialPort::write(const char* data)
+void SerialPort::write(const std::string& data)
 {
-    return Serial.write(data);
+    Serial.write(data.c_str());
 }
 
-std::size_t SerialPort::write(const u8* buf, std::size_t length)
+void SerialPort::write(const u8* buf, std::size_t length)
 {
-    return Serial.write(buf, length);
+    Serial.write(buf, length);
 }
 
-std::size_t SerialPort::write(u8 byte)
+void SerialPort::write(u8 byte)
 {
-    return Serial.write(byte);
+    Serial.write(byte);
 }
 
-std::size_t SerialPort::read(u8* buf, std::size_t length)
+void SerialPort::setHandler(handler::ReaderCallback readerCallback)
 {
-    return Serial.readBytes(buf, length);
+    readerCallback_ = readerCallback;
 }
 
-u8 SerialPort::readByte()
+void SerialPort::process()
 {
-    return Serial.read();
+    DataBuffer buffer;
+    buffer.resize(Serial.available());
+
+    Serial.readBytes(buffer.data(), buffer.size());
+    readerCallback_(buffer.data(), buffer.size(),
+                    [this](const u8* buf, std::size_t len) { write(buf, len); });
 }
 
 } // namespace serial

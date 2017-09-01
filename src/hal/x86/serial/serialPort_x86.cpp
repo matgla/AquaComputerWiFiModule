@@ -51,7 +51,8 @@ SerialPort::SerialWrapper::SerialWrapper(const std::string& port, int baudrate)
             {
                 ioService_.run();
             }
-        }}.detach();
+        }}
+            .detach();
         loop();
     }
     catch (boost::system::system_error& e)
@@ -116,6 +117,10 @@ void SerialPort::write(const u8* buf, std::size_t length)
 void SerialPort::write(u8 byte)
 {
     serialWrapper_->serialPort_.write_some(boost::asio::buffer(std::vector<u8>{byte}));
+}
+
+void SerialPort::process()
+{
 }
 
 // void SerialPort::read(u8* buf, std::size_t length)
