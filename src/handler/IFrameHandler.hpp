@@ -5,7 +5,6 @@
 
 #include "utils/types.hpp"
 
-#include "handler/IDataHandler.hpp"
 #include "handler/handlers.hpp"
 
 namespace handler

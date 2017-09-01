@@ -50,7 +50,6 @@ const std::string& handlerName = "SerialHandler";
 
 void setup()
 {
-    serialPort->write("Hejo :)\n");
     logger::Logger logger("Main");
     for (auto& loggerType : settings::Settings::db()["loggers"].as<JsonArray>())
     {
@@ -70,6 +69,6 @@ void setup()
 
 void loop()
 {
-    // serial.write("a\n");
     hal::time::sleep(1);
+    serialPort->process();
 }

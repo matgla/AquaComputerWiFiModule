@@ -7,7 +7,6 @@
 #include <gtest/gtest.h>
 
 #include "mock/frameHandlerMock.hpp"
-#include "mock/frameReceiverMock.hpp"
 #include "mock/messageHandlerMock.hpp"
 #include "mock/rawDataReceiverMock.hpp"
 

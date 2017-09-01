@@ -4,7 +4,6 @@
 #include <queue>
 #include <vector>
 
-#include "handler/IDataHandler.hpp"
 #include "handler/IDataReceiver.hpp"
 #include "handler/IFrameHandler.hpp"
 #include "handler/handlers.hpp"
