@@ -18,8 +18,10 @@ class JsonHandler : public MessageHandler
 {
 public:
     JsonHandler();
-    void onRead(DataBuffer data);
+    void handleData(const DataBuffer& data) override;
     void send(const JsonObject& message);
+
+    void addMessageHandler(const std::string& name, IHandler::HandlerPtr handler);
 
 protected:
     logger::Logger logger_;

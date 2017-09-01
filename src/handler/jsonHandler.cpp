@@ -11,7 +11,7 @@ JsonHandler::JsonHandler() : logger_("JsonHandler")
 {
 }
 
-void JsonHandler::onRead(std::vector<u8> data)
+void JsonHandler::handleData(const DataBuffer& data)
 {
     DynamicJsonBuffer buffer;
     JsonObject& obj = buffer.parseObject(data.data());
@@ -30,19 +30,18 @@ void JsonHandler::onRead(std::vector<u8> data)
         return;
     }
 
-    // handlers_[key]->onData(obj);
+    handlers_[key]->onData(obj);
 }
 
-// void JsonHandler::addMessageHandler(const std::string& messageName,
-//                                     IMessageHandler::MessageHandlerPtr handler)
-// {
-//     if (handlers_.count(messageName) != 0)
-//     {
-//         logger_.warn() << "Handler for message " << messageName
-//                        << " exists and will be replaced with new one";
-//     }
-//     handlers_[messageName] = std::move(handler);
-// }
+void JsonHandler::addMessageHandler(const std::string& messageName, IHandler::HandlerPtr handler)
+{
+    if (handlers_.count(messageName) != 0)
+    {
+        logger_.warn() << "Handler for message " << messageName
+                       << " exists and will be replaced with new one";
+    }
+    handlers_[messageName] = std::move(handler);
+}
 
 
 } // namespace handler

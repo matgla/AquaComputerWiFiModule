@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <ArduinoJson.h>
+
 namespace handler
 {
 
@@ -11,6 +13,8 @@ public:
     using HandlerPtr = std::unique_ptr<IHandler>;
 
     virtual ~IHandler() = default;
+
+    virtual void onData(const JsonObject& data) = 0;
 };
 
 } // namespace handler
