@@ -29,7 +29,7 @@ int main()
 #include "hal/time/sleep.hpp"
 #include "handler/dispatcher.hpp"
 #include "handler/jsonHandler.hpp"
-#include "handler/messageReceiver.hpp"
+#include "handler/messageHandler.hpp"
 #include "logger/logger.hpp"
 #include "logger/loggerConf.hpp"
 #include "logger/stdOutLogger.hpp"
@@ -40,14 +40,12 @@ namespace
 // hal::serial::SerialPort serial("");
 std::shared_ptr<hal::net::socket::TcpServer> messageServer(new hal::net::socket::TcpServer(1010));
 handler::Dispatcher dispatcher;
-auto receiver = std::make_shared<handler::MessageReceiver>();
-auto jsonHandler = std::make_shared<handler::JsonHandler>();
+auto jsonHandler = std::make_unique<handler::JsonHandler>();
+
 auto serialPort = std::make_shared<hal::serial::SerialPort>(
     settings::Settings::db()["serial"]["port"].as<std::string>(), 9600);
 
-const std::string& receiverName = "MessageFrameReceiver";
-const std::string& handlerName = "JsonHandler";
-const std::string& dataReceiverName = "TcpReceiver";
+const std::string& handlerName = "SerialHandler";
 }
 
 void setup()
@@ -63,12 +61,10 @@ void setup()
     }
 
     logger.info() << "System booting up";
-    dispatcher.addRawDataReceiver(messageServer, dataReceiverName);
-    dispatcher.addHandler(receiver, receiverName);
-    dispatcher.addHandler(jsonHandler, handlerName);
+    jsonHandler->setConnection(serialPort);
 
-    dispatcher.connectReceivers(dataReceiverName, receiverName);
-    dispatcher.connectHandler(receiverName, handlerName);
+    dispatcher.addHandler(std::move(jsonHandler), handlerName);
+
     logger.info() << "Handlers setup finished";
 }
 

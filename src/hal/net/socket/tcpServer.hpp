@@ -23,6 +23,16 @@ public:
 
     void setHandler(handler::ReaderCallback reader) override;
 
+    void write(const std::string& data) override
+    {
+    }
+    void write(u8 byte) override
+    {
+    }
+    void write(const u8* data, std::size_t len) override
+    {
+    }
+
 private:
     class TcpServerImpl;
     std::unique_ptr<TcpServerImpl> tcpServerImpl_;

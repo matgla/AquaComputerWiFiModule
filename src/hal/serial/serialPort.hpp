@@ -3,6 +3,8 @@
 #include <memory>
 #include <string>
 
+#include "handler/IDataReceiver.hpp"
+#include "handler/handlers.hpp"
 #include "utils/types.hpp"
 
 namespace hal
@@ -10,22 +12,26 @@ namespace hal
 namespace serial
 {
 
-class SerialPort
+class SerialPort : public handler::IDataReceiver
 {
 public:
     SerialPort(const std::string& port, int baudRate = 115200);
     ~SerialPort();
-    std::size_t write(const char* data);
-    std::size_t write(const u8* buf, std::size_t length);
-    std::size_t write(u8 byte);
+    void write(const std::string& data) override;
+    void write(const u8* buf, std::size_t length) override;
+    void write(u8 byte) override;
+
+    void setHandler(handler::ReaderCallback readerCallback) override;
 
     std::size_t isDataToRecive();
-    std::size_t read(u8* buf, std::size_t length);
-    u8 readByte();
+    // void read(u8* buf, std::size_t length);
+    // u8 readByte();
 
 protected:
     class SerialWrapper;
     std::unique_ptr<SerialWrapper> serialWrapper_;
+
+    handler::ReaderCallback readerCallback_;
 };
 
 } // namespace serial

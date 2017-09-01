@@ -32,23 +32,26 @@ public:
     int baudrate_;
     u8 rawBuffer_[1024];
     container::Buffer<2048> buffer_;
+    handler::ReaderCallback readerCallback_;
 
 private:
     void loop();
-    void readCallback(const boost::system::error_code& error,
-                      std::size_t bytes_transferred);
+    void readCallback(const boost::system::error_code& error, std::size_t bytes_transferred);
 };
 
 SerialPort::SerialWrapper::SerialWrapper(const std::string& port, int baudrate)
-    : serialPort_(ioService_),
-      port_(port),
-      baudrate_(baudrate)
+    : serialPort_(ioService_), port_(port), baudrate_(baudrate)
 {
     try
     {
         serialPort_.open(port);
         serialPort_.set_option(asio::serial_port_base::baud_rate(baudrate_));
-        std::thread{[this]() {while(true) {ioService_.run();} }}.detach();
+        std::thread{[this]() {
+            while (true)
+            {
+                ioService_.run();
+            }
+        }}.detach();
         loop();
     }
     catch (boost::system::system_error& e)
@@ -64,8 +67,9 @@ SerialPort::SerialWrapper::~SerialWrapper()
 
 void SerialPort::SerialWrapper::loop()
 {
-    serialPort_.async_read_some(boost::asio::buffer(rawBuffer_),
-                                boost::bind(&SerialPort::SerialWrapper::readCallback, this, _1, _2));
+    serialPort_.async_read_some(
+        boost::asio::buffer(rawBuffer_),
+        boost::bind(&SerialPort::SerialWrapper::readCallback, this, _1, _2));
 }
 
 void SerialPort::SerialWrapper::readCallback(const boost::system::error_code& error,
@@ -75,7 +79,9 @@ void SerialPort::SerialWrapper::readCallback(const boost::system::error_code& er
     {
         return;
     }
-    buffer_.write(rawBuffer_, bytes_transferred);
+    readerCallback_(rawBuffer_, bytes_transferred, [this](const u8* buffer, std::size_t len) {
+        serialPort_.write_some(boost::asio::buffer(buffer, len));
+    });
     loop();
 }
 
@@ -92,30 +98,37 @@ std::size_t SerialPort::isDataToRecive()
     return serialWrapper_->buffer_.size();
 }
 
-std::size_t SerialPort::write(const char* data)
+void SerialPort::setHandler(handler::ReaderCallback readerCallback)
 {
-    return serialWrapper_->serialPort_.write_some(boost::asio::buffer(data, strlen(data)));
+    serialWrapper_->readerCallback_ = readerCallback;
 }
 
-std::size_t SerialPort::write(const u8* buf, std::size_t length)
+void SerialPort::write(const std::string& data)
 {
-    return serialWrapper_->serialPort_.write_some(boost::asio::buffer(buf, length));
+    serialWrapper_->serialPort_.write_some(boost::asio::buffer(data));
 }
 
-std::size_t SerialPort::write(u8 byte)
+void SerialPort::write(const u8* buf, std::size_t length)
 {
-    return serialWrapper_->serialPort_.write_some(boost::asio::buffer(std::vector<u8>{byte}));
+    serialWrapper_->serialPort_.write_some(boost::asio::buffer(buf, length));
 }
 
-std::size_t SerialPort::read(u8* buf, std::size_t length)
+void SerialPort::write(u8 byte)
 {
-    return serialWrapper_->buffer_.getData(buf, length);
+    serialWrapper_->serialPort_.write_some(boost::asio::buffer(std::vector<u8>{byte}));
 }
 
-u8 SerialPort::readByte()
-{
-    return serialWrapper_->buffer_.getByte();
-}
+// void SerialPort::read(u8* buf, std::size_t length)
+// {
+//     // DataBuffer buffer;
+//     // buffer.resize(length);
+//     // serialWrapper_->buffer_.getData(buf, length);
+// }
+
+// u8 SerialPort::readByte()
+// {
+//     // return serialWrapper_->buffer_.getByte();
+// }
 
 } // namespace serial
 } // namespace hal
