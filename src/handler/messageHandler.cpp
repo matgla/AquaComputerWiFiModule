@@ -3,6 +3,7 @@
 #include <functional>
 
 #include "message/messages.hpp"
+#include "serializer/serializer.hpp"
 
 namespace handler
 {
@@ -11,7 +12,7 @@ const u8 LENGTH_SIZE = 8; // bytes
 
 MessageHandler::MessageHandler()
     : transmissionStarted_(false), lengthToBeReceived_(0), messageLengthReceived_(false),
-      messageLengthToBeReceived_(0)
+      messageLengthToBeReceived_(0), logger_("MessageHandler")
 {
 }
 
@@ -36,7 +37,7 @@ void MessageHandler::receiveMessageLength(u8 data)
     }
 }
 
-u8 MessageHandler::initializeTransmission(u8 data)
+void MessageHandler::initializeTransmission(u8 data, WriterCallback& write)
 {
     if (message::TransmissionId::Start == data)
     {
@@ -45,15 +46,24 @@ u8 MessageHandler::initializeTransmission(u8 data)
         lengthToBeReceived_ = LENGTH_SIZE;
         messageLengthToBeReceived_ = 0;
 
-        return message::TransmissionId::Ack;
+        reply(message::TransmissionId::Ack, write);
+        return;
     }
 
     if (message::TransmissionId::Ack == data) // transmission accepted, send queued message
     {
-        // handler_
+        DataBuffer buffer = transmissionBuffers_.front();
+        transmissionBuffers_.pop();
+
+        const u8 messageLengthSize = 8;
+        u8 length[messageLengthSize];
+        serializer::serialize(length, buffer.size());
+        write(length, messageLengthSize);
+        write(buffer.data(), buffer.size());
+        return;
     }
 
-    return message::TransmissionId::Nack;
+    reply(message::TransmissionId::Nack, write);
 }
 
 void MessageHandler::onRead(const u8* buffer, std::size_t length, WriterCallback write)
@@ -62,7 +72,7 @@ void MessageHandler::onRead(const u8* buffer, std::size_t length, WriterCallback
     {
         if (!transmissionStarted_)
         {
-            reply(initializeTransmission(buffer[i]), write);
+            initializeTransmission(buffer[i], write);
             continue;
         }
 
@@ -89,8 +99,27 @@ void MessageHandler::reply(const u8 answer, WriterCallback& write) const
     write(answerMessage, sizeof(answerMessage));
 }
 
+void MessageHandler::setConnection(IDataReceiver::RawDataReceiverPtr dataReceiver)
+{
+    connection_ = dataReceiver;
+    logger_.info() << "Connection set";
+}
+
 void MessageHandler::send(const DataBuffer& data)
 {
+    if (!connection_)
+    {
+        logger_.error() << "Trying to send message while connection aren't set";
+    }
+
+    if (transmissionStarted_)
+    {
+        return;
+    }
+
+    connection_->write(message::TransmissionId::Start);
+    transmissionBuffers_.push(data);
+    logger_.info() << "Pushed to buffer: " << data.size();
     // TODO: implement me
 }
 

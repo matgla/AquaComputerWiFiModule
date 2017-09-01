@@ -16,33 +16,29 @@ class Dispatcher
 {
 public:
     using HandlerContainer = std::map<std::string, IFrameHandler::HandlerPtr>;
-    using ReceiverContainer = std::map<std::string, IDataReceiver::RawDataReceiverPtr>;
-
-    using Connection = std::pair<std::string, std::string>;
-    using ConnectionContainer = std::vector<Connection>;
 
     Dispatcher();
 
     void addHandler(IFrameHandler::HandlerPtr receiver, const std::string& name);
     void removeHandler(const std::string& name);
 
-    void addReceiver(IDataReceiver::RawDataReceiverPtr dataReceiver, const std::string& name);
-    void removeReceiver(const std::string& name);
+    // void addReceiver(IDataReceiver::RawDataReceiverPtr dataReceiver, const std::string& name);
+    // void removeReceiver(const std::string& name);
 
-    void connect(const std::string& receiverName, const std::string& handlerName);
+    // void connect(const std::string& receiverName, const std::string& handlerName);
 
     const HandlerContainer& getHandlers() const;
-    const ReceiverContainer& getReceivers() const;
+    // const ReceiverContainer& getReceivers() const;
 
-    const ConnectionContainer& getConnections() const;
+    // const ConnectionContainer& getConnections() const;
 
 protected:
     logger::Logger logger_;
 
-    ReceiverContainer receivers_;
+    // ReceiverContainer receivers_;
     HandlerContainer handlers_;
 
-    ConnectionContainer connections_;
+    // ConnectionContainer connections_;
 };
 
 } // namespace handler

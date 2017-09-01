@@ -1,10 +1,14 @@
 #pragma once
 
+#include <map>
+#include <queue>
 #include <vector>
 
 #include "handler/IDataHandler.hpp"
+#include "handler/IDataReceiver.hpp"
 #include "handler/IFrameHandler.hpp"
 #include "handler/handlers.hpp"
+#include "logger/logger.hpp"
 #include "utils/types.hpp"
 
 namespace handler
@@ -20,19 +24,26 @@ public:
     u64 lengthToBeReceived();
     void onRead(const u8* buffer, std::size_t length, WriterCallback write) override;
     void send(const DataBuffer& data);
+    void setConnection(IDataReceiver::RawDataReceiverPtr dataReceiver);
 
     virtual void handleData(const DataBuffer& data) = 0;
 
 protected:
-    u8 initializeTransmission(u8 data);
+    void initializeTransmission(u8 data, WriterCallback& write);
     void receiveMessageLength(u8 data);
     void reply(const u8 answer, WriterCallback& write) const;
 
     bool messageLengthReceived_;
     bool transmissionStarted_;
     DataBuffer buffer_;
+
     u64 messageLengthToBeReceived_;
     u64 lengthToBeReceived_;
+
+    std::queue<DataBuffer> transmissionBuffers_;
+    IDataReceiver::RawDataReceiverPtr connection_;
+
+    logger::Logger logger_;
 };
 
 } // namespace handler

@@ -20,4 +20,16 @@ void serialize(u8* buffer, const T& data)
     }
 }
 
+template <typename T>
+void deserialize(const u8* buffer, T& data)
+{
+    static_assert(std::is_arithmetic<T>::value, "Type provided for serialize isn't arithmetic");
+    u8* byte = reinterpret_cast<u8*>(&data);
+
+    for (std::size_t i = 0; i < sizeof(T); ++i)
+    {
+        byte = static_cast<u8>(data << i * BITS_IN_BYTE);
+    }
+}
+
 } // namespace serializer
