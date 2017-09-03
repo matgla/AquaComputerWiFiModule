@@ -17,12 +17,13 @@ class MessageHandler : public IFrameHandler
 {
 public:
     MessageHandler();
-    virtual ~MessageHandler() = default;
+    virtual ~MessageHandler();
 
     bool transmissionStarted();
     u64 lengthToBeReceived();
     void onRead(const u8* buffer, std::size_t length, WriterCallback write) override;
     void send(const DataBuffer& data);
+    void send(const std::string& data);
     void setConnection(IDataReceiver::RawDataReceiverPtr dataReceiver);
 
     virtual void handleData(const DataBuffer& data) = 0;

@@ -13,3 +13,4 @@ build
 *node_modules*
 cmake-build-*
 .idea
+lib/ESPAsyncTCP*

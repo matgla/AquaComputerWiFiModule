@@ -16,6 +16,11 @@ MessageHandler::MessageHandler()
 {
 }
 
+MessageHandler::~MessageHandler()
+{
+    connection_->setHandler(&defaultReader);
+}
+
 bool MessageHandler::transmissionStarted()
 {
     return transmissionStarted_;
@@ -102,6 +107,8 @@ void MessageHandler::reply(const u8 answer, WriterCallback& write) const
 void MessageHandler::setConnection(IDataReceiver::RawDataReceiverPtr dataReceiver)
 {
     connection_ = dataReceiver;
+    dataReceiver->setHandler(std::bind(&MessageHandler::onRead, this, std::placeholders::_1,
+                                       std::placeholders::_2, std::placeholders::_3));
     logger_.info() << "Connection set";
 }
 
@@ -120,7 +127,13 @@ void MessageHandler::send(const DataBuffer& data)
     connection_->write(message::TransmissionId::Start);
     transmissionBuffers_.push(data);
     logger_.info() << "Pushed to buffer: " << data.size();
-    // TODO: implement me
+}
+
+void MessageHandler::send(const std::string& data)
+{
+    DataBuffer buffer;
+    std::copy(data.begin(), data.end(), std::back_inserter(buffer));
+    send(buffer);
 }
 
 } // namespace handler

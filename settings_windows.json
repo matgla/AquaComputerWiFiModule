@@ -3,6 +3,6 @@
         "stdout"
     ],
     "serial": {
-        "port": "COM1"
+        "port": "COM3"
     }
 }

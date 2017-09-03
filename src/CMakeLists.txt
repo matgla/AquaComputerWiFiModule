@@ -39,6 +39,9 @@ elseif (${ARCH} STREQUAL "ESP8266")
 endif (${ARCH} STREQUAL "X86")
 
 add_library(${target_name_lib} STATIC ${production_srcs})
+
+message("Linking with: ${target_libs}")
+
 target_link_libraries(${target_name_lib} PUBLIC ${target_libs} ${common_libs})
 
 file(WRITE ${PROJECT_BINARY_DIR}/null.cpp "")
@@ -50,7 +53,7 @@ if (${ARCH} STREQUAL "ESP8266")
         POST_BUILD
         COMMAND ${XTENSA_TOOLCHAIN_PATH}/xtensa-lx106-elf-size -B -d ${target_name}${CMAKE_EXECUTABLE_SUFFIX}
     )
-    
+
     add_custom_target(
         firmware_binary ALL
         COMMAND ${ESP8266_ESPTOOL} -eo \"${ARDUINO_ESP8266_DIR}/bootloaders/eboot/eboot.elf\" -bo ${target_name}.bin -bm dio -bf 40 -bz 4M -bs .text -bp 4096 -ec -eo \"$<TARGET_FILE:${target_name}>\" -bs .irom0.text -bs .text -bs .data -bs .rodata -bc -ec

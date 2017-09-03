@@ -14,6 +14,8 @@ set(common_srcs
     ${COMMON_SRC_DIR}/logger/stdErrLogger.cpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.cpp
     ${COMMON_SRC_DIR}/stream/socketStream.cpp
+    ${COMMON_SRC_DIR}/statemachine/mcuConnection.cpp
+
 )
 
 set(common_incs
@@ -31,8 +33,8 @@ set(common_incs
     ${COMMON_SRC_DIR}/handler/dispatcher.hpp
     ${COMMON_SRC_DIR}/handler/jsonHandler.hpp
     ${COMMON_SRC_DIR}/handler/handlers.hpp
-    ${COMMON_SRC_DIR}/handler/IHandler.hpp
     ${COMMON_SRC_DIR}/handler/IDataReceiver.hpp
+    ${COMMON_SRC_DIR}/handler/IFrameHandler.hpp
     ${COMMON_SRC_DIR}/handler/messageHandler.hpp
     ${COMMON_SRC_DIR}/handler/stmMessageReceiver.hpp
     ${COMMON_SRC_DIR}/logger/ILogger.hpp
@@ -44,6 +46,7 @@ set(common_incs
     ${COMMON_SRC_DIR}/logger/stdErrLogger.hpp
     ${COMMON_SRC_DIR}/message/IMessage.hpp
     ${COMMON_SRC_DIR}/message/messages.hpp
+    ${COMMON_SRC_DIR}/statemachine/mcuConnection.hpp
     ${COMMON_SRC_DIR}/serializer/serializer.hpp
     ${COMMON_SRC_DIR}/settings/settings.hpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.hpp

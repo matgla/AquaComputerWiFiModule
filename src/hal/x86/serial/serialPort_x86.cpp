@@ -86,7 +86,7 @@ void SerialPort::SerialWrapper::readCallback(const boost::system::error_code& er
     loop();
 }
 
-
+// TODO: set default reader
 SerialPort::SerialPort(const std::string& port, int baudrate)
     : serialWrapper_(new SerialWrapper(port, baudrate))
 {

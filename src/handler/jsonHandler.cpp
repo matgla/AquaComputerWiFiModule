@@ -43,5 +43,13 @@ void JsonHandler::addMessageHandler(const std::string& messageName, IHandler::Ha
     handlers_[messageName] = std::move(handler);
 }
 
+void JsonHandler::send(const JsonObject& data)
+{
+    std::string buffer;
+    data.printTo(buffer);
+
+    MessageHandler::send(buffer);
+}
+
 
 } // namespace handler

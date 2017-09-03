@@ -34,6 +34,7 @@ int main()
 #include "logger/loggerConf.hpp"
 #include "logger/stdOutLogger.hpp"
 #include "settings/settings.hpp"
+#include "statemachine/mcuConnection.hpp"
 
 namespace
 {
@@ -46,6 +47,10 @@ auto serialPort = std::make_shared<hal::serial::SerialPort>(
     settings::Settings::db()["serial"]["port"].as<char*>(), 9600);
 
 const std::string& handlerName = "SerialHandler";
+
+logger::Logger mcuConnectionLogger("McuConnection");
+
+boost::sml::sm<statemachine::McuConnection> mcuConnection{jsonHandler.get(), mcuConnectionLogger};
 }
 
 void setup()
@@ -69,6 +74,12 @@ void setup()
 
 void loop()
 {
+    logger::Logger logger("loop");
     hal::time::sleep(1);
     serialPort->process();
+    if (mcuConnection.is(boost::sml::state<statemachine::states::NotConnected>))
+    {
+        logger.info() << "Process connect";
+        mcuConnection.process_event(statemachine::events::Connect{});
+    }
 }

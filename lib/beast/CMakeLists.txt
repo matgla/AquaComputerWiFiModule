@@ -1,4 +1,7 @@
-file(GLOB_RECURSE beast_srcs "*.hpp" "*.h" "*.ipp")
+file(GLOB_RECURSE beast_srcs
+    "*.hpp"
+    "*.h"
+    "*.ipp")
 
 set(Beast_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lib/beast/" CACHE STRING "path to Beast sources" FORCE)
 
