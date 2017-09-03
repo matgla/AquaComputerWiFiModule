@@ -11,9 +11,12 @@ set(common_srcs
     ${COMMON_SRC_DIR}/logger/loggerConf.cpp
     ${COMMON_SRC_DIR}/logger/socketLogger.cpp
     ${COMMON_SRC_DIR}/logger/stdOutLogger.cpp
+    ${COMMON_SRC_DIR}/logger/fileLogger.cpp
     ${COMMON_SRC_DIR}/logger/stdErrLogger.cpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.cpp
     ${COMMON_SRC_DIR}/stream/socketStream.cpp
+    ${COMMON_SRC_DIR}/stream/fileBuffer.cpp
+    ${COMMON_SRC_DIR}/stream/fileOStream.cpp
     ${COMMON_SRC_DIR}/statemachine/mcuConnection.cpp
 
 )
@@ -42,6 +45,7 @@ set(common_incs
     ${COMMON_SRC_DIR}/logger/loggerBase.hpp
     ${COMMON_SRC_DIR}/logger/loggerConf.hpp
     ${COMMON_SRC_DIR}/logger/socketLogger.hpp
+    ${COMMON_SRC_DIR}/logger/fileLogger.hpp
     ${COMMON_SRC_DIR}/logger/stdOutLogger.hpp
     ${COMMON_SRC_DIR}/logger/stdErrLogger.hpp
     ${COMMON_SRC_DIR}/message/IMessage.hpp
@@ -50,6 +54,8 @@ set(common_incs
     ${COMMON_SRC_DIR}/serializer/serializer.hpp
     ${COMMON_SRC_DIR}/settings/settings.hpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.hpp
+    ${COMMON_SRC_DIR}/stream/fileBuffer.hpp
+    ${COMMON_SRC_DIR}/stream/fileOStream.hpp
     ${COMMON_SRC_DIR}/stream/socketStream.hpp
     ${COMMON_SRC_DIR}/utils/types.hpp
 )

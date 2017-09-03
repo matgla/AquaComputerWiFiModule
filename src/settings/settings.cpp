@@ -19,7 +19,7 @@ JsonObject& Settings::db()
 Settings::Settings()
 {
     hal::fs::File settingsFile;
-    settingsFile.open(SETTINGS_PATH);
+    settingsFile.open(SETTINGS_PATH, "r");
     jsonData_.resize(settingsFile.size() + 1);
     settingsFile.read(jsonData_.data(), settingsFile.size());
     settingsFile.close();

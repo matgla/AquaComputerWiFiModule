@@ -30,6 +30,7 @@ int main()
 #include "handler/dispatcher.hpp"
 #include "handler/jsonHandler.hpp"
 #include "handler/messageHandler.hpp"
+#include "logger/fileLogger.hpp"
 #include "logger/logger.hpp"
 #include "logger/loggerConf.hpp"
 #include "logger/stdOutLogger.hpp"
@@ -58,9 +59,13 @@ void setup()
     logger::Logger logger("Main");
     for (auto& loggerType : settings::Settings::db()["loggers"].as<JsonArray>())
     {
-        if ("stdout" == loggerType)
+        if ("stdout" == loggerType["type"])
         {
             logger::LoggerConf::get().add(logger::StdOutLogger{});
+        }
+        else if ("file" == loggerType["type"])
+        {
+            logger::LoggerConf::get().add(logger::FileLogger{});
         }
     }
 

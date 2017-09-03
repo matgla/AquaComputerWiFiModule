@@ -25,9 +25,26 @@ File::File() : fileWrapper_(new FileWrapper())
 
 File::~File() = default;
 
-void File::open(const std::string& path)
+void File::open(const std::string& path, const std::string& mode)
 {
-    fileWrapper_->fs_.open(path, std::fstream::in | std::fstream::out);
+    std::ios_base::openmode openmode;
+
+    if (std::string::npos != mode.find("r"))
+    {
+        openmode |= std::ios::in;
+    }
+
+    if (std::string::npos != mode.find("w"))
+    {
+        openmode |= std::ios::out;
+    }
+
+    if (std::string::npos != mode.find("+"))
+    {
+        openmode |= std::ios::app;
+    }
+
+    fileWrapper_->fs_.open(path, openmode);
     if (!isOpen())
     {
         throw std::runtime_error("File " + path + " opening failed...");

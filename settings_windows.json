@@ -1,6 +1,12 @@
 {
     "loggers": [
-        "stdout"
+        {
+            "type": "stdout"
+        },
+        {
+            "type": "file",
+            "path": "target.log"
+        }
     ],
     "serial": {
         "port": "COM3"

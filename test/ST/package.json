@@ -4,15 +4,16 @@
   "description": "System level tests for aqua computer server.",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha tests --recursive"
+    "test": "node_modules/.bin/mocha tests --recursive --timeout=15000"
   },
   "author": "",
   "license": "GPL-3.0",
   "dependencies": {
     "chai": "latest",
     "eslint": "latest",
+    "fifo": "^2.3.0",
+    "mocha": "latest",
     "serialport": "^5.0.0",
-    "sleep": "^5.1.1",
-    "mocha": "latest"
+    "sleep": "^5.1.1"
   }
 }
