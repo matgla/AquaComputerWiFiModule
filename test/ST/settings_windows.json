@@ -1,0 +1,12 @@
+{
+    "serial": {
+        "port": "COM4",
+        "baudrate": 9600
+    },
+    "logger": {
+        "level": "debug"
+    },
+    "binary": {
+        "path": "../../bin/src/AquaLampServer.exe"
+    }
+}

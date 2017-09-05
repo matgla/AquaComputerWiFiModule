@@ -11,6 +11,7 @@ void McuConnection::sendHandshake(HandlerPtr handler, logger::Logger& logger)
     DynamicJsonBuffer buffer;
     JsonObject& jsonMsg = buffer.parseObject(msg);
     handler->send(jsonMsg);
+
     logger.info() << "Handshake was sent to MCU";
 }
 

@@ -24,6 +24,7 @@ set(common_srcs
 set(common_incs
     ${COMMON_SRC_DIR}/container/buffer.hpp
     ${COMMON_SRC_DIR}/hal/fs/file.hpp
+    ${COMMON_SRC_DIR}/hal/fs/filesystem.hpp
     ${COMMON_SRC_DIR}/hal/net/http/asyncHttpRequest.hpp
     ${COMMON_SRC_DIR}/hal/net/http/asyncHttpServer.hpp
     ${COMMON_SRC_DIR}/hal/net/http/fwd.hpp

@@ -1,7 +1,0 @@
-<03/09/17 16:55:50> INF/Main: System booting up
-<03/09/17 16:55:50> INF/MessageHandler: Connection set
-<03/09/17 16:55:50> INF/Dispatcher: Added handler with name: SerialHandler
-<03/09/17 16:55:50> INF/Main: Handlers setup finished
-<03/09/17 16:55:51> INF/loop: Process connect
-<03/09/17 16:55:51> INF/MessageHandler: Pushed to buffer: 18
-<03/09/17 16:55:51> INF/McuConnection: Handshake was sent to MCU

@@ -12,6 +12,7 @@
     "chai": "latest",
     "eslint": "latest",
     "fifo": "^2.3.0",
+    "log4js": "^2.3.3",
     "mocha": "latest",
     "serialport": "^5.0.0",
     "sleep": "^5.1.1"

@@ -9,6 +9,6 @@ namespace logger
 class FileLogger : public LoggerBase
 {
 public:
-    FileLogger(const std::string& path = "target.log");
+    FileLogger(const std::string& path);
 };
 } // namespace logger

@@ -24,6 +24,7 @@ int main()
 #include <ArduinoJson.h>
 
 #include "hal/fs/file.hpp"
+#include "hal/fs/filesystem.hpp"
 #include "hal/net/socket/tcpServer.hpp"
 #include "hal/serial/serialPort.hpp"
 #include "hal/time/sleep.hpp"
@@ -57,15 +58,16 @@ boost::sml::sm<statemachine::McuConnection> mcuConnection{jsonHandler.get(), mcu
 void setup()
 {
     logger::Logger logger("Main");
-    for (auto& loggerType : settings::Settings::db()["loggers"].as<JsonArray>())
+    for (auto& logger : settings::Settings::db()["loggers"].as<JsonArray>())
     {
-        if ("stdout" == loggerType["type"])
+        if ("stdout" == logger["type"])
         {
             logger::LoggerConf::get().add(logger::StdOutLogger{});
         }
-        else if ("file" == loggerType["type"])
+        else if ("file" == logger["type"])
         {
-            logger::LoggerConf::get().add(logger::FileLogger{});
+            hal::fs::FileSystem::removeFile(logger["path"].as<const char*>());
+            logger::LoggerConf::get().add(logger::FileLogger{logger["path"].as<const char*>()});
         }
     }
 
