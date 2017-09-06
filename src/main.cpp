@@ -29,6 +29,7 @@ int main()
 #include "hal/serial/serialPort.hpp"
 #include "hal/time/sleep.hpp"
 #include "handler/dispatcher.hpp"
+#include "handler/handshakeHandler.hpp"
 #include "handler/jsonHandler.hpp"
 #include "handler/messageHandler.hpp"
 #include "logger/fileLogger.hpp"
@@ -74,6 +75,10 @@ void setup()
     logger.info() << "System booting up";
     jsonHandler->setConnection(serialPort);
 
+    handler::IHandler::HandlerPtr handshakeHandler(
+        new handler::HandshakeHandler(jsonHandler.get()));
+
+    jsonHandler->addMessageHandler("handshake", std::move(handshakeHandler));
     dispatcher.addHandler(std::move(jsonHandler), handlerName);
 
     logger.info() << "Handlers setup finished";
@@ -82,11 +87,11 @@ void setup()
 void loop()
 {
     logger::Logger logger("loop");
-    hal::time::sleep(1);
     serialPort->process();
     if (mcuConnection.is(boost::sml::state<statemachine::states::NotConnected>))
     {
         logger.info() << "Process connect";
         mcuConnection.process_event(statemachine::events::Connect{});
     }
+    hal::time::msleep(100);
 }

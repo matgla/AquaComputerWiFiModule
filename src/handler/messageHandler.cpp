@@ -91,9 +91,9 @@ void MessageHandler::onRead(const u8* buffer, std::size_t length, WriterCallback
         if (0 == --messageLengthToBeReceived_)
         {
             // Received whole message
-            handleData(buffer_);
-            buffer_.clear();
             transmissionStarted_ = false;
+            buffer_.clear();
+            handleData(buffer_);
         }
     }
 }
@@ -121,6 +121,7 @@ void MessageHandler::send(const DataBuffer& data)
 
     if (transmissionStarted_)
     {
+        logger_.debug() << "Transmission ongoing";
         return;
     }
 

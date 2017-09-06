@@ -1,7 +1,10 @@
-<06/09/17 22:58:00> INF/Main: System booting up
-<06/09/17 22:58:00> INF/MessageHandler: Connection set
-<06/09/17 22:58:00> INF/Dispatcher: Added handler with name: SerialHandler
-<06/09/17 22:58:00> INF/Main: Handlers setup finished
-<06/09/17 22:58:01> INF/loop: Process connect
-<06/09/17 22:58:01> INF/MessageHandler: Pushed to buffer: 18
-<06/09/17 22:58:01> INF/McuConnection: Handshake was sent to MCU
+<06/09/17 23:55:31> INF/Main: System booting up
+<06/09/17 23:55:31> INF/MessageHandler: Connection set
+<06/09/17 23:55:31> INF/Dispatcher: Added handler with name: SerialHandler
+<06/09/17 23:55:31> INF/Main: Handlers setup finished
+<06/09/17 23:55:31> INF/loop: Process connect
+<06/09/17 23:55:31> INF/MessageHandler: Pushed to buffer: 18
+<06/09/17 23:55:31> INF/McuConnection: Handshake was sent to MCU
+<06/09/17 23:55:31> DBG/HandshakeHandler: Received handshake from MCU
+<06/09/17 23:55:31> INF/MessageHandler: Pushed to buffer: 20
+<06/09/17 23:55:31> DBG/HandshakeHandler: Module info to MCU was sent

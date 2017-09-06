@@ -6,19 +6,27 @@ var fifo = require("fifo")
 const chai = require('chai');
 const _ = require("underscore");
 const Promise = require("bluebird");
+const os = require("os")
 
-var settings = require("../settings_windows.json");
+if (os.platform() == "win32") {
+    var settings = require("../settings_windows.json");
+}
 var messages = require("./messages.js");
 
 var logger = log4js.getLogger("serial");
 logger.level = settings.logger.level;
 
 class Expectation {
-    constructor(msg, fn, inSequence) {
+    constructor(msg, fn, inSequence, comparator) {
         this.message = msg;
         this.callback = fn;
         this.inSequence = inSequence;
         this.timesToBeCalled = 1;
+        this.comparator = comparator;
+    }
+
+    setComparator(comparator) {
+        this.comparator = comparator;
     }
 
     times(times_) {
@@ -63,7 +71,7 @@ class Serial {
 
         chai.assert(this.expectations.length != 0, "Unexpected call: " + JSON.stringify(msg) + ". Any expectations was set.");
 
-        if (_.isEqual(this.expectations[0].message, msg)) {
+        if (this.expectations[0].comparator(this.expectations[0].message, msg)) {
             if (this.expectations[0].timesToBeCalled == 1) {
                 var expectation = this.expectations.shift();
                 expectation.callback(msg);
@@ -74,7 +82,7 @@ class Serial {
             }
         }
         else if (index = _.findIndex_(this.expectations[0], function (expectation) {
-            return _.isEqual(expectation.message, msg) && expectation.inSequence === false;
+            return expectation.comparator(expectation.message, msg) && expectation.inSequence === false;
         })) {
             if (expectation.times == 1) {
                 this.expectations.splice(index, 1);
@@ -115,7 +123,7 @@ class Serial {
                     lengthBuffer.push(0);
                 }
 
-                logger.trace("sending data: " + buf.toString());
+                logger.trace("sending data: " + lengthBuffer.toString());
                 this.serial.write(lengthBuffer);
                 this.serial.write(message);
             }
@@ -143,8 +151,8 @@ class Serial {
         }
     }
 
-    expect(msg, fn = function (data) { }, inSequence = true) {
-        var expectation = new Expectation(msg, fn, inSequence);
+    expect(msg, fn = function (data) { }, inSequence = true, comparator = _.isEqual) {
+        var expectation = new Expectation(msg, fn, inSequence, comparator);
 
         this.expectations.push(expectation);
         return expectation;
@@ -158,6 +166,17 @@ class Serial {
     close() {
         this.verify();
         this.serial.close();
+    }
+
+    send(msg) {
+        this.messageQueue.push(JSON.stringify(msg));
+        this.serial.write([messages.TransmissionMessages.Start]);
+    }
+
+    resend() {
+        if (this.messageQueue.length > 0) {
+            this.serial.write([messages.TransmissionMessages.Start]);
+        }
     }
 }
 

@@ -5,6 +5,7 @@ set(common_srcs
     ${COMMON_SRC_DIR}/handler/messageHandler.cpp
     ${COMMON_SRC_DIR}/handler/dispatcher.cpp
     ${COMMON_SRC_DIR}/handler/jsonHandler.cpp
+    ${COMMON_SRC_DIR}/handler/handshakeHandler.cpp
     ${COMMON_SRC_DIR}/settings/settings.cpp
     ${COMMON_SRC_DIR}/logger/logger.cpp
     ${COMMON_SRC_DIR}/logger/loggerBase.cpp
@@ -40,6 +41,7 @@ set(common_incs
     ${COMMON_SRC_DIR}/handler/IDataReceiver.hpp
     ${COMMON_SRC_DIR}/handler/IFrameHandler.hpp
     ${COMMON_SRC_DIR}/handler/messageHandler.hpp
+    ${COMMON_SRC_DIR}/handler/handshakeHandler.hpp
     ${COMMON_SRC_DIR}/handler/stmMessageReceiver.hpp
     ${COMMON_SRC_DIR}/logger/ILogger.hpp
     ${COMMON_SRC_DIR}/logger/logger.hpp
