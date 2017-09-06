@@ -3,16 +3,30 @@
 var SerialPort = require("serialport");
 var log4js = require("log4js");
 var fifo = require("fifo")
+const chai = require('chai');
+const _ = require("underscore");
+const Promise = require("bluebird");
 
-var settings = require("../settings_windows.json")
+var settings = require("../settings_windows.json");
 var messages = require("./messages.js");
 
 var logger = log4js.getLogger("serial");
 logger.level = settings.logger.level;
 
+class Expectation {
+    constructor(msg, fn, inSequence) {
+        this.message = msg;
+        this.callback = fn;
+        this.inSequence = inSequence;
+        this.timesToBeCalled = 1;
+    }
+
+    times(times_) {
+        this.timesToBeCalled = times_;
+    }
+}
+
 class Serial {
-
-
     constructor() {
         this.serial = new SerialPort(settings.serial.port, { baudRate: settings.serial.baudrate }, function (err) {
             if (err) {
@@ -37,17 +51,42 @@ class Serial {
             logger.info("Serial port " + settings.serial.port + " opened with baudrate: " + settings.serial.baudrate.toString());
         });
 
-        this.expectation_sequence = [];
+        this.expectations = [];
 
     }
 
     parseData() {
         var buffer = new Buffer(this.transmission.buffer);
         logger.trace("Message buffer: ", buffer.toString("ascii"));
-
         var msg = JSON.parse(buffer);
-
         logger.debug("Received message:", msg.id);
+
+        chai.assert(this.expectations.length != 0, "Unexpected call: " + JSON.stringify(msg) + ". Any expectations was set.");
+
+        if (_.isEqual(this.expectations[0].message, msg)) {
+            if (this.expectations[0].timesToBeCalled == 1) {
+                var expectation = this.expectations.shift();
+                expectation.callback(msg);
+            } else {
+                this.expectations[0].timesToBeCalled--;
+                var expectation = this.expectations[0];
+                expectation.callback(msg);
+            }
+        }
+        else if (index = _.findIndex_(this.expectations[0], function (expectation) {
+            return _.isEqual(expectation.message, msg) && expectation.inSequence === false;
+        })) {
+            if (expectation.times == 1) {
+                this.expectations.splice(index, 1);
+                expectation.callback(msg);
+            } else {
+                this.expectations[index].timesToBeCalled--;
+                expectation.callback(msg);
+            }
+        }
+        else {
+            chai.assert.fail(false, true, "Unexpected call: " + JSON.stringify(msg));
+        }
     }
 
     onData(data) {
@@ -104,15 +143,20 @@ class Serial {
         }
     }
 
-    expect(msg) {
-        this.expectation_sequence.push(msg);
+    expect(msg, fn = function (data) { }, inSequence = true) {
+        var expectation = new Expectation(msg, fn, inSequence);
+
+        this.expectations.push(expectation);
+        return expectation;
+
     }
 
     verify() {
-        // check if all expected messages arrived
+        chai.assert(this.expectations.length == 0, "Unresolved expectations: " + JSON.stringify(this.expectations));
     }
 
     close() {
+        this.verify();
         this.serial.close();
     }
 }
