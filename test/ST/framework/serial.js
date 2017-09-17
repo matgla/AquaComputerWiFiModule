@@ -146,6 +146,7 @@ class Serial {
                 if (this.transmission.length == 0) {
                     this.transmission.ongoing = false;
                     this.parseData();
+                    this.write();
                 }
             }
         }
@@ -170,12 +171,14 @@ class Serial {
 
     send(msg) {
         this.messageQueue.push(JSON.stringify(msg));
-        this.serial.write([messages.TransmissionMessages.Start]);
+        this.write();
     }
 
-    resend() {
-        if (this.messageQueue.length > 0) {
-            this.serial.write([messages.TransmissionMessages.Start]);
+    write() {
+        if (!this.transmission.ongoing) {
+            if (this.messageQueue.length > 0) {
+                this.serial.write([messages.TransmissionMessages.Start]);
+            }
         }
     }
 }

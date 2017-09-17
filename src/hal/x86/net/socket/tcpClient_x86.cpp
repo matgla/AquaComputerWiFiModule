@@ -23,7 +23,7 @@ namespace socket
 class TcpClient::TcpClientImpl
 {
 public:
-    TcpClientImpl(const std::string& url, u16 port, handler::ReaderCallback readerCallback)
+    TcpClientImpl(const std::string& url, u16 port, dispatcher::ReaderCallback readerCallback)
         : url_(url), port_(port), logger_("TcpClientImpl"), resolver_(ioService_),
           socket_(ioService_), readerCallback_(readerCallback)
     {
@@ -62,7 +62,7 @@ public:
         return session_ ? session_->connected() : false;
     }
 
-    void setHandler(handler::ReaderCallback reader)
+    void setHandler(dispatcher::ReaderCallback reader)
     {
         readerCallback_ = reader;
         if (session_)
@@ -116,11 +116,11 @@ private:
     tcp::resolver resolver_;
     tcp::socket socket_;
     std::thread thread_;
-    handler::ReaderCallback readerCallback_;
+    dispatcher::ReaderCallback readerCallback_;
 };
 
 
-TcpClient::TcpClient(const std::string& url, u16 port, handler::ReaderCallback readerCallback)
+TcpClient::TcpClient(const std::string& url, u16 port, dispatcher::ReaderCallback readerCallback)
     : tcpClientImpl_(new TcpClientImpl(url, port, readerCallback))
 {
 }
@@ -161,7 +161,7 @@ void TcpClient::write(u8 byte)
     }
 }
 
-void TcpClient::setHandler(handler::ReaderCallback reader)
+void TcpClient::setHandler(dispatcher::ReaderCallback reader)
 {
     tcpClientImpl_->setHandler(reader);
 }

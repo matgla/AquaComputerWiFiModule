@@ -1,11 +1,12 @@
 #pragma once
 
+#include <functional>
 #include <string>
 
-#include "handler/handlers.hpp"
+#include "dispatcher/handlers.hpp"
 #include "utils/types.hpp"
 
-namespace handler
+namespace dispatcher
 {
 class IDataReceiver
 {
@@ -20,4 +21,4 @@ public:
     virtual void write(const u8* buf, std::size_t length) = 0;
     virtual void write(u8 byte) = 0;
 };
-} // namespace handler
+} // namespace dispatcher

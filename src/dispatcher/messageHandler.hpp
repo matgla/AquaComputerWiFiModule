@@ -4,13 +4,13 @@
 #include <queue>
 #include <vector>
 
-#include "handler/IDataReceiver.hpp"
-#include "handler/IFrameHandler.hpp"
-#include "handler/handlers.hpp"
+#include "dispatcher/IDataReceiver.hpp"
+#include "dispatcher/IFrameHandler.hpp"
+#include "dispatcher/handlers.hpp"
 #include "logger/logger.hpp"
 #include "utils/types.hpp"
 
-namespace handler
+namespace dispatcher
 {
 
 class MessageHandler : public IFrameHandler
@@ -46,4 +46,4 @@ protected:
     logger::Logger logger_;
 };
 
-} // namespace handler
+} // namespace dispatcher

@@ -12,7 +12,7 @@ namespace net
 {
 namespace socket
 {
-TcpSession::TcpSession(tcp::socket socket, handler::ReaderCallback reader)
+TcpSession::TcpSession(tcp::socket socket, dispatcher::ReaderCallback reader)
     : socket_(std::move(socket)), logger_("TcpSession"), readerCallback_(reader)
 {
 }
@@ -108,7 +108,7 @@ void TcpSession::doRead()
     });
 }
 
-void TcpSession::setHandler(handler::ReaderCallback reader)
+void TcpSession::setHandler(dispatcher::ReaderCallback reader)
 {
     std::lock_guard<std::mutex> safeCallback(readerCallbackMutex_);
     readerCallback_ = reader;

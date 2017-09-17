@@ -23,28 +23,30 @@ int main()
 
 #include <ArduinoJson.h>
 
+#include "dispatcher/dispatcher.hpp"
+#include "dispatcher/handler/getInfoHandler.hpp"
+#include "dispatcher/handler/handshakeHandler.hpp"
+#include "dispatcher/jsonHandler.hpp"
+#include "dispatcher/messageHandler.hpp"
 #include "hal/fs/file.hpp"
 #include "hal/fs/filesystem.hpp"
 #include "hal/net/socket/tcpServer.hpp"
 #include "hal/serial/serialPort.hpp"
 #include "hal/time/sleep.hpp"
-#include "handler/dispatcher.hpp"
-#include "handler/handshakeHandler.hpp"
-#include "handler/jsonHandler.hpp"
-#include "handler/messageHandler.hpp"
 #include "logger/fileLogger.hpp"
 #include "logger/logger.hpp"
 #include "logger/loggerConf.hpp"
 #include "logger/stdOutLogger.hpp"
+#include "message/messages.hpp"
 #include "settings/settings.hpp"
-#include "statemachine/mcuConnection.hpp"
+#include "statemachine/mcuConnectionFrontEnd.hpp"
 
 namespace
 {
 // hal::serial::SerialPort serial("");
 std::shared_ptr<hal::net::socket::TcpServer> messageServer(new hal::net::socket::TcpServer(1010));
-handler::Dispatcher dispatcher;
-std::unique_ptr<handler::JsonHandler> jsonHandler(new handler::JsonHandler());
+dispatcher::Dispatcher dispatch;
+std::unique_ptr<dispatcher::JsonHandler> jsonHandler(new dispatcher::JsonHandler());
 
 auto serialPort = std::make_shared<hal::serial::SerialPort>(
     settings::Settings::db()["serial"]["port"].as<char*>(), 9600);
@@ -53,7 +55,9 @@ const std::string& handlerName = "SerialHandler";
 
 logger::Logger mcuConnectionLogger("McuConnection");
 
-boost::sml::sm<statemachine::McuConnection> mcuConnection{jsonHandler.get(), mcuConnectionLogger};
+// boost::sml::sm<statemachine::McuConnection> mcuConnection{jsonHandler.get(),
+// mcuConnectionLogger};
+statemachine::McuConnectionFrontEnd mcuSM(*jsonHandler);
 }
 
 void setup()
@@ -75,11 +79,13 @@ void setup()
     logger.info() << "System booting up";
     jsonHandler->setConnection(serialPort);
 
-    handler::IHandler::HandlerPtr handshakeHandler(
-        new handler::HandshakeHandler(jsonHandler.get()));
+    dispatcher::IHandler::HandlerPtr handshakeHandler(
+        new dispatcher::handler::HandshakeHandler(mcuSM));
+    dispatcher::IHandler::HandlerPtr getInfoHandler(new dispatcher::handler::GetInfoHandler(mcuSM));
 
-    jsonHandler->addMessageHandler("handshake", std::move(handshakeHandler));
-    dispatcher.addHandler(std::move(jsonHandler), handlerName);
+    jsonHandler->addMessageHandler(message::Handshake, std::move(handshakeHandler));
+    jsonHandler->addMessageHandler(message::GetInfo, std::move(getInfoHandler));
+    dispatch.addHandler(std::move(jsonHandler), handlerName);
 
     logger.info() << "Handlers setup finished";
 }
@@ -88,10 +94,10 @@ void loop()
 {
     logger::Logger logger("loop");
     serialPort->process();
-    if (mcuConnection.is(boost::sml::state<statemachine::states::NotConnected>))
+    if (mcuSM.backend().is(boost::sml::state<statemachine::states::NotConnected>))
     {
         logger.info() << "Process connect";
-        mcuConnection.process_event(statemachine::events::Connect{});
+        mcuSM.connect();
     }
     hal::time::msleep(100);
 }

@@ -4,8 +4,8 @@
 #include <memory>
 #include <string>
 
-#include "handler/IDataReceiver.hpp"
-#include "handler/handlers.hpp"
+#include "dispatcher/IDataReceiver.hpp"
+#include "dispatcher/handlers.hpp"
 #include "utils/types.hpp"
 
 namespace hal
@@ -14,11 +14,12 @@ namespace net
 {
 namespace socket
 {
-class TcpClient : public handler::IDataReceiver
+class TcpClient : public dispatcher::IDataReceiver
 {
 public:
     ~TcpClient();
-    TcpClient(const std::string& url, u16 port, handler::ReaderCallback readerCallback = handler::defaultReader);
+    TcpClient(const std::string& url, u16 port,
+              dispatcher::ReaderCallback readerCallback = dispatcher::defaultReader);
 
     void start();
     void stop();
@@ -27,7 +28,7 @@ public:
     void write(const u8* buf, std::size_t length);
     void write(u8 byte);
 
-    void setHandler(handler::ReaderCallback reader) override;
+    void setHandler(dispatcher::ReaderCallback reader) override;
 
 private:
     class TcpClientImpl;

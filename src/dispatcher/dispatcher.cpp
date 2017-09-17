@@ -1,10 +1,10 @@
-#include "handler/dispatcher.hpp"
+#include "dispatcher/dispatcher.hpp"
 
 #include <algorithm>
 
-#include "handler/IFrameHandler.hpp"
+#include "dispatcher/IFrameHandler.hpp"
 
-namespace handler
+namespace dispatcher
 {
 
 Dispatcher::Dispatcher() : logger_("Dispatcher")
@@ -41,4 +41,4 @@ const Dispatcher::HandlerContainer& Dispatcher::getHandlers() const
     return handlers_;
 }
 
-} // namespace handler
+} // namespace dispatcher

@@ -5,9 +5,9 @@
 
 #include "utils/types.hpp"
 
-#include "handler/handlers.hpp"
+#include "dispatcher/handlers.hpp"
 
-namespace handler
+namespace dispatcher
 {
 
 class IFrameHandler
@@ -21,4 +21,4 @@ public:
     virtual void send(const DataBuffer& data) = 0;
 };
 
-} // namespace handler
+} // namespace dispatcher

@@ -1,11 +1,11 @@
-#include "handler/MessageHandler.hpp"
+#include "dispatcher/MessageHandler.hpp"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <ArduinoJson.h>
 
-#include "handler/IDataReceiver.hpp"
+#include "dispatcher/IDataReceiver.hpp"
 
 #include "matcher/arrayCompare.hpp"
 #include "message/messages.hpp"
@@ -14,7 +14,7 @@
 
 using namespace testing;
 
-namespace handler
+namespace dispatcher
 {
 
 class MessageHandlerForTest : public MessageHandler
@@ -30,7 +30,7 @@ public:
     }
 };
 
-struct ReceiverForTest : public handler::IDataReceiver
+struct ReceiverForTest : public dispatcher::IDataReceiver
 {
     void setHandler(ReaderCallback readerCallback) override
     {
@@ -358,4 +358,4 @@ TEST_F(MessageHandlerShould, NotSendStartWhileTransmissionOngoing)
     receiver_->clearBuffers();
 }
 
-} // namespace handler
+} // namespace dispatcher

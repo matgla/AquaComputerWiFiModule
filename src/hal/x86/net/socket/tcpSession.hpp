@@ -6,7 +6,7 @@
 
 #include <boost/asio.hpp>
 
-#include "handler/handlers.hpp"
+#include "dispatcher/handlers.hpp"
 #include "logger/logger.hpp"
 #include "utils/types.hpp"
 
@@ -21,7 +21,8 @@ const std::size_t BUF_SIZE = 1024;
 class TcpSession
 {
 public:
-    TcpSession(boost::asio::ip::tcp::socket socket, handler::ReaderCallback reader = handler::defaultReader);
+    TcpSession(boost::asio::ip::tcp::socket socket,
+               dispatcher::ReaderCallback reader = dispatcher::defaultReader);
     ~TcpSession();
 
     void start();
@@ -33,7 +34,7 @@ public:
 
     void disconnect();
     bool connected();
-    void setHandler(handler::ReaderCallback reader);
+    void setHandler(dispatcher::ReaderCallback reader);
 
 private:
     void doRead();
@@ -41,7 +42,7 @@ private:
     u8 buffer_[BUF_SIZE];
     boost::asio::ip::tcp::socket socket_;
     logger::Logger logger_;
-    handler::ReaderCallback readerCallback_;
+    dispatcher::ReaderCallback readerCallback_;
     std::mutex readerCallbackMutex_;
 };
 

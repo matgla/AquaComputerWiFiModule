@@ -1,10 +1,10 @@
-#include "handler/jsonHandler.hpp"
+#include "dispatcher/jsonHandler.hpp"
 
 #include <string>
 
 #include <ArduinoJson.h>
 
-namespace handler
+namespace dispatcher
 {
 
 JsonHandler::JsonHandler() : logger_("JsonHandler")
@@ -51,5 +51,4 @@ void JsonHandler::send(const JsonObject& data)
     MessageHandler::send(buffer);
 }
 
-
-} // namespace handler
+} // namespace dispatcher

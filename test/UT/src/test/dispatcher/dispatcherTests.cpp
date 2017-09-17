@@ -1,4 +1,4 @@
-#include "handler/dispatcher.hpp"
+#include "dispatcher/dispatcher.hpp"
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 
 using namespace testing;
 
-namespace handler
+namespace dispatcher
 {
 
 class DispatcherShould : public Test
@@ -34,7 +34,7 @@ public:
     }
 
 protected:
-    handler::Dispatcher dispatcher_;
+    dispatcher::Dispatcher dispatcher_;
 
     const std::string firstHandlerName_;
     const std::string secondHandlerName_;
@@ -82,4 +82,4 @@ TEST_F(DispatcherShould, RemoveHandler)
     EXPECT_EQ(0, handlers_.count(secondHandlerName_));
 }
 
-} // namespace handler
+} // namespace dispatcher

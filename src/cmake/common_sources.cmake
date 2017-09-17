@@ -1,11 +1,12 @@
 set(COMMON_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 
 set(common_srcs
-    ${COMMON_SRC_DIR}/handler/handlers.cpp
-    ${COMMON_SRC_DIR}/handler/messageHandler.cpp
-    ${COMMON_SRC_DIR}/handler/dispatcher.cpp
-    ${COMMON_SRC_DIR}/handler/jsonHandler.cpp
-    ${COMMON_SRC_DIR}/handler/handshakeHandler.cpp
+    ${COMMON_SRC_DIR}/dispatcher/handlers.cpp
+    ${COMMON_SRC_DIR}/dispatcher/messageHandler.cpp
+    ${COMMON_SRC_DIR}/dispatcher/dispatcher.cpp
+    ${COMMON_SRC_DIR}/dispatcher/jsonHandler.cpp
+    ${COMMON_SRC_DIR}/dispatcher/handler/handshakeHandler.cpp
+    ${COMMON_SRC_DIR}/dispatcher/handler/getInfoHandler.cpp
     ${COMMON_SRC_DIR}/settings/settings.cpp
     ${COMMON_SRC_DIR}/logger/logger.cpp
     ${COMMON_SRC_DIR}/logger/loggerBase.cpp
@@ -19,7 +20,9 @@ set(common_srcs
     ${COMMON_SRC_DIR}/stream/fileBuffer.cpp
     ${COMMON_SRC_DIR}/stream/fileOStream.cpp
     ${COMMON_SRC_DIR}/statemachine/mcuConnection.cpp
-
+    ${COMMON_SRC_DIR}/statemachine/mcuConnectionFrontEnd.cpp
+    ${COMMON_SRC_DIR}/protocol/frameHandler.cpp
+    ${COMMON_SRC_DIR}/protocol/packetHandler.cpp
 )
 
 set(common_incs
@@ -35,14 +38,15 @@ set(common_incs
     ${COMMON_SRC_DIR}/hal/net/socket/websocket.hpp
     ${COMMON_SRC_DIR}/hal/serial/serialPort.hpp
     ${COMMON_SRC_DIR}/hal/time/sleep.hpp
-    ${COMMON_SRC_DIR}/handler/dispatcher.hpp
-    ${COMMON_SRC_DIR}/handler/jsonHandler.hpp
-    ${COMMON_SRC_DIR}/handler/handlers.hpp
-    ${COMMON_SRC_DIR}/handler/IDataReceiver.hpp
-    ${COMMON_SRC_DIR}/handler/IFrameHandler.hpp
-    ${COMMON_SRC_DIR}/handler/messageHandler.hpp
-    ${COMMON_SRC_DIR}/handler/handshakeHandler.hpp
-    ${COMMON_SRC_DIR}/handler/stmMessageReceiver.hpp
+    ${COMMON_SRC_DIR}/dispatcher/dispatcher.hpp
+    ${COMMON_SRC_DIR}/dispatcher/jsonHandler.hpp
+    ${COMMON_SRC_DIR}/dispatcher/handlers.hpp
+    ${COMMON_SRC_DIR}/dispatcher/IDataReceiver.hpp
+    ${COMMON_SRC_DIR}/dispatcher/IFrameHandler.hpp
+    ${COMMON_SRC_DIR}/dispatcher/messageHandler.hpp
+    ${COMMON_SRC_DIR}/dispatcher/handler/handshakeHandler.hpp
+    ${COMMON_SRC_DIR}/dispatcher/handler/getInfoHandler.hpp
+    ${COMMON_SRC_DIR}/dispatcher/stmMessageReceiver.hpp
     ${COMMON_SRC_DIR}/logger/ILogger.hpp
     ${COMMON_SRC_DIR}/logger/logger.hpp
     ${COMMON_SRC_DIR}/logger/loggerBase.hpp
@@ -54,6 +58,7 @@ set(common_incs
     ${COMMON_SRC_DIR}/message/IMessage.hpp
     ${COMMON_SRC_DIR}/message/messages.hpp
     ${COMMON_SRC_DIR}/statemachine/mcuConnection.hpp
+    ${COMMON_SRC_DIR}/statemachine/mcuConnectionFrontEnd.hpp
     ${COMMON_SRC_DIR}/serializer/serializer.hpp
     ${COMMON_SRC_DIR}/settings/settings.hpp
     ${COMMON_SRC_DIR}/stream/socketBuffer.hpp
@@ -61,4 +66,8 @@ set(common_incs
     ${COMMON_SRC_DIR}/stream/fileOStream.hpp
     ${COMMON_SRC_DIR}/stream/socketStream.hpp
     ${COMMON_SRC_DIR}/utils/types.hpp
+    ${COMMON_SRC_DIR}/protocol/frame.hpp
+    ${COMMON_SRC_DIR}/protocol/IFrame.hpp
+    ${COMMON_SRC_DIR}/protocol/frameHandler.hpp
+    ${COMMON_SRC_DIR}/protocol/packetHandler.hpp
 )

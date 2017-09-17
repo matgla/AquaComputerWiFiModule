@@ -12,10 +12,10 @@
 
 #include "logger/logger.hpp"
 
-namespace http = boost::beast::http; // from <beast/http.hpp>
+namespace http = boost::beast::http;           // from <beast/http.hpp>
 namespace websocket = boost::beast::websocket; // from <beast/websocket.hpp>
-namespace ip = boost::asio::ip; // from <boost/asio.hpp>
-using tcp = boost::asio::ip::tcp; // from <boost/asio.hpp>
+namespace ip = boost::asio::ip;                // from <boost/asio.hpp>
+using tcp = boost::asio::ip::tcp;              // from <boost/asio.hpp>
 
 namespace hal
 {
@@ -27,11 +27,9 @@ logger::Logger logger("WS");
 
 class WebSocket::WebSocketWrapper
 {
-    using error_code = boost::system::error_code; // Saves typing
-    using stream_type =
-        websocket::stream<tcp::socket>; // The type of our websocket stream
-    using clock_type =
-        std::chrono::steady_clock; // For the timer
+    using error_code = boost::system::error_code;       // Saves typing
+    using stream_type = websocket::stream<tcp::socket>; // The type of our websocket stream
+    using clock_type = std::chrono::steady_clock;       // For the timer
 
 public:
     void start()
@@ -43,20 +41,18 @@ public:
     class connection : public std::enable_shared_from_this<connection>
     {
         tcp::endpoint ep_; // The remote endpoing
-        stream_type ws_; // The websocket stream
+        stream_type ws_;   // The websocket stream
 
         boost::asio::io_service::strand strand_; // Needed when threads > 1
-        boost::beast::multi_buffer buffer_; // Stores the current message
-        boost::beast::drain_buffer drain_; // Helps discard data on close
-        std::size_t id_; // A small unique id
+        boost::beast::multi_buffer buffer_;      // Stores the current message
+        boost::beast::drain_buffer drain_;       // Helps discard data on close
+        std::size_t id_;                         // A small unique id
 
     public:
         /// Constructor
-        connection(
-            WebSocketWrapper& parent,
-            tcp::endpoint const& ep,
-            tcp::socket&& sock)
-            : parent_(parent), ep_(ep), ws_(std::move(sock)), strand_(ws_.get_io_service()), id_([] {
+        connection(WebSocketWrapper& parent, tcp::endpoint const& ep, tcp::socket&& sock)
+            : parent_(parent), ep_(ep), ws_(std::move(sock)), strand_(ws_.get_io_service()),
+              id_([] {
                   static std::atomic<std::size_t> n{0};
                   return ++n;
               }())
@@ -80,10 +76,8 @@ public:
                 [](websocket::response_type& res) {
                     res.insert(http::field::server, "websocket-server-async");
                 },
-                strand_.wrap(std::bind(
-                    &connection::on_accept,
-                    shared_from_this(),
-                    std::placeholders::_1)));
+                strand_.wrap(
+                    std::bind(&connection::on_accept, shared_from_this(), std::placeholders::_1)));
         }
 
     private:
@@ -99,11 +93,8 @@ public:
         void do_read()
         {
             // Read a message
-            ws_.async_read(buffer_,
-                           strand_.wrap(std::bind(
-                               &connection::on_read,
-                               shared_from_this(),
-                               std::placeholders::_1)));
+            ws_.async_read(buffer_, strand_.wrap(std::bind(&connection::on_read, shared_from_this(),
+                                                           std::placeholders::_1)));
         }
 
         // Called after the message read completes
@@ -120,14 +111,14 @@ public:
             std::stringstream ss;
             ss << boost::beast::buffers(buffer_.data());
 
-            parent_.handler_(reinterpret_cast<const u8*>(ss.str().c_str()), ss.str().length(), [this](const u8* data, std::size_t length) {
-                //  ws_.binary(ws_.got_binary());
-                ws_.async_write(boost::asio::buffer(data, length),
-                                strand_.wrap(std::bind(
-                                    &connection::on_write,
-                                    shared_from_this(),
-                                    std::placeholders::_1)));
-            });
+            parent_.handler_(reinterpret_cast<const u8*>(ss.str().c_str()), ss.str().length(),
+                             [this](const u8* data, std::size_t length) {
+                                 //  ws_.binary(ws_.got_binary());
+                                 ws_.async_write(boost::asio::buffer(data, length),
+                                                 strand_.wrap(std::bind(&connection::on_write,
+                                                                        shared_from_this(),
+                                                                        std::placeholders::_1)));
+                             });
         }
 
         // Called after the message write completes
@@ -153,16 +144,15 @@ public:
         WebSocketWrapper& parent_;
     };
 
-    WebSocketWrapper(const std::string& uri, u16 port, handler::ReaderCallback handler)
+    WebSocketWrapper(const std::string& uri, u16 port, dispatcher::ReaderCallback handler)
         : uri_(uri), port_(port), sock_(ios_), acceptor_(ios_), work_(ios_), handler_(handler)
     {
         thread_.reserve(1);
 
-        thread_.emplace_back(
-            [&] { ios_.run(); });
+        thread_.emplace_back([&] { ios_.run(); });
     }
 
-    void setHandler(handler::ReaderCallback reader)
+    void setHandler(dispatcher::ReaderCallback reader)
     {
         handler_ = reader;
     }
@@ -174,9 +164,8 @@ public:
 
     void do_accept()
     {
-        acceptor_.async_accept(sock_, ep_,
-                               std::bind(&WebSocketWrapper::on_accept, this,
-                                         std::placeholders::_1));
+        acceptor_.async_accept(
+            sock_, ep_, std::bind(&WebSocketWrapper::on_accept, this, std::placeholders::_1));
     }
 
     // Called when receiving an incoming connection
@@ -212,8 +201,7 @@ public:
     }
 
     /// Return the listening endpoint.
-    tcp::endpoint
-        local_endpoint() const
+    tcp::endpoint local_endpoint() const
     {
         return acceptor_.local_endpoint();
     }
@@ -223,8 +211,7 @@ public:
     It is used to set options for every connection.
 */
     template <class F>
-    void
-        on_new_stream(F const& f)
+    void on_new_stream(F const& f)
     {
         mod_ = f;
     }
@@ -233,36 +220,31 @@ public:
     @param ep The address and port to bind to.
     @param ec Set to the error, if any occurred.
 */
-    void
-        open(tcp::endpoint const& ep, error_code& ec)
+    void open(tcp::endpoint const& ep, error_code& ec)
     {
         acceptor_.open(ep.protocol(), ec);
         if (ec)
             return fail("open", ec);
-        acceptor_.set_option(
-            boost::asio::socket_base::reuse_address{true});
+        acceptor_.set_option(boost::asio::socket_base::reuse_address{true});
         acceptor_.bind(ep, ec);
         if (ec)
             return fail("bind", ec);
-        acceptor_.listen(
-            boost::asio::socket_base::max_connections, ec);
+        acceptor_.listen(boost::asio::socket_base::max_connections, ec);
         if (ec)
             return fail("listen", ec);
         do_accept();
     }
 
 protected:
-    handler::ReaderCallback handler_;
-    std::ostream* log_; // Used for diagnostic output, may be null
-    boost::asio::io_service ios_; // The io_service, required
-    tcp::socket sock_; // Holds accepted connections
-    tcp::endpoint ep_; // The remote endpoint during accept
-    std::vector<std::thread> thread_; // Threads for the io_service
-    boost::asio::ip::tcp::acceptor acceptor_; // The listening socket
-    std::function<void(stream_type&)> mod_; // Called on new stream
-    boost::optional<
-        boost::asio::io_service::work>
-        work_; // Keeps io_service::run from returning
+    dispatcher::ReaderCallback handler_;
+    std::ostream* log_;                                   // Used for diagnostic output, may be null
+    boost::asio::io_service ios_;                         // The io_service, required
+    tcp::socket sock_;                                    // Holds accepted connections
+    tcp::endpoint ep_;                                    // The remote endpoint during accept
+    std::vector<std::thread> thread_;                     // Threads for the io_service
+    boost::asio::ip::tcp::acceptor acceptor_;             // The listening socket
+    std::function<void(stream_type&)> mod_;               // Called on new stream
+    boost::optional<boost::asio::io_service::work> work_; // Keeps io_service::run from returning
     std::string uri_;
     u16 port_;
 };
@@ -278,15 +260,12 @@ class set_stream_options
 public:
     set_stream_options(set_stream_options const&) = default;
 
-    explicit set_stream_options(
-        websocket::permessage_deflate const& pmd)
-        : pmd_(pmd)
+    explicit set_stream_options(websocket::permessage_deflate const& pmd) : pmd_(pmd)
     {
     }
 
     template <class NextLayer>
-    void
-        operator()(websocket::stream<NextLayer>& ws) const
+    void operator()(websocket::stream<NextLayer>& ws) const
     {
         ws.set_option(pmd_);
 
@@ -302,7 +281,7 @@ public:
 };
 
 
-WebSocket::WebSocket(const std::string& uri, u16 port, handler::ReaderCallback handler)
+WebSocket::WebSocket(const std::string& uri, u16 port, dispatcher::ReaderCallback handler)
     : webSocketWrapper_(new WebSocketWrapper(uri, port, handler))
 {
     websocket::permessage_deflate pmd;
@@ -314,7 +293,7 @@ WebSocket::WebSocket(const std::string& uri, u16 port, handler::ReaderCallback h
 
 WebSocket::~WebSocket() = default;
 
-void WebSocket::setHandler(handler::ReaderCallback handler)
+void WebSocket::setHandler(dispatcher::ReaderCallback handler)
 {
     webSocketWrapper_->setHandler(handler);
 }

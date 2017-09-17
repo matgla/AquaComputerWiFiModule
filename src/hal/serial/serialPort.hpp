@@ -3,8 +3,8 @@
 #include <memory>
 #include <string>
 
-#include "handler/IDataReceiver.hpp"
-#include "handler/handlers.hpp"
+#include "dispatcher/IDataReceiver.hpp"
+#include "dispatcher/handlers.hpp"
 #include "utils/types.hpp"
 
 namespace hal
@@ -12,7 +12,7 @@ namespace hal
 namespace serial
 {
 
-class SerialPort : public handler::IDataReceiver
+class SerialPort : public dispatcher::IDataReceiver
 {
 public:
     SerialPort(const std::string& port, int baudRate = 115200);
@@ -21,7 +21,7 @@ public:
     void write(const u8* buf, std::size_t length) override;
     void write(u8 byte) override;
 
-    void setHandler(handler::ReaderCallback readerCallback) override;
+    void setHandler(dispatcher::ReaderCallback readerCallback) override;
 
     std::size_t isDataToRecive();
     void process();
@@ -32,7 +32,7 @@ protected:
     class SerialWrapper;
     std::unique_ptr<SerialWrapper> serialWrapper_;
 
-    handler::ReaderCallback readerCallback_;
+    dispatcher::ReaderCallback readerCallback_;
 };
 
 } // namespace serial

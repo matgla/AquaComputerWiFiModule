@@ -4,8 +4,8 @@
 #include <memory>
 #include <string>
 
-#include "handler/IDataReceiver.hpp"
-#include "handler/handlers.hpp"
+#include "dispatcher/IDataReceiver.hpp"
+#include "dispatcher/handlers.hpp"
 #include "utils/types.hpp"
 
 namespace hal
@@ -14,16 +14,17 @@ namespace net
 {
 namespace socket
 {
-class WebSocket : public handler::IDataReceiver
+class WebSocket : public dispatcher::IDataReceiver
 {
 public:
-    WebSocket(const std::string& uri, u16 port, handler::ReaderCallback handler = handler::defaultReader);
+    WebSocket(const std::string& uri, u16 port,
+              dispatcher::ReaderCallback handler = dispatcher::defaultReader);
     ~WebSocket();
 
     void start();
     void stop();
 
-    void setHandler(handler::ReaderCallback handler) override;
+    void setHandler(dispatcher::ReaderCallback handler) override;
 
 private:
     class WebSocketWrapper;

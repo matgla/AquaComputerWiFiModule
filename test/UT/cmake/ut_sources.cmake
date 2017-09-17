@@ -1,10 +1,12 @@
 set(UT_SRC_DIR "${PROJECT_SOURCE_DIR}/test/UT/src")
 
 set(ut_srcs
-    ${UT_SRC_DIR}/test/handler/messageHandlerTests.cpp
+    ${UT_SRC_DIR}/test/dispatcher/messageHandlerTests.cpp
     ${UT_SRC_DIR}/test/serializer/serializerTests.cpp
-    ${UT_SRC_DIR}/test/handler/dispatcherTests.cpp
-    ${UT_SRC_DIR}/test/handler/jsonHandlerTests.cpp
+    ${UT_SRC_DIR}/test/dispatcher/dispatcherTests.cpp
+    ${UT_SRC_DIR}/test/dispatcher/jsonHandlerTests.cpp
+    ${UT_SRC_DIR}/test/protocol/frameTests.cpp
+    ${UT_SRC_DIR}/test/protocol/frameHandlerTests.cpp
     ${UT_SRC_DIR}/test/testMain.cpp
 
 )

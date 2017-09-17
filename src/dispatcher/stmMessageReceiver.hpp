@@ -1,10 +1,10 @@
 #pragma once
 
-namespace handler
+namespace dispatcher
 {
 
 class StmMessageReceiver
 {
 };
 
-} // namespace handler
+} // namespace dispatcher

@@ -6,12 +6,12 @@
 
 #include <ArduinoJson.h>
 
-#include "handler/IHandler.hpp"
-#include "handler/MessageHandler.hpp"
+#include "dispatcher/IHandler.hpp"
+#include "dispatcher/MessageHandler.hpp"
 #include "logger/logger.hpp"
 #include "utils/types.hpp"
 
-namespace handler
+namespace dispatcher
 {
 
 class JsonHandler : public MessageHandler
@@ -29,4 +29,4 @@ protected:
     std::map<std::string, IHandler::HandlerPtr> handlers_;
 };
 
-} // namespace handler
+} // namespace dispatcher

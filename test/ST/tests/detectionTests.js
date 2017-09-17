@@ -25,6 +25,7 @@ describe("DetectionShould", function () {
     it("DetectMcu", function (done) {
         serial.expect({ "id": "handshake" }, () => {
             serial.send({ "id": "handshake" });
+            serial.send({ "id": "get_info" })
         });
 
         serial.expect({ id: "module_info" }, () => { done(); }).setComparator((expected, received) => {

@@ -3,8 +3,8 @@
 #include <functional>
 #include <memory>
 
-#include "handler/IDataReceiver.hpp"
-#include "handler/handlers.hpp"
+#include "dispatcher/IDataReceiver.hpp"
+#include "dispatcher/handlers.hpp"
 #include "utils/types.hpp"
 
 namespace hal
@@ -13,15 +13,15 @@ namespace net
 {
 namespace socket
 {
-class TcpServer : public handler::IDataReceiver
+class TcpServer : public dispatcher::IDataReceiver
 {
 public:
-    TcpServer(u16 port, handler::ReaderCallback readerCallback = handler::defaultReader);
+    TcpServer(u16 port, dispatcher::ReaderCallback readerCallback = dispatcher::defaultReader);
     ~TcpServer();
     void start();
     void stop();
 
-    void setHandler(handler::ReaderCallback reader) override;
+    void setHandler(dispatcher::ReaderCallback reader) override;
 
     void write(const std::string& data) override
     {

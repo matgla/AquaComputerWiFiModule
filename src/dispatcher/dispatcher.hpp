@@ -6,11 +6,11 @@
 #include <utility>
 #include <vector>
 
-#include "handler/IDataReceiver.hpp"
-#include "handler/IFrameHandler.hpp"
+#include "dispatcher/IDataReceiver.hpp"
+#include "dispatcher/IFrameHandler.hpp"
 #include "logger/logger.hpp"
 
-namespace handler
+namespace dispatcher
 {
 class Dispatcher
 {
@@ -30,4 +30,4 @@ protected:
     HandlerContainer handlers_;
 };
 
-} // namespace handler
+} // namespace dispatcher

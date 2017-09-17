@@ -23,11 +23,9 @@ namespace socket
 class TcpServer::TcpServerImpl
 {
 public:
-    TcpServerImpl(u16 port, handler::ReaderCallback readerCallback)
-        : logger_("TcpServerImpl"),
-          socket_(ioService_),
-          acceptor_(ioService_, tcp::endpoint(tcp::v4(), port)),
-          readerCallback_(readerCallback)
+    TcpServerImpl(u16 port, dispatcher::ReaderCallback readerCallback)
+        : logger_("TcpServerImpl"), socket_(ioService_),
+          acceptor_(ioService_, tcp::endpoint(tcp::v4(), port)), readerCallback_(readerCallback)
     {
     }
 
@@ -40,9 +38,7 @@ public:
     {
         doAccept();
 
-        thread_ = std::thread{[this]() {
-            ioService_.run();
-        }};
+        thread_ = std::thread{[this]() { ioService_.run(); }};
     }
 
     void stop()
@@ -56,7 +52,7 @@ public:
         }
     }
 
-    void setHandler(handler::ReaderCallback reader)
+    void setHandler(dispatcher::ReaderCallback reader)
     {
         for (auto& session : sessions_)
         {
@@ -71,16 +67,16 @@ public:
 private:
     void doAccept()
     {
-        acceptor_.async_accept(socket_,
-                               [this](boost::system::error_code error) {
-                                   if (!error)
-                                   {
-                                       sessions_.push_back(std::make_unique<TcpSession>(std::move(socket_), readerCallback_));
-                                       sessions_.back()->start();
-                                   }
+        acceptor_.async_accept(socket_, [this](boost::system::error_code error) {
+            if (!error)
+            {
+                sessions_.push_back(
+                    std::make_unique<TcpSession>(std::move(socket_), readerCallback_));
+                sessions_.back()->start();
+            }
 
-                                   doAccept();
-                               });
+            doAccept();
+        });
     }
 
     logger::Logger logger_;
@@ -89,11 +85,11 @@ private:
     tcp::acceptor acceptor_;
     std::vector<std::unique_ptr<TcpSession>> sessions_;
     std::thread thread_;
-    handler::ReaderCallback readerCallback_;
+    dispatcher::ReaderCallback readerCallback_;
 };
 
 
-TcpServer::TcpServer(u16 port, handler::ReaderCallback readerCallback)
+TcpServer::TcpServer(u16 port, dispatcher::ReaderCallback readerCallback)
     : tcpServerImpl_(new TcpServerImpl(port, readerCallback))
 {
 }
@@ -110,7 +106,7 @@ void TcpServer::stop()
     tcpServerImpl_->stop();
 }
 
-void TcpServer::setHandler(handler::ReaderCallback reader)
+void TcpServer::setHandler(dispatcher::ReaderCallback reader)
 {
     tcpServerImpl_->setHandler(reader);
 }

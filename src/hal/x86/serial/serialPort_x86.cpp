@@ -32,7 +32,7 @@ public:
     int baudrate_;
     u8 rawBuffer_[1024];
     container::Buffer<2048> buffer_;
-    handler::ReaderCallback readerCallback_;
+    dispatcher::ReaderCallback readerCallback_;
 
 private:
     void loop();
@@ -99,7 +99,7 @@ std::size_t SerialPort::isDataToRecive()
     return serialWrapper_->buffer_.size();
 }
 
-void SerialPort::setHandler(handler::ReaderCallback readerCallback)
+void SerialPort::setHandler(dispatcher::ReaderCallback readerCallback)
 {
     serialWrapper_->readerCallback_ = readerCallback;
 }

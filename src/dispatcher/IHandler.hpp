@@ -4,7 +4,7 @@
 
 #include <ArduinoJson.h>
 
-namespace handler
+namespace dispatcher
 {
 
 class IHandler
@@ -17,4 +17,4 @@ public:
     virtual void onData(const JsonObject& data) = 0;
 };
 
-} // namespace handler
+} // namespace dispatcher

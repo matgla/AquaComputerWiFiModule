@@ -1,11 +1,13 @@
-#include "handler/MessageHandler.hpp"
+#include "dispatcher/MessageHandler.hpp"
 
 #include <functional>
+
+#include <sstream>
 
 #include "message/messages.hpp"
 #include "serializer/serializer.hpp"
 
-namespace handler
+namespace dispatcher
 {
 
 const u8 LENGTH_SIZE = 8; // bytes
@@ -18,7 +20,10 @@ MessageHandler::MessageHandler()
 
 MessageHandler::~MessageHandler()
 {
-    connection_->setHandler(&defaultReader);
+    if (connection_)
+    {
+        connection_->setHandler(&defaultReader);
+    }
 }
 
 bool MessageHandler::transmissionStarted()
@@ -38,6 +43,7 @@ void MessageHandler::receiveMessageLength(u8 data)
     if (0 == lengthToBeReceived_)
     {
         messageLengthReceived_ = true;
+        logger_.info() << "to be received: " << std::to_string(messageLengthToBeReceived_);
         buffer_.reserve(messageLengthToBeReceived_);
     }
 }
@@ -73,8 +79,13 @@ void MessageHandler::initializeTransmission(u8 data, WriterCallback& write)
 
 void MessageHandler::onRead(const u8* buffer, std::size_t length, WriterCallback write)
 {
+    logger_.info() << "on read";
     for (std::size_t i = 0; i < length; ++i)
     {
+        std::stringstream str;
+        str << std::hex << buffer[i];
+        logger_.info() << "b: " << buffer[i] << "(" << std::to_string(buffer[i]) << ") = 0x"
+                       << str.str();
         if (!transmissionStarted_)
         {
             initializeTransmission(buffer[i], write);
@@ -88,12 +99,13 @@ void MessageHandler::onRead(const u8* buffer, std::size_t length, WriterCallback
         }
 
         buffer_.push_back(buffer[i]);
+
         if (0 == --messageLengthToBeReceived_)
         {
             // Received whole message
             transmissionStarted_ = false;
-            buffer_.clear();
             handleData(buffer_);
+            buffer_.clear();
         }
     }
 }
@@ -137,4 +149,4 @@ void MessageHandler::send(const std::string& data)
     send(buffer);
 }
 
-} // namespace handler
+} // namespace dispatcher

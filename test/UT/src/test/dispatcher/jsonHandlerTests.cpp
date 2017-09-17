@@ -1,4 +1,4 @@
-#include "handler/jsonHandler.hpp"
+#include "dispatcher/jsonHandler.hpp"
 
 #include <memory>
 
@@ -10,7 +10,7 @@
 
 using namespace testing;
 
-namespace handler
+namespace dispatcher
 {
 
 class JsonHandlerShould : public Test
@@ -65,4 +65,4 @@ TEST_F(JsonHandlerShould, NotHandleUnregisteredMessage)
     handler_.handleData(payload);
 }
 
-} // namespace handler
+} // namespace dispatcher
