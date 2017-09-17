@@ -4,6 +4,8 @@
 #include <cstring>
 #include <limits>
 
+#include <CRC.h>
+
 #include "protocol/IFrame.hpp"
 #include "utils/types.hpp"
 
@@ -19,8 +21,9 @@ enum FrameByte : u8
 enum Control : u8
 {
     Success = 0x20,
-    PortNotConnect = 0x21,
-    FramingError = 0x22
+    PortNotConnect,
+    CrcChecksumFailed,
+    WrongEndByte
 };
 
 template <u16 PAYLOAD_SIZE = 255>
@@ -97,7 +100,7 @@ public:
 
     u16 crc() const override
     {
-        return 0;
+        return CRC::Calculate(payload_.data(), length_, CRC::CRC_16_ARC());
     }
 
     u8 payloadSize() const override

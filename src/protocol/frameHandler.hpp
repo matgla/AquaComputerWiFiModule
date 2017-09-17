@@ -34,10 +34,24 @@ public:
     void onRead(const u8* buffer, std::size_t length);
     void send(const IFrame& data);
 
-    void addFrameReceiver(u16 port, FrameReceiver frameReceiver);
+    void connect(u16 port, FrameReceiver frameReceiver);
 
 protected:
+    enum class State
+    {
+        IDLE,
+        LENGTH_TRANSMISSION,
+        FRAME_NUMBER_TRANSMISSION,
+        PORT_TRANSMISSION,
+        CONTROL_TRANSMISSION,
+        PAYLOAD_TRANSMISSION,
+        CRC_TRANSMISSION,
+        END_TRANSMISSION
+    };
+
     Frame<FRAME_SIZE> rxBuffer_;
+
+    State state_;
     bool rxTransmissionOngoing_;
     bool rxLengthKnown_;
     bool rxNumberReceived_;

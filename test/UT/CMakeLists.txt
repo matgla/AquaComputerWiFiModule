@@ -14,7 +14,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z")
 find_package(Boost 1.58 COMPONENTS system program_options REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${Beast_INCLUDE_DIR})
-set(target_libs ${target_libs} ${Boost_LIBRARIES} beast ArduinoJson stdc++fs sml)
+set(target_libs ${target_libs} ${Boost_LIBRARIES} beast ArduinoJson stdc++fs sml crcpp)
 
 add_definitions(-DX86_ARCH)
 

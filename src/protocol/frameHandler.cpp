@@ -1,12 +1,14 @@
 #include "protocol/frameHandler.hpp"
+#include "serializer/serializer.hpp"
 
 namespace protocol
 {
 
 FrameHandler::FrameHandler()
-    : logger_("FrameHandler"), rxTransmissionOngoing_(false), rxLengthKnown_(false),
-      rxNumberReceived_(false), rxControlByteReceived_(false), rxPortReceived_(false),
-      rxHeaderReceived_(false), rxCrcBytesReceived_(false), rxLength_(0), rxCrc_(0)
+    : state_(State::IDLE), logger_("FrameHandler"), rxTransmissionOngoing_(false),
+      rxLengthKnown_(false), rxNumberReceived_(false), rxControlByteReceived_(false),
+      rxPortReceived_(false), rxHeaderReceived_(false), rxCrcBytesReceived_(false), rxLength_(0),
+      rxCrc_(0)
 {
 }
 
@@ -26,93 +28,102 @@ void FrameHandler::setConnection(dispatcher::IDataReceiver::RawDataReceiverPtr d
     logger_.info() << "Connection set";
 }
 
-void FrameHandler::onRead(const u8* buffer, std::size_t length)
+void FrameHandler::connect(u16 port, FrameReceiver frameReceiver)
 {
-    logger_.info() << "OnRead";
-    u8 frameBytesToBeReceived = 0;
-    // receive payload
-    if (rxLength_ != 0 && rxHeaderReceived_)
+    if (receivers_.count(port) != 0)
     {
-        logger_.info() << "Data Receive";
-        frameBytesToBeReceived = length > rxLength_ ? rxLength_ : length;
-        if (frameBytesToBeReceived != rxBuffer_.payload(buffer, frameBytesToBeReceived))
-        {
-            logger_.error() << "Received more bytes than frame max size";
-            Frame<0> frame;
-            frame.port(rxBuffer_.port());
-            frame.number(rxBuffer_.number());
-            frame.control(Control::FramingError);
-            send(frame);
-        }
-        rxLength_ -= frameBytesToBeReceived;
+        logger_.warn() << "Connection on port " << port << " exists.";
+        return;
     }
 
-    for (int i = 0 + frameBytesToBeReceived; i < length; ++i)
-    {
-        // start byte
-        if (!rxTransmissionOngoing_ && FrameByte::Start == buffer[i])
-        {
-            rxTransmissionOngoing_ = true;
-            rxLengthKnown_ = false;
-            rxNumberReceived_ = false;
-            rxPortReceived_ = false;
-            rxLength_ = 0;
-            rxCrcBytesReceived_ = 0;
-            rxCrc_ = 0;
-            rxControlByteReceived_ = false;
-            rxHeaderReceived_ = false;
-            rxBuffer_.clear();
-            logger_.info() << "Transmission started";
-            continue;
-        }
-        // length byte
-        if (rxTransmissionOngoing_ && !rxLengthKnown_)
-        {
-            rxLength_ = buffer[i];
-            rxLengthKnown_ = true;
-            logger_.info() << "Length received" << std::to_string(rxLength_);
-            continue;
-        }
-        // part number byte
-        if (rxTransmissionOngoing_ && !rxNumberReceived_)
-        {
-            rxBuffer_.number(buffer[i]);
-            rxNumberReceived_ = true;
-            logger_.info() << "part received";
-            continue;
-        }
-        // port byte
-        if (rxTransmissionOngoing_ && !rxPortReceived_)
-        {
-            rxBuffer_.port(buffer[i]);
-            rxPortReceived_ = true;
-            logger_.info() << "port received";
-            continue;
-        }
-        // control byte
-        if (rxTransmissionOngoing_ && !rxControlByteReceived_)
-        {
-            rxBuffer_.control(buffer[i]);
-            rxControlByteReceived_ = true;
-            rxHeaderReceived_ = true;
-            logger_.info() << "controll received";
-            onRead(buffer + i, length - i);
-            break;
-        }
-        // crc bytes
-        if (rxTransmissionOngoing_ && rxLength_ == 0 && rxCrcBytesReceived_ < 2)
-        {
-            rxCrc_ |= buffer[i] << (8 * (1 - rxCrcBytesReceived_));
-            ++rxCrcBytesReceived_;
-            logger_.info() << "Crc received";
+    receivers_[port] = frameReceiver;
+}
 
-            continue;
-        }
-        // end byte
-        if (rxTransmissionOngoing_ && rxLength_ == 0 && rxCrcBytesReceived_ == 2)
+void FrameHandler::onRead(const u8* buffer, std::size_t length)
+{
+    for (int i = 0; i < length; ++i)
+    {
+        switch (state_)
         {
-            // jesli crc jest ok i otrzymano bajt konca
-            if (rxBuffer_.crc() == rxCrc_ && buffer[i] == FrameByte::End)
+            case State::IDLE:
+            {
+                if (FrameByte::Start == buffer[i])
+                {
+                    rxTransmissionOngoing_ = true;
+                    rxLengthKnown_ = false;
+                    rxNumberReceived_ = false;
+                    rxPortReceived_ = false;
+                    rxLength_ = 0;
+                    rxCrcBytesReceived_ = 0;
+                    rxCrc_ = 0;
+                    rxControlByteReceived_ = false;
+                    rxHeaderReceived_ = false;
+                    rxBuffer_.clear();
+                    state_ = State::LENGTH_TRANSMISSION;
+                }
+            }
+            break;
+
+            case State::LENGTH_TRANSMISSION:
+            {
+                rxLength_ = buffer[i];
+                state_ = State::FRAME_NUMBER_TRANSMISSION;
+            }
+            break;
+
+            case State::FRAME_NUMBER_TRANSMISSION:
+            {
+                rxBuffer_.number(buffer[i]);
+                state_ = State::PORT_TRANSMISSION;
+            }
+            break;
+
+            case State::PORT_TRANSMISSION:
+            {
+                rxBuffer_.port(buffer[i]);
+                state_ = State::CONTROL_TRANSMISSION;
+            }
+            break;
+
+            case State::CONTROL_TRANSMISSION:
+            {
+                rxBuffer_.control(buffer[i]);
+                state_ = State::PAYLOAD_TRANSMISSION;
+            }
+            break;
+
+            case State::PAYLOAD_TRANSMISSION:
+            {
+                u8 frameBytesToBeReceived = 0;
+
+                // receive payload
+                if (rxLength_ != 0)
+                {
+                    frameBytesToBeReceived = length - i > rxLength_ ? rxLength_ : length - i;
+                    rxBuffer_.payload(&buffer[i], frameBytesToBeReceived);
+                    rxLength_ -= frameBytesToBeReceived;
+                    i += frameBytesToBeReceived - 1;
+                }
+
+                if (rxLength_ == 0)
+                {
+                    state_ = State::CRC_TRANSMISSION;
+                }
+            }
+            break;
+
+            case State::CRC_TRANSMISSION:
+            {
+                rxCrc_ |= buffer[i] << 8 * rxCrcBytesReceived_;
+                logger_.info() << std::to_string(rxCrcBytesReceived_);
+                if (++rxCrcBytesReceived_ == 2)
+                {
+                    state_ = State::END_TRANSMISSION;
+                }
+            }
+            break;
+
+            case State::END_TRANSMISSION:
             {
                 if (0 == receivers_.count(rxBuffer_.port()))
                 {
@@ -124,10 +135,28 @@ void FrameHandler::onRead(const u8* buffer, std::size_t length)
                     frame.control(Control::PortNotConnect);
                     send(frame);
                 }
+                else if (rxBuffer_.crc() != rxCrc_)
+                {
+                    logger_.error()
+                        << "CRC failed. Received " << rxCrc_ << " Expected: " << rxBuffer_.crc()
+                        << ", retranssmision requested";
+                    Frame<0> frame;
+                    frame.port(rxBuffer_.port());
+                    frame.number(rxBuffer_.number());
+                    frame.control(Control::CrcChecksumFailed);
+                    send(frame);
+                }
+                else if (buffer[i] != FrameByte::End)
+                {
+                    logger_.error() << "Wrong end received, retranssmision requested";
+                    Frame<0> frame;
+                    frame.port(rxBuffer_.port());
+                    frame.number(rxBuffer_.number());
+                    frame.control(Control::WrongEndByte);
+                    send(frame);
+                }
                 else
                 {
-                    logger_.info() << "Data received";
-
                     Frame<0> frame;
                     frame.port(rxBuffer_.port());
                     frame.number(rxBuffer_.number());
@@ -135,24 +164,10 @@ void FrameHandler::onRead(const u8* buffer, std::size_t length)
                     send(frame);
                     receivers_.at(rxBuffer_.port())(rxBuffer_);
                 }
+                state_ = State::IDLE;
             }
-            continue;
+            break;
         }
-    }
-    if (rxLength_ != 0 && rxHeaderReceived_)
-    {
-        logger_.info() << "Data Receive";
-        frameBytesToBeReceived = length > rxLength_ ? rxLength_ : length;
-        if (frameBytesToBeReceived != rxBuffer_.payload(buffer, frameBytesToBeReceived))
-        {
-            logger_.error() << "Received more bytes than frame max size";
-            Frame<0> frame;
-            frame.port(rxBuffer_.port());
-            frame.number(rxBuffer_.number());
-            frame.control(Control::FramingError);
-            send(frame);
-        }
-        rxLength_ -= frameBytesToBeReceived;
     }
 }
 
@@ -161,6 +176,7 @@ void FrameHandler::send(const IFrame& frame)
     if (!connection_)
     {
         logger_.error() << "Trying to send message while connection aren't set";
+        return;
     }
 
     connection_->write(FrameByte::Start);
@@ -169,7 +185,9 @@ void FrameHandler::send(const IFrame& frame)
     connection_->write(frame.port());
     connection_->write(frame.control());
     connection_->write(frame.payload(), frame.length());
-    connection_->write(frame.crc());
+    u8 crc[2];
+    serializer::serialize(crc, frame.crc());
+    connection_->write(crc, sizeof(crc));
     connection_->write(FrameByte::End);
 }
 

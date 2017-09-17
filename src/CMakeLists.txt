@@ -6,7 +6,7 @@ include_directories("${PROJECT_SOURCE_DIR}/src")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 
-set(target_libs ${target_libs} ArduinoJson sml)
+set(target_libs ${target_libs} ArduinoJson sml crcpp)
 set(target_name AquaLampServer)
 set(target_name_lib firmware)
 

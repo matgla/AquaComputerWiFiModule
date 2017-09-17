@@ -17,4 +17,5 @@ set(ut_incs
     ${UT_SRC_DIR}/mock/writerHandlerMock.hpp
     ${UT_SRC_DIR}/mock/rawDataReceiverMock.hpp
     ${UT_SRC_DIR}/mock/messageHandlerMock.hpp
+    ${UT_SRC_DIR}/stub/receiverStub.hpp
 )
