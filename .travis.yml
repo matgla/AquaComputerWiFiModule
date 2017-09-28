@@ -7,4 +7,6 @@ before_install:
   - docker pull matgla/esp8266
   #- docker run -d -p 127.0.0.1:4567 matgla/esp8266 /bin/sh -c "cd ~; bundler exec foreman start;"
   - docker ps -a
-  - docker run -i -t matgla/esp8266 -v ./:/mnt/repo /bin/sh -c "cd /mnt/repo && sh run_tests.sh"
+
+script:
+  - docker run -v ($pwd):/mnt/repo -it matgla/esp8266 /bin/sh -c "cd /mnt/repo && sh run_tests.sh"
