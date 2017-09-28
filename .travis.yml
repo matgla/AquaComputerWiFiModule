@@ -9,4 +9,4 @@ before_install:
   - docker ps -a
 
 script:
-  - docker run -v $(pwd):/mnt/repo -it matgla/esp8266 /bin/sh -c "cd /mnt/repo && sh run_tests.sh"
+  - docker run -v $(pwd):/mnt/repo -it matgla/esp8266 /bin/sh -c "cd /mnt/repo && sh run_tests.sh && sh build_x86.sh && sh build_esp.sh"
