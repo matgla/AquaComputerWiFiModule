@@ -1,4 +1,4 @@
-#include "dispatcher/MessageHandler.hpp"
+#include "dispatcher/messageHandler.hpp"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
