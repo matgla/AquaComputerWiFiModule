@@ -15,6 +15,10 @@ namespace fs = std::experimental::filesystem;
 const std::string
     SETTINGS_PATH(fs::path(__FILE__).parent_path().parent_path().parent_path().string() +
                   "\\settings_windows.json");
+#elif defined(X86_ARCH) && defined(__linux)
+const std::string
+    SETTINGS_PATH(fs::path(__FILE__).parent_path().parent_path().parent_path().string() +
+                  "\\settings_linux.json");
 #elif defined(ESP8266_ARCH)
 const std::string SETTINGS_PATH("/settings.json");
 #endif // X86_ARCH && WIN32

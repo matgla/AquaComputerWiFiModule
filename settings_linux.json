@@ -1,0 +1,14 @@
+{
+    "loggers": [
+        {
+            "type": "stdout"
+        },
+        {
+            "type": "file",
+            "path": "target.log"
+        }
+    ],
+    "serial": {
+        "port": "/dev/ttyS10"
+    }
+}
