@@ -17,11 +17,6 @@
 namespace protocol
 {
 
-// handler ma obierać całe wiadomości
-// pierwsza ramka to otrzymanie headera
-// kolejne payload
-// ostatnia checksuma
-
 class FrameHandler
 {
 public:
@@ -49,15 +44,12 @@ protected:
         END_TRANSMISSION
     };
 
+    void sendReply(Control status);
+
     Frame<FRAME_SIZE> rxBuffer_;
 
     State state_;
-    bool rxTransmissionOngoing_;
-    bool rxLengthKnown_;
-    bool rxNumberReceived_;
-    bool rxControlByteReceived_;
-    bool rxPortReceived_;
-    bool rxHeaderReceived_;
+
     u8 rxCrcBytesReceived_;
     u8 rxLength_;
     u16 rxCrc_;

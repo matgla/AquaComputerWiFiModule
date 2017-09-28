@@ -5,10 +5,7 @@ namespace protocol
 {
 
 FrameHandler::FrameHandler()
-    : state_(State::IDLE), logger_("FrameHandler"), rxTransmissionOngoing_(false),
-      rxLengthKnown_(false), rxNumberReceived_(false), rxControlByteReceived_(false),
-      rxPortReceived_(false), rxHeaderReceived_(false), rxCrcBytesReceived_(false), rxLength_(0),
-      rxCrc_(0)
+    : state_(State::IDLE), logger_("FrameHandler"), rxCrcBytesReceived_(0), rxLength_(0), rxCrc_(0)
 {
 }
 
@@ -39,6 +36,15 @@ void FrameHandler::connect(u16 port, FrameReceiver frameReceiver)
     receivers_[port] = frameReceiver;
 }
 
+void FrameHandler::sendReply(Control status)
+{
+    Frame<0> frame;
+    frame.port(rxBuffer_.port());
+    frame.number(rxBuffer_.number());
+    frame.control(status);
+    send(frame);
+}
+
 void FrameHandler::onRead(const u8* buffer, std::size_t length)
 {
     for (int i = 0; i < length; ++i)
@@ -49,15 +55,9 @@ void FrameHandler::onRead(const u8* buffer, std::size_t length)
             {
                 if (FrameByte::Start == buffer[i])
                 {
-                    rxTransmissionOngoing_ = true;
-                    rxLengthKnown_ = false;
-                    rxNumberReceived_ = false;
-                    rxPortReceived_ = false;
                     rxLength_ = 0;
                     rxCrcBytesReceived_ = 0;
                     rxCrc_ = 0;
-                    rxControlByteReceived_ = false;
-                    rxHeaderReceived_ = false;
                     rxBuffer_.clear();
                     state_ = State::LENGTH_TRANSMISSION;
                 }
@@ -129,39 +129,23 @@ void FrameHandler::onRead(const u8* buffer, std::size_t length)
                 {
                     logger_.error() << "Handler for port " << std::to_string(rxBuffer_.port())
                                     << " not exists.";
-                    Frame<0> frame;
-                    frame.port(rxBuffer_.port());
-                    frame.number(rxBuffer_.number());
-                    frame.control(Control::PortNotConnect);
-                    send(frame);
+                    sendReply(Control::PortNotConnect);
                 }
                 else if (rxBuffer_.crc() != rxCrc_)
                 {
                     logger_.error()
                         << "CRC failed. Received " << rxCrc_ << " Expected: " << rxBuffer_.crc()
                         << ", retranssmision requested";
-                    Frame<0> frame;
-                    frame.port(rxBuffer_.port());
-                    frame.number(rxBuffer_.number());
-                    frame.control(Control::CrcChecksumFailed);
-                    send(frame);
+                    sendReply(Control::CrcChecksumFailed);
                 }
                 else if (buffer[i] != FrameByte::End)
                 {
-                    logger_.error() << "Wrong end received, retranssmision requested";
-                    Frame<0> frame;
-                    frame.port(rxBuffer_.port());
-                    frame.number(rxBuffer_.number());
-                    frame.control(Control::WrongEndByte);
-                    send(frame);
+                    logger_.error() << "Wrong end byte received";
+                    sendReply(Control::WrongEndByte);
                 }
                 else
                 {
-                    Frame<0> frame;
-                    frame.port(rxBuffer_.port());
-                    frame.number(rxBuffer_.number());
-                    frame.control(Control::Success);
-                    send(frame);
+                    sendReply(Control::Success);
                     receivers_.at(rxBuffer_.port())(rxBuffer_);
                 }
                 state_ = State::IDLE;
