@@ -5,7 +5,7 @@
 #include "serializer/serializer.hpp"
 
 #include "matcher/arrayCompare.hpp"
-#include "stub/ReceiverStub.hpp"
+#include "stub/receiverStub.hpp"
 
 namespace protocol
 {
