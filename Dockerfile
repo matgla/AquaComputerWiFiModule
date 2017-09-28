@@ -37,3 +37,7 @@ RUN echo 'stty -F /dev/ttyS10 -onlcr && stty -F /dev/ttyS11 -onlcr' >> /usr/bin/
 RUN chmod +x /usr/bin/startup.sh
 
 CMD /usr/bin/startup.sh
+
+# CI configuration
+RUN apk add --no-cache libffi-dev libffi openssl-dev
+RUN pip install --user cpp-coveralls
