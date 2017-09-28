@@ -11,9 +11,7 @@
 [submodule "lib/boost/sml"]
 	path = lib/boost/sml
 	url = https://github.com/boost-experimental/sml.git
-[submodule "message"]
-	path = message
-	url = git@bitbucket.org:mateusz_s/aquacomputerservermessages.git
+
 [submodule "lib/CRCpp/CRCpp"]
 	path = lib/CRCpp/CRCpp
 	url = https://github.com/d-bahr/CRCpp.git

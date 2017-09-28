@@ -1,4 +1,4 @@
-#include "dispatcher/MessageHandler.hpp"
+#include "dispatcher/messageHandler.hpp"
 
 #include <functional>
 

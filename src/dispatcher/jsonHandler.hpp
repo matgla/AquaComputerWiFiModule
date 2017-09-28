@@ -7,7 +7,7 @@
 #include <ArduinoJson.h>
 
 #include "dispatcher/IHandler.hpp"
-#include "dispatcher/MessageHandler.hpp"
+#include "dispatcher/messageHandler.hpp"
 #include "logger/logger.hpp"
 #include "utils/types.hpp"
 
