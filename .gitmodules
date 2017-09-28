@@ -14,6 +14,6 @@
 [submodule "message"]
 	path = message
 	url = git@bitbucket.org:mateusz_s/aquacomputerservermessages.git
-[submodule ".\\lib\\CRCpp\\CRCpp"]
-	path = .\\lib\\CRCpp\\CRCpp
+[submodule "lib/CRCpp/CRCpp"]
+	path = lib/CRCpp/CRCpp
 	url = https://github.com/d-bahr/CRCpp.git
