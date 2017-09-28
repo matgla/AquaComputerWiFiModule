@@ -5,6 +5,6 @@ services:
 
 before_install:
   - docker pull matgla/esp8266
-  - docker run -d -p 127.0.0.1:4567 matgla/esp8266 /bin/sh -c "cd ~; bundler exec foreman start;"
+  #- docker run -d -p 127.0.0.1:4567 matgla/esp8266 /bin/sh -c "cd ~; bundler exec foreman start;"
   - docker ps -a
   - docker run matgla/esp8266 /bin/sh -c "git clone https://github.com/matgla/AquaLampWiFiModule.git && cd AquaLampWiFiModule && git submodule update --init && mkdir bin_test && cd bin_test && cmake .. -DBUILD_TEST=ON -DARCH=X86 -GNinja && test/UT/AquaLampServerUTs"
