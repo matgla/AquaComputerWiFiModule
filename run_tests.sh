@@ -1,10 +1,5 @@
 #!/bin/sh
 
-git submodule update --init
-if [ $? -ne 0 ]; then
-    return -1
-fi
-
 mkdir -p bin_test
 if [ $? -ne 0 ]; then
     return -1
