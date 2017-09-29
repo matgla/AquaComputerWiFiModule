@@ -11,7 +11,7 @@ u64 milliseconds()
 {
     auto epoch = std::chrono::high_resolution_clock::from_time_t(0);
     auto now = std::chrono::high_resolution_clock::now();
-    return std::duration_cast<std::chrono::milliseconds>(now - epoch).count();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(now - epoch).count();
 }
 
 } // namespace time
