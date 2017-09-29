@@ -12,6 +12,7 @@ set(esp8266_srcs
     ${ESP_SRC_DIR}/net/socket/websocket_esp.cpp
     ${ESP_SRC_DIR}/serial/serialPort_esp.cpp
     ${ESP_SRC_DIR}/time/sleep_esp.cpp
+    ${ESP_SRC_DIR}/time/time_esp.cpp
 )
 
 set(esp8266_incs

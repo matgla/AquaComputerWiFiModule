@@ -7,8 +7,12 @@ set(ut_srcs
     ${UT_SRC_DIR}/test/dispatcher/jsonHandlerTests.cpp
     ${UT_SRC_DIR}/test/protocol/frameTests.cpp
     ${UT_SRC_DIR}/test/protocol/frameHandlerTests.cpp
+    ${UT_SRC_DIR}/test/timer/intervalTimerTests.cpp
+    ${UT_SRC_DIR}/test/timer/managerTests.cpp
+    ${UT_SRC_DIR}/test/timer/timeoutTimerTests.cpp
     ${UT_SRC_DIR}/test/testMain.cpp
 
+    ${UT_SRC_DIR}/stub/timeStub.cpp
 )
 
 set(ut_incs
@@ -18,4 +22,5 @@ set(ut_incs
     ${UT_SRC_DIR}/mock/rawDataReceiverMock.hpp
     ${UT_SRC_DIR}/mock/messageHandlerMock.hpp
     ${UT_SRC_DIR}/stub/receiverStub.hpp
+    ${UT_SRC_DIR}/stub/timeStub.hpp
 )

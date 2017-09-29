@@ -1,6 +1,7 @@
 enable_testing()
 
 include(cmake/ut_sources.cmake)
+include(cmake/target_sources.cmake)
 include(${PROJECT_SOURCE_DIR}/src/cmake/common_sources.cmake)
 include(${PROJECT_SOURCE_DIR}/src/cmake/x86_sources.cmake)
 
@@ -28,7 +29,7 @@ add_executable(AquaLampServerUTs ${ut_srcs}
                                  ${ut_incs}
                                  ${common_srcs}
                                  ${common_incs}
-                                 ${x86_srcs}
+                                 ${target_srcs}
                                  ${x86_incs}
 )
 

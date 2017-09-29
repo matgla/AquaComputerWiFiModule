@@ -21,6 +21,9 @@ set(common_srcs
     ${COMMON_SRC_DIR}/stream/fileOStream.cpp
     ${COMMON_SRC_DIR}/statemachine/mcuConnection.cpp
     ${COMMON_SRC_DIR}/statemachine/mcuConnectionFrontEnd.cpp
+    ${COMMON_SRC_DIR}/timer/intervalTimer.cpp
+    ${COMMON_SRC_DIR}/timer/manager.cpp
+    ${COMMON_SRC_DIR}/timer/timeoutTimer.cpp
     ${COMMON_SRC_DIR}/protocol/frameHandler.cpp
     ${COMMON_SRC_DIR}/protocol/packetHandler.cpp
 )
@@ -38,6 +41,7 @@ set(common_incs
     ${COMMON_SRC_DIR}/hal/net/socket/websocket.hpp
     ${COMMON_SRC_DIR}/hal/serial/serialPort.hpp
     ${COMMON_SRC_DIR}/hal/time/sleep.hpp
+    ${COMMON_SRC_DIR}/hal/time/time.hpp
     ${COMMON_SRC_DIR}/dispatcher/dispatcher.hpp
     ${COMMON_SRC_DIR}/dispatcher/jsonHandler.hpp
     ${COMMON_SRC_DIR}/dispatcher/handlers.hpp
@@ -65,6 +69,11 @@ set(common_incs
     ${COMMON_SRC_DIR}/stream/fileBuffer.hpp
     ${COMMON_SRC_DIR}/stream/fileOStream.hpp
     ${COMMON_SRC_DIR}/stream/socketStream.hpp
+    ${COMMON_SRC_DIR}/timer/IManager.hpp
+    ${COMMON_SRC_DIR}/timer/intervalTimer.hpp
+    ${COMMON_SRC_DIR}/timer/ITimer.hpp
+    ${COMMON_SRC_DIR}/timer/manager.hpp
+    ${COMMON_SRC_DIR}/timer/timeoutTimer.hpp
     ${COMMON_SRC_DIR}/utils/types.hpp
     ${COMMON_SRC_DIR}/protocol/frame.hpp
     ${COMMON_SRC_DIR}/protocol/IFrame.hpp
