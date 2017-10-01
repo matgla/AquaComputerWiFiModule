@@ -131,6 +131,27 @@ TEST_F(FrameHandlerShould, NackWhenWrongEndByteReceived)
     EXPECT_THAT(receiver_->writeBuffer.data(),
                 ArrayCompare(expectedNackFrame, sizeof(expectedNackFrame)));
 }
+
+TEST_F(FrameHandlerShould, SuccessWithEmptyPayload)
+{
+    u8 frameNumber = 0;
+    const u16 testingPort = 10;
+    const u16 controlByte = messages::Control::Transmission;
+
+    u8 crc[2] = {0, 0};
+
+    const u8 frame[] = {FrameByte::Start, 0,      frameNumber, testingPort,
+                        controlByte,      crc[0], crc[1],      FrameByte::End};
+
+    handler_.connect(testingPort, emptyFrameReceiver);
+    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
+
+    const u8 expectedAckFrame[] = {FrameByte::Start,           0,   frameNumber, testingPort,
+                                   messages::Control::Success, 0x0, 0x0,         FrameByte::End};
+
+    EXPECT_THAT(receiver_->writeBuffer.data(),
+                ArrayCompare(expectedAckFrame, sizeof(expectedAckFrame)));
+}
 }
 
 
