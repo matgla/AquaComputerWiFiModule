@@ -28,11 +28,13 @@ ITimer::TimerPtr Manager::setInterval(u32 milliseconds, ITimer::TimerCallback ca
 
 void Manager::run()
 {
+    for (auto& timer : timers_)
+    {
+        timer->run();
+    }
+
     timers_.erase(std::remove_if(timers_.begin(), timers_.end(),
-                                 [](const ITimer::TimerPtr& timer) {
-                                     timer->run();
-                                     return !timer->enabled();
-                                 }),
+                                 [](const ITimer::TimerPtr& timer) { return !timer->enabled(); }),
                   timers_.end());
 }
 

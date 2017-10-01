@@ -91,13 +91,16 @@ void FrameHandler::onRead(const u8* buffer, std::size_t length, dispatcher::Writ
             case State::CONTROL_TRANSMISSION:
             {
                 rxBuffer_.control(buffer[i]);
-                if (rxBuffer_.length() > 0)
+                logger_.info() << "Len: " << std::to_string(rxLength_);
+                if (rxLength_ > 0)
                 {
                     state_ = State::PAYLOAD_TRANSMISSION;
+                    logger_.info() << "payload";
                 }
                 else
                 {
                     state_ = State::CRC_TRANSMISSION;
+                    logger_.info() << "crc";
                 }
             }
             break;
@@ -149,6 +152,7 @@ void FrameHandler::onRead(const u8* buffer, std::size_t length, dispatcher::Writ
                 }
                 else if (buffer[i] != FrameByte::End)
                 {
+                    logger_.error() << "Wrong end byte received";
                     sendReply(messages::Control::WrongEndByte);
                 }
                 else
