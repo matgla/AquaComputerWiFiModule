@@ -10,7 +10,9 @@ namespace protocol
 class IFrame
 {
 public:
-    //  using FramePtr = std::unique_ptr<IFrame>;
+    using FramePtr = std::unique_ptr<IFrame>;
+
+    virtual ~IFrame() = default;
 
     virtual void port(u8 port) = 0;
     virtual u8 port() const = 0;

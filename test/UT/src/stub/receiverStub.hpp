@@ -2,40 +2,47 @@
 
 #include "dispatcher/IDataReceiver.hpp"
 
+#include "logger/logger.hpp"
+
 namespace stub
 {
 struct ReceiverStub : public dispatcher::IDataReceiver
 {
-    void setHandler(dispatcher::ReaderCallback readerCallback) override
+    ReceiverStub() : logger("Receiver stub") {}
+
+    void setHandler(dispatcher::ReaderCallback callback) override
     {
-        readerCallback_ = readerCallback;
+        u8 test[] = { 1, 2, 3 };
+        logger.info() << "Set reader callback";
+        readerCallback = callback;
     }
 
-    void write(const std::string& data)
+    void write(const std::string& data) override
     {
-        writeBuffer_.resize(writeBuffer_.size() + data.length());
-        memcpy(writeBuffer_.data() + writeBuffer_.size() - data.length(), data.c_str(),
+        writeBuffer.resize(writeBuffer.size() + data.length());
+        memcpy(writeBuffer.data() + writeBuffer.size() - data.length(), data.c_str(),
                data.length());
     }
 
-    void write(const u8* buf, std::size_t size)
+    void write(const u8* buf, const std::size_t size) override
     {
-        writeBuffer_.resize(writeBuffer_.size() + size);
-        memcpy(writeBuffer_.data() + writeBuffer_.size() - size, buf, size);
+        writeBuffer.resize(writeBuffer.size() + size);
+        memcpy(writeBuffer.data() + writeBuffer.size() - size, buf, size);
     }
 
-    void write(u8 byte)
+    void write(const u8 byte) override
     {
-        writeBuffer_.push_back(byte);
+        writeBuffer.push_back(byte);
     }
 
     void clearBuffers()
     {
-        writeBuffer_.clear();
+        writeBuffer.clear();
     }
 
-    dispatcher::ReaderCallback readerCallback_;
+    dispatcher::ReaderCallback readerCallback;
 
-    DataBuffer writeBuffer_;
+    DataBuffer writeBuffer;
+    logger::Logger logger;
 };
 } // namespace stub

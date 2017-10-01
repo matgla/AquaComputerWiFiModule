@@ -12,21 +12,16 @@
 namespace protocol
 {
 
+const u16 MaxPayloadSize = 247;
+
 enum FrameByte : u8
 {
     Start = 0xaa,
     End = 0x11
 };
 
-enum Control : u8
-{
-    Success = 0x20,
-    PortNotConnect,
-    CrcChecksumFailed,
-    WrongEndByte
-};
 
-template <u16 PAYLOAD_SIZE = 255>
+template <u16 PAYLOAD_SIZE = MaxPayloadSize>
 class Frame : public IFrame
 {
     static_assert((PAYLOAD_SIZE <= std::numeric_limits<u8>::max()), "Payload size must be < 256");

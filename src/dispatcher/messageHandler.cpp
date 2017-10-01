@@ -1,7 +1,7 @@
 #include "dispatcher/messageHandler.hpp"
 
 #include <functional>
-
+#include <iterator>
 #include <sstream>
 
 #include "message/messages.hpp"

@@ -10,6 +10,7 @@
 #include "logger/logger.hpp"
 #include "protocol/IFrame.hpp"
 #include "protocol/frame.hpp"
+#include "protocol/messages/control.hpp"
 #include "statemachine/helper.hpp"
 
 #define FRAME_SIZE 255
@@ -26,7 +27,6 @@ public:
 
     void setConnection(dispatcher::IDataReceiver::RawDataReceiverPtr dataReceiver);
 
-    void onRead(const u8* buffer, std::size_t length);
     void send(const IFrame& data);
 
     void connect(u16 port, FrameReceiver frameReceiver);
@@ -44,7 +44,8 @@ protected:
         END_TRANSMISSION
     };
 
-    void sendReply(Control status);
+    void sendReply(messages::Control status);
+    void onRead(const u8* buffer, std::size_t length, dispatcher::WriterCallback writer);
 
     Frame<FRAME_SIZE> rxBuffer_;
 

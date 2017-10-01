@@ -11,7 +11,7 @@ include_directories(${PROJECT_SOURCE_DIR}/test/UT/src)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z")
+set (CMAKE_CXX_STANDARD 14)
 find_package(Boost 1.58 COMPONENTS system program_options REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${Beast_INCLUDE_DIR})

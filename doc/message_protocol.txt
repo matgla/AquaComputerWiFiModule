@@ -25,6 +25,8 @@ Max message = 256 frames
 
 Next message is proceses when sender recive confirmation for message.
 
+Timeout for ack for frame is 400 ms. After timeout retransmission.
+
 3) Framing Layer
 
 Max payload size is 256 bytes.
@@ -45,3 +47,12 @@ bits  0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7
      |            CRC16            |       end       |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+CRC16 for payload only.
+
+4) Packet
+
+First frame is message header
+
+next frames are payload
+
+last frame crc32

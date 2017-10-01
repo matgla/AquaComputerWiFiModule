@@ -79,4 +79,5 @@ set(common_incs
     ${COMMON_SRC_DIR}/protocol/IFrame.hpp
     ${COMMON_SRC_DIR}/protocol/frameHandler.hpp
     ${COMMON_SRC_DIR}/protocol/packetHandler.hpp
+    ${COMMON_SRC_DIR}/protocol/messages/control.hpp
 )

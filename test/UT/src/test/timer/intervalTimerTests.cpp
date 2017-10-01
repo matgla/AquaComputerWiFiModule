@@ -20,6 +20,7 @@ TEST(IntervalTimerShould, fireAfterTimeout)
     EXPECT_TRUE(timer->enabled());
     stub::time::forwardTime(99);
     timer->run();
+
     EXPECT_FALSE(fired);
     EXPECT_TRUE(timer->enabled());
 

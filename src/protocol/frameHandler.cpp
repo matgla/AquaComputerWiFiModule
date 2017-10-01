@@ -1,4 +1,6 @@
 #include "protocol/frameHandler.hpp"
+
+#include "protocol/messages/control.hpp"
 #include "serializer/serializer.hpp"
 
 namespace protocol
@@ -20,8 +22,9 @@ FrameHandler::~FrameHandler()
 void FrameHandler::setConnection(dispatcher::IDataReceiver::RawDataReceiverPtr dataReceiver)
 {
     connection_ = dataReceiver;
-    dataReceiver->setHandler(
-        std::bind(&FrameHandler::onRead, this, std::placeholders::_1, std::placeholders::_2));
+    dataReceiver->setHandler(std::bind(&FrameHandler::onRead, this, std::placeholders::_1,
+                                       std::placeholders::_2, std::placeholders::_3));
+
     logger_.info() << "Connection set";
 }
 
@@ -36,7 +39,7 @@ void FrameHandler::connect(u16 port, FrameReceiver frameReceiver)
     receivers_[port] = frameReceiver;
 }
 
-void FrameHandler::sendReply(Control status)
+void FrameHandler::sendReply(messages::Control status)
 {
     Frame<0> frame;
     frame.port(rxBuffer_.port());
@@ -45,7 +48,7 @@ void FrameHandler::sendReply(Control status)
     send(frame);
 }
 
-void FrameHandler::onRead(const u8* buffer, std::size_t length)
+void FrameHandler::onRead(const u8* buffer, std::size_t length, dispatcher::WriterCallback writer)
 {
     for (int i = 0; i < length; ++i)
     {
@@ -88,7 +91,14 @@ void FrameHandler::onRead(const u8* buffer, std::size_t length)
             case State::CONTROL_TRANSMISSION:
             {
                 rxBuffer_.control(buffer[i]);
-                state_ = State::PAYLOAD_TRANSMISSION;
+                if (rxBuffer_.length() > 0)
+                {
+                    state_ = State::PAYLOAD_TRANSMISSION;
+                }
+                else
+                {
+                    state_ = State::CRC_TRANSMISSION;
+                }
             }
             break;
 
@@ -115,7 +125,6 @@ void FrameHandler::onRead(const u8* buffer, std::size_t length)
             case State::CRC_TRANSMISSION:
             {
                 rxCrc_ |= buffer[i] << 8 * rxCrcBytesReceived_;
-                logger_.info() << std::to_string(rxCrcBytesReceived_);
                 if (++rxCrcBytesReceived_ == 2)
                 {
                     state_ = State::END_TRANSMISSION;
@@ -129,23 +138,25 @@ void FrameHandler::onRead(const u8* buffer, std::size_t length)
                 {
                     logger_.error() << "Handler for port " << std::to_string(rxBuffer_.port())
                                     << " not exists.";
-                    sendReply(Control::PortNotConnect);
+                    sendReply(messages::Control::PortNotConnect);
                 }
                 else if (rxBuffer_.crc() != rxCrc_)
                 {
                     logger_.error()
                         << "CRC failed. Received " << rxCrc_ << " Expected: " << rxBuffer_.crc()
                         << ", retranssmision requested";
-                    sendReply(Control::CrcChecksumFailed);
+                    sendReply(messages::Control::CrcChecksumFailed);
                 }
                 else if (buffer[i] != FrameByte::End)
                 {
-                    logger_.error() << "Wrong end byte received";
-                    sendReply(Control::WrongEndByte);
+                    sendReply(messages::Control::WrongEndByte);
                 }
                 else
                 {
-                    sendReply(Control::Success);
+                    if (rxBuffer_.control() == messages::Control::Transmission)
+                    {
+                        sendReply(messages::Control::Success);
+                    }
                     receivers_.at(rxBuffer_.port())(rxBuffer_);
                 }
                 state_ = State::IDLE;

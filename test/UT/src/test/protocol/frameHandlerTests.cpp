@@ -44,17 +44,18 @@ TEST_F(FrameHandlerShould, Success)
                         crc[1],           FrameByte::End};
 
     handler_.connect(testingPort, emptyFrameReceiver);
-    handler_.onRead(frame, sizeof(frame));
+    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
 
-    const u8 expectedNackFrame[] = {FrameByte::Start, 0,   frameNumber, testingPort,
-                                    Control::Success, 0x0, 0x0,         FrameByte::End};
+    const u8 expectedNackFrame[] = {FrameByte::Start,           0,   frameNumber, testingPort,
+                                    messages::Control::Success, 0x0, 0x0,         FrameByte::End};
 
-    EXPECT_THAT(receiver_->writeBuffer_.data(),
+    EXPECT_THAT(receiver_->writeBuffer.data(),
                 ArrayCompare(expectedNackFrame, sizeof(expectedNackFrame)));
 
-    receiver_->writeBuffer_.clear();
-    handler_.onRead(frame, sizeof(frame));
-    EXPECT_THAT(receiver_->writeBuffer_.data(),
+    receiver_->writeBuffer.clear();
+    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
+
+    EXPECT_THAT(receiver_->writeBuffer.data(),
                 ArrayCompare(expectedNackFrame, sizeof(expectedNackFrame)));
 }
 
@@ -69,12 +70,13 @@ TEST_F(FrameHandlerShould, NackWithPortNotConnected)
         FrameByte::Start, sizeof(payload), frameNumber, testingPort, controlByte,
         payload[0],       payload[1],      0x0,         0x0,         FrameByte::End};
 
-    handler_.onRead(frame, sizeof(frame));
+    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
 
-    const u8 expectedNackFrame[] = {FrameByte::Start,        0,   frameNumber, testingPort,
-                                    Control::PortNotConnect, 0x0, 0x0,         FrameByte::End};
+    const u8 expectedNackFrame[] = {
+        FrameByte::Start, 0, frameNumber, testingPort, messages::Control::PortNotConnect, 0x0, 0x0,
+        FrameByte::End};
 
-    EXPECT_THAT(receiver_->writeBuffer_.data(),
+    EXPECT_THAT(receiver_->writeBuffer.data(),
                 ArrayCompare(expectedNackFrame, sizeof(expectedNackFrame)));
 }
 
@@ -90,12 +92,18 @@ TEST_F(FrameHandlerShould, NackWhenCrcCalculationFailed)
         payload[0],       payload[1],      0x0,         0x0,         FrameByte::End};
 
     handler_.connect(testingPort, emptyFrameReceiver);
-    handler_.onRead(frame, sizeof(frame));
+    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
 
-    const u8 expectedNackFrame[] = {FrameByte::Start,           0,   frameNumber, testingPort,
-                                    Control::CrcChecksumFailed, 0x0, 0x0,         FrameByte::End};
+    const u8 expectedNackFrame[] = {FrameByte::Start,
+                                    0,
+                                    frameNumber,
+                                    testingPort,
+                                    messages::Control::CrcChecksumFailed,
+                                    0x0,
+                                    0x0,
+                                    FrameByte::End};
 
-    EXPECT_THAT(receiver_->writeBuffer_.data(),
+    EXPECT_THAT(receiver_->writeBuffer.data(),
                 ArrayCompare(expectedNackFrame, sizeof(expectedNackFrame)));
 }
 
@@ -114,12 +122,16 @@ TEST_F(FrameHandlerShould, NackWhenWrongEndByteReceived)
                         crc[1],           FrameByte::Start};
 
     handler_.connect(testingPort, emptyFrameReceiver);
-    handler_.onRead(frame, sizeof(frame));
+    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
 
-    const u8 expectedNackFrame[] = {FrameByte::Start,      0,   frameNumber, testingPort,
-                                    Control::WrongEndByte, 0x0, 0x0,         FrameByte::End};
+    const u8 expectedNackFrame[] = {
+        FrameByte::Start, 0, frameNumber, testingPort, messages::Control::WrongEndByte, 0x0, 0x0,
+        FrameByte::End};
 
-    EXPECT_THAT(receiver_->writeBuffer_.data(),
+    EXPECT_THAT(receiver_->writeBuffer.data(),
                 ArrayCompare(expectedNackFrame, sizeof(expectedNackFrame)));
 }
 }
+
+
+// TODO: Test na ramkowanie 0 payload
