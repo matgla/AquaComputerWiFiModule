@@ -20,4 +20,6 @@ if [ $? -ne 0 ]; then
     return -1
 fi
 
+chmod -R 777 .
+
 test/UT/AquaLampServerUTs
