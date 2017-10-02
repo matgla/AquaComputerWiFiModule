@@ -10,7 +10,7 @@ if [ $? -ne 0 ]; then
     return -1
 fi
 
-cmake .. -DBUILD_TESTS=ON -DARCH=X86 -GNinja
+cmake .. -DBUILD_TESTS=ON -DGCOV=ON -DARCH=X86 -GNinja
 if [ $? -ne 0 ]; then
     return -1
 fi
