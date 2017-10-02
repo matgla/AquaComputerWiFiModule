@@ -12,4 +12,4 @@ script:
 
 after_success:
   - cd ${TRAVIS_BUILD_DIR}
-  - coveralls --exclude lib --exclude test --gcov-options '\-lp'
+  - coveralls --exclude lib --exclude test --exclude src/hal --gcov-options '\-lp'
