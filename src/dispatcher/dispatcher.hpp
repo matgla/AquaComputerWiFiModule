@@ -19,7 +19,7 @@ public:
 
     Dispatcher();
 
-    void addHandler(IFrameHandler::HandlerPtr receiver, const std::string& name);
+    void addHandler(IFrameHandler::HandlerPtr handler, const std::string& name);
     void removeHandler(const std::string& name);
 
     const HandlerContainer& getHandlers() const;

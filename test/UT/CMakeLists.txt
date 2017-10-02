@@ -33,6 +33,8 @@ add_executable(AquaLampServerUTs ${ut_srcs}
                                  ${x86_incs}
 )
 
+set(clang_tidy_srcs ${clang_tidy_srcs} ${ut_srcs} ${target_srcs} CACHE INTERNAL "clang_tidy_srcs")
+
 set(testing_libs ${testing_libs} gmock gtest pthread)
 
 target_link_libraries(AquaLampServerUTs ${target_libs} ${common_libs} ${testing_libs})

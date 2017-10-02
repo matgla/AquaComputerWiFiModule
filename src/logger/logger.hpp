@@ -14,6 +14,10 @@ class Logger
 {
 public:
     Logger(const std::string& name = "", bool insertNewlineWhenDestruct = false);
+    Logger(const Logger&) = delete;
+    Logger(const Logger&&) = delete;
+    Logger& operator=(const Logger&& other) = delete;
+    Logger& operator=(const Logger& other) = delete;
     ~Logger();
     void add(LoggerBase logger);
 

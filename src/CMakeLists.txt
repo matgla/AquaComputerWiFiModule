@@ -39,8 +39,7 @@ elseif (${ARCH} STREQUAL "ESP8266")
 endif (${ARCH} STREQUAL "X86")
 
 add_library(${target_name_lib} STATIC ${production_srcs})
-
-message("Linking with: ${target_libs}")
+set(clang_tidy_srcs ${clang_tidy_srcs} ${common_srcs} ${x86_srcs} CACHE INTERNAL "clang_tidy_srcs")
 
 target_link_libraries(${target_name_lib} PUBLIC ${target_libs} ${common_libs})
 

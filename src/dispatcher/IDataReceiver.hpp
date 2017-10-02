@@ -14,6 +14,10 @@ public:
     using RawDataReceiverPtr = std::shared_ptr<IDataReceiver>;
 
     virtual ~IDataReceiver() = default;
+    IDataReceiver(const IDataReceiver&) = delete;
+    IDataReceiver(const IDataReceiver&&) = delete;
+    IDataReceiver& operator=(const IDataReceiver&&) = delete;
+    IDataReceiver& operator=(const IDataReceiver&) = delete;
 
     virtual void setHandler(ReaderCallback readerCallback) = 0;
 

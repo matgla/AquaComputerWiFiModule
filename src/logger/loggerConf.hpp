@@ -11,17 +11,18 @@ namespace logger
 class LoggerConf final
 {
 public:
+    LoggerConf(const LoggerConf&) = delete;
+    LoggerConf(const LoggerConf&&) = delete;
+    LoggerConf& operator=(const LoggerConf&) = delete;
+    LoggerConf& operator=(const LoggerConf&&) = delete;
+    ~LoggerConf() = default;
+
     void add(LoggerBase logger);
     static LoggerConf& get();
     std::vector<LoggerBase>& getLoggers();
 
 private:
     LoggerConf() = default;
-    LoggerConf(const LoggerConf&) = delete;
-    LoggerConf(const LoggerConf&&) = delete;
-    LoggerConf(LoggerConf&) = delete;
-    LoggerConf(LoggerConf&&) = delete;
-    void operator=(LoggerConf&) = delete;
 
     std::vector<LoggerBase> loggers_;
 };
