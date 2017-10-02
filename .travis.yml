@@ -5,8 +5,15 @@ services:
 
 before_install:
   - docker pull matgla/esp8266
-  #- docker run -d -p 127.0.0.1:4567 matgla/esp8266 /bin/sh -c "cd ~; bundler exec foreman start;"
   - docker ps -a
+  - gem install coveralls-lcov
 
 script:
   - docker run -v $(pwd):/mnt/repo -it matgla/esp8266 /bin/sh -c "cd /mnt/repo && sh run_tests.sh && sh build_x86.sh"
+
+after_success:
+  - cd ${TRAVIS_BUILD_DIR}
+  - lcov --directory . --capture --output-file coverage.info
+  - lcov --remove coverage.info 'tests/*' '/usr/*' '/lib/*' --output-file coverage.info 
+  - lcov --list coverage.info 
+  - coveralls-lcov --repo-token ${COVERALLS_TOKEN} coverage.info 
