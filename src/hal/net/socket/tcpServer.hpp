@@ -18,6 +18,11 @@ class TcpServer : public dispatcher::IDataReceiver
 public:
     TcpServer(u16 port, dispatcher::ReaderCallback readerCallback = dispatcher::defaultReader);
     ~TcpServer();
+    TcpServer(const TcpServer&) = delete;
+    TcpServer(const TcpServer&&) = delete;
+    TcpServer& operator=(const TcpServer&&) = delete;
+    TcpServer& operator=(const TcpServer&) = delete;
+
     void start();
     void stop();
 

@@ -32,6 +32,12 @@ public:
 
 struct ReceiverForTest : public dispatcher::IDataReceiver
 {
+    ReceiverForTest() = default;
+    ReceiverForTest(const ReceiverForTest&) = delete;
+    ReceiverForTest(const ReceiverForTest&&) = delete;
+    ReceiverForTest& operator=(const ReceiverForTest&&) = delete;
+    ReceiverForTest& operator=(const ReceiverForTest&) = delete;
+    ~ReceiverForTest() = default;
     void setHandler(ReaderCallback readerCallback) override
     {
         readerCallback_ = readerCallback;

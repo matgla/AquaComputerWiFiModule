@@ -6,7 +6,7 @@ target_sources(arduino PRIVATE
     ${WEBSERVER_LIB_SRC}
 )
 
-target_include_directories(arduino PUBLIC
+target_include_directories(arduino SYSTEM PUBLIC
     ${ARDUINO_ESP8266_DIR}/libraries/ESP8266WebServer/src
 )
 

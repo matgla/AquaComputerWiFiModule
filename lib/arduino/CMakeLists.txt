@@ -54,7 +54,7 @@ add_library(arduino STATIC
     ${ARDUINO_SOURCES}
 )
 
-target_include_directories(arduino PUBLIC
+target_include_directories(arduino SYSTEM PUBLIC
     ${ARDUINO_ESP8266_DIR}/cores/esp8266
     ${ARDUINO_ESP8266_DIR}/tools/sdk/include
     ${ARDUINO_ESP8266_DIR}/tools/sdk/lwip/include

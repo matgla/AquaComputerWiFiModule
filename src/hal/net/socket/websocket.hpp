@@ -20,6 +20,10 @@ public:
     WebSocket(const std::string& uri, u16 port,
               dispatcher::ReaderCallback handler = dispatcher::defaultReader);
     ~WebSocket();
+    WebSocket(const WebSocket&) = delete;
+    WebSocket(const WebSocket&&) = delete;
+    WebSocket& operator=(const WebSocket&&) = delete;
+    WebSocket& operator=(const WebSocket&) = delete;
 
     void start();
     void stop();

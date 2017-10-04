@@ -64,15 +64,10 @@ endif()
 set (clang_tidy_srcs "" CACHE INTERNAL "clang tidy sources")
 
 if (CLANG_TIDY)
-    find_program(CLANG_TIDY_BIN clang-tidy-5.0)
-    find_program(RUN_CLANG_TIDY_BIN run-clang-tidy-5.0.py)
+    find_program(CLANG_TIDY_BIN clang-tidy)
 
     if(CLANG_TIDY_BIN STREQUAL "CLANG_TIDY_BIN-NOTFOUND")
         message(FATAL_ERROR "unable to locate clang-tidy-5.0")
-    endif()
-
-    if(RUN_CLANG_TIDY_BIN STREQUAL "RUN_CLANG_TIDY_BIN-NOTFOUND")
-        message(FATAL_ERROR "unable to locate run-clang-tidy-5.0.py")
     endif()
 
     set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES 0)
@@ -156,7 +151,7 @@ add_subdirectory(lib)
 if (CLANG_TIDY)
     add_custom_target(
         clang_tidy
-        COMMAND ${CLANG_TIDY_BIN} -checks=clan*,cert*,misc*,perf*,cppc*,read*,mode*,-cert-err58-cpp,-cert-dc158-cpp,-misc-noexcept-move-constructor -header-filter="src/*" -p . ${clang_tidy_srcs}
+        COMMAND ${CLANG_TIDY_BIN} -checks=clan*,cert*,misc*,perf*,cppc*,read*,mode*,-cert-err58-cpp,-cert-dc158-cpp,-misc-noexcept-move-constructor -header-filter="src" -p . ${clang_tidy_srcs}
         COMMENT "running clang tidy"
     )
 endif (CLANG_TIDY)

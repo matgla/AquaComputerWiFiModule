@@ -6,7 +6,7 @@ add_library(esp8266mdns STATIC
     ${MDNS_LIB_SRC}
 )
 
-target_include_directories(esp8266mdns PUBLIC
+target_include_directories(esp8266mdns SYSTEM PUBLIC
     ${ARDUINO_ESP8266_DIR}/libraries/ESP8266mDNS
 )
 

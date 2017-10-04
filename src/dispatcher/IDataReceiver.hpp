@@ -12,7 +12,7 @@ class IDataReceiver
 {
 public:
     using RawDataReceiverPtr = std::shared_ptr<IDataReceiver>;
-
+    IDataReceiver() = default;
     virtual ~IDataReceiver() = default;
     IDataReceiver(const IDataReceiver&) = delete;
     IDataReceiver(const IDataReceiver&&) = delete;

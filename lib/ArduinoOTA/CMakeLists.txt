@@ -6,7 +6,7 @@ add_library(esp8266arduino_ota STATIC
     ${ARDUINO_OTA_LIB_SRC}
 )
 
-target_include_directories(esp8266arduino_ota PUBLIC
+target_include_directories(esp8266arduino_ota SYSTEM PUBLIC
     ${ARDUINO_ESP8266_DIR}/libraries/ArduinoOTA
 )
 

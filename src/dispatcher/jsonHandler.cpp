@@ -33,20 +33,20 @@ void JsonHandler::handleData(const DataBuffer& data)
     handlers_[key]->onData(obj);
 }
 
-void JsonHandler::addMessageHandler(const std::string& messageName, IHandler::HandlerPtr handler)
+void JsonHandler::addMessageHandler(const std::string& name, IHandler::HandlerPtr handler)
 {
-    if (handlers_.count(messageName) != 0)
+    if (handlers_.count(name) != 0)
     {
-        logger_.warn() << "Handler for message " << messageName
+        logger_.warn() << "Handler for message " << name
                        << " exists and will be replaced with new one";
     }
-    handlers_[messageName] = std::move(handler);
+    handlers_[name] = std::move(handler);
 }
 
-void JsonHandler::send(const JsonObject& data)
+void JsonHandler::send(const JsonObject& message)
 {
     std::string buffer;
-    data.printTo(buffer);
+    message.printTo(buffer);
 
     MessageHandler::send(buffer);
 }

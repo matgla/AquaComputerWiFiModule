@@ -15,11 +15,12 @@ class IFrameHandler
 public:
     using HandlerPtr = std::unique_ptr<IFrameHandler>;
 
+    IFrameHandler() = default;
     virtual ~IFrameHandler() = default;
     IFrameHandler(const IFrameHandler&) = delete;
-    IFrameHandler(const IFrameHandler&&) = delete;
-    IFrameHandler& operator=(const IFrameHandler&& other) = delete;
-    IFrameHandler& operator=(const IFrameHandler& other) = delete;
+    // IFrameHandler(const IFrameHandler&&) = delete;
+    // IFrameHandler& operator=(const IFrameHandler&& other) = delete;
+    // IFrameHandler& operator=(const IFrameHandler& other) = delete;
 
     virtual void onRead(const u8* buffer, std::size_t length, WriterCallback write) = 0;
 

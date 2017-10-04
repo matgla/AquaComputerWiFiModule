@@ -14,8 +14,8 @@ class Logger
 {
 public:
     Logger(const std::string& name = "", bool insertNewlineWhenDestruct = false);
-    Logger(const Logger&) = delete;
-    Logger(const Logger&&) = delete;
+    Logger(const Logger&) = default;
+    Logger(Logger&&) = default;
     Logger& operator=(const Logger&& other) = delete;
     Logger& operator=(const Logger& other) = delete;
     ~Logger();

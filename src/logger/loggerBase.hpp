@@ -14,8 +14,8 @@ class LoggerBase : public ILoggerBase
 public:
     LoggerBase();
     virtual ~LoggerBase() = default;
-    LoggerBase(const LoggerBase&) = delete;
-    LoggerBase(const LoggerBase&&) = delete;
+    LoggerBase(const LoggerBase&) = default;
+    LoggerBase(LoggerBase&&) = default;
     LoggerBase& operator=(const LoggerBase&&) = delete;
     LoggerBase& operator=(const LoggerBase&) = delete;
     template <typename T>

@@ -13,7 +13,7 @@ set(target_name_lib firmware)
 if (${ARCH} STREQUAL "X86")
     include(cmake/x86_sources.cmake)
     find_package(Boost 1.58 COMPONENTS system program_options REQUIRED)
-    include_directories(${Boost_INCLUDE_DIR})
+    include_directories(SYSTEM ${Boost_INCLUDE_DIR})
     set(production_srcs ${production_srcs} ${x86_srcs} ${x86_incs})
 
     set(target_libs ${target_libs} ${Boost_LIBRARIES} beast stdc++fs)

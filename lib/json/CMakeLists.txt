@@ -4,7 +4,7 @@ set(ArduinoJson_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lib/json/json/src" CACHE STRI
 
 add_library(ArduinoJson STATIC ${arduino_json_srcs})
 
-target_include_directories(ArduinoJson PUBLIC
+target_include_directories(ArduinoJson SYSTEM PUBLIC
     ${ArduinoJson_INCLUDE_DIR}
 )
 

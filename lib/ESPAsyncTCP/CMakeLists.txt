@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter -Wno-empty-body ")
 add_library(espasynctcp STATIC ${esp_async_tcp_srcs} ${esp_async_tcp_incs})
 
 target_include_directories(
-    espasynctcp PUBLIC
+    espasynctcp SYSTEM PUBLIC
     ${ARDUINO_ESP8266_DIR}/tools/sdk/include
     ${ARDUINO_ESP8266_DIR}/tools/sdk/lwip/include
     ${ARDUINO_ESP8266_DIR}/cores/esp8266

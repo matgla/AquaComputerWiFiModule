@@ -7,4 +7,4 @@ set(Beast_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lib/beast/" CACHE STRING "path to B
 
 add_library(beast INTERFACE)
 target_sources(beast INTERFACE ${beast_srcs})
-target_include_directories(beast INTERFACE ${Beast_INCLUDE_DIR})
+target_include_directories(beast SYSTEM INTERFACE ${Beast_INCLUDE_DIR})

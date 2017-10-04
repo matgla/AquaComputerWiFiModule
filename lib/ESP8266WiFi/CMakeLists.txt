@@ -6,7 +6,7 @@ target_sources(arduino PRIVATE
     ${WIFI_LIB_SRC}
 )
 
-target_include_directories(arduino PUBLIC
+target_include_directories(arduino SYSTEM PUBLIC
     ${ARDUINO_ESP8266_DIR}/tools/sdk/lwip/include
     ${ARDUINO_ESP8266_DIR}/libraries/ESP8266WiFi/src
     ${ARDUINO_ESP8266_DIR}/libraries/ESP8266WiFi/src/include

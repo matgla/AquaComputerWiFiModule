@@ -8,11 +8,17 @@ namespace stub
 {
 struct ReceiverStub : public dispatcher::IDataReceiver
 {
-    ReceiverStub() : logger("Receiver stub") {}
-
+    ReceiverStub() : logger("Receiver stub")
+    {
+    }
+    ReceiverStub(const ReceiverStub&) = delete;
+    ReceiverStub(const ReceiverStub&&) = delete;
+    ReceiverStub& operator=(const ReceiverStub&&) = delete;
+    ReceiverStub& operator=(const ReceiverStub&) = delete;
+    ~ReceiverStub() = default;
     void setHandler(dispatcher::ReaderCallback callback) override
     {
-        u8 test[] = { 1, 2, 3 };
+        u8 test[] = {1, 2, 3};
         logger.info() << "Set reader callback";
         readerCallback = callback;
     }

@@ -8,4 +8,4 @@ set(SML_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lib/boost/sml/include/" CACHE STRING 
 
 add_library(sml INTERFACE)
 target_sources(sml INTERFACE ${boost_sml_srcs})
-target_include_directories(sml INTERFACE ${SML_INCLUDE_DIR})
+target_include_directories(sml SYSTEM INTERFACE ${SML_INCLUDE_DIR})

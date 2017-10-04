@@ -67,7 +67,7 @@ add_definitions(
 )
 
 
-include_directories(
+include_directories( SYSTEM
     ${ARDUINO_ESP8266_DIR}/tools/sdk/include
     ${ARDUINO_ESP8266_DIR}/tools/sdk/lwip/include
     ${ARDUINO_ESP8266_DIR}/tools/sdk/libc/xtensa-lx106-elf

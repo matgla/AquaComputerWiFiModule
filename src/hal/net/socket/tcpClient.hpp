@@ -20,6 +20,10 @@ public:
     ~TcpClient();
     TcpClient(const std::string& url, u16 port,
               dispatcher::ReaderCallback readerCallback = dispatcher::defaultReader);
+    TcpClient(const TcpClient&) = delete;
+    TcpClient(const TcpClient&&) = delete;
+    TcpClient& operator=(const TcpClient&&) = delete;
+    TcpClient& operator=(const TcpClient&) = delete;
 
     void start();
     void stop();

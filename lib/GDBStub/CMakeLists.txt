@@ -17,7 +17,7 @@ add_library(esp8266gdbstub STATIC
     ${GDBSTUB_LIB_SRC_ASM}
 )
 
-target_include_directories(esp8266gdbstub PUBLIC
+target_include_directories(esp8266gdbstub SYSTEM PUBLIC
     ${ARDUINO_ESP8266_DIR}/libraries/GDBStub/src
     ${ARDUINO_ESP8266_DIR}/libraries/GDBStub/src/internal
     ${ARDUINO_ESP8266_DIR}/libraries/GDBStub/src/xtensa

@@ -1,4 +1,4 @@
-#pragma once
+#pragma nce
 
 #include <map>
 #include <queue>
@@ -18,6 +18,10 @@ class MessageHandler : public IFrameHandler
 public:
     MessageHandler();
     virtual ~MessageHandler();
+    MessageHandler(const MessageHandler&) = delete;
+    // MessageHandler(const MessageHandler&&) = delete;
+    // MessageHandler& operator=(const MessageHandler&&) = delete;
+    // MessageHandler& operator=(const MessageHandler&) = delete;
 
     bool transmissionStarted();
     u64 lengthToBeReceived();
