@@ -24,12 +24,16 @@ public:
     using FrameReceiver = std::function<void(const IFrame& frame)>;
     FrameHandler();
     ~FrameHandler();
+    FrameHandler(const FrameHandler&) = delete;
+    FrameHandler(const FrameHandler&&) = delete;
+    FrameHandler& operator=(const FrameHandler&&) = delete;
+    FrameHandler& operator=(const FrameHandler&) = delete;
 
-    void setConnection(dispatcher::IDataReceiver::RawDataReceiverPtr dataReceiver);
+    void setConnection(const dispatcher::IDataReceiver::RawDataReceiverPtr& dataReceiver);
 
-    void send(const IFrame& data);
+    void send(const IFrame& frame);
 
-    void connect(u16 port, FrameReceiver frameReceiver);
+    void connect(u16 port, const FrameReceiver& frameReceiver);
 
 protected:
     enum class State
@@ -45,7 +49,7 @@ protected:
     };
 
     void sendReply(messages::Control status);
-    void onRead(const u8* buffer, std::size_t length, dispatcher::WriterCallback writer);
+    void onRead(const u8* buffer, std::size_t length, const dispatcher::WriterCallback& writer);
 
     Frame<FRAME_SIZE> rxBuffer_;
 

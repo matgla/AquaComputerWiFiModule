@@ -21,8 +21,8 @@ using Handlers = std::map<std::string, RequestHandler>;
 class HttpConnection : public std::enable_shared_from_this<HttpConnection>
 {
 public:
-    HttpConnection(boost::asio::ip::tcp::socket socket,
-                   Handlers& getHandlers, Handlers& postHandlers);
+    HttpConnection(boost::asio::ip::tcp::socket socket, Handlers& getHandlers,
+                   Handlers& postHandlers);
 
     void start();
 
@@ -30,12 +30,13 @@ private:
     void getCallback(u16 code, const std::string& type, const std::string& body);
     void readRequest();
     void processRequest(boost::beast::error_code& ec);
-    void createGetResponse(boost::beast::error_code& ec);
+    void createGetResponse();
     void writeResponse(boost::beast::error_code& ec);
-    void handlePost(boost::beast::error_code& ec);
+    void handlePost();
     std::string getBodyCallback();
-    std::unique_ptr<AsyncHttpResponse> chunkedResponseCallback(const std::string& type,
-                                                               AsyncHttpRequest::ChunkedResponseParseCallback callback);
+    std::unique_ptr<AsyncHttpResponse>
+        chunkedResponseCallback(const std::string& type,
+                                const AsyncHttpRequest::ChunkedResponseParseCallback& callback);
 
     boost::asio::ip::tcp::socket socket_;
 

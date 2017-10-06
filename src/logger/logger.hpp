@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "ILogger.hpp"
@@ -13,7 +14,7 @@ namespace logger
 class Logger
 {
 public:
-    Logger(const std::string& name = "", bool insertNewlineWhenDestruct = false);
+    Logger(std::string name = "", bool insertNewlineWhenDestruct = false);
     Logger(const Logger&) = default;
     Logger(Logger&&) = default;
     Logger& operator=(const Logger&& other) = delete;
@@ -26,7 +27,7 @@ public:
     {
         for (auto& logger : LoggerConf::get().getLoggers())
         {
-            logger << data;
+            logger << data; // NOLINT TODO: stadnik implement printer for different arrays
         }
         return *this;
     }

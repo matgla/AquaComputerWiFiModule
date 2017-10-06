@@ -15,6 +15,10 @@ class File
 public:
     File();
     ~File();
+    File(const File&) = delete;
+    File(const File&&) = delete;
+    File& operator=(const File&& other) = delete;
+    File& operator=(const File& other) = delete;
 
     void open(const std::string& path, const std::string& mode = "rw+");
     void seek(std::size_t index);

@@ -6,8 +6,9 @@
 namespace timer
 {
 
-TimeoutTimer::TimeoutTimer(u64 time, TimerCallback callback)
-    : callback_(callback), startTime_(hal::time::milliseconds()), time_(time), enabled_(true)
+TimeoutTimer::TimeoutTimer(const u64 time, TimerCallback callback)
+    : callback_(std::move(callback)), startTime_(hal::time::milliseconds()), time_(time),
+      enabled_(true)
 {
 }
 

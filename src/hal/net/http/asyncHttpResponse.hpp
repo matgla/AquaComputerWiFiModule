@@ -15,14 +15,15 @@ namespace http
 class AsyncHttpResponse
 {
 public:
-    AsyncHttpResponse()
-        : logger_("AsyncHttpResponse")
+    AsyncHttpResponse() : logger_("AsyncHttpResponse"), code_{0}
     {
     }
 
-    ~AsyncHttpResponse()
-    {
-    }
+    ~AsyncHttpResponse() = default;
+    AsyncHttpResponse(const AsyncHttpResponse&) = delete;
+    AsyncHttpResponse(const AsyncHttpResponse&&) = delete;
+    AsyncHttpResponse& operator=(const AsyncHttpResponse&& other) = delete;
+    AsyncHttpResponse& operator=(const AsyncHttpResponse& other) = delete;
 
     u16 getCode()
     {

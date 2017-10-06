@@ -16,7 +16,7 @@ struct ReceiverStub : public dispatcher::IDataReceiver
     ReceiverStub& operator=(const ReceiverStub&&) = delete;
     ReceiverStub& operator=(const ReceiverStub&) = delete;
     ~ReceiverStub() = default;
-    void setHandler(dispatcher::ReaderCallback callback) override
+    void setHandler(const dispatcher::ReaderCallback& callback) override
     {
         u8 test[] = {1, 2, 3};
         logger.info() << "Set reader callback";

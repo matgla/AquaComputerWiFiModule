@@ -3,7 +3,7 @@
 namespace logger
 {
 
-void LoggerConf::add(LoggerBase logger)
+void LoggerConf::add(const LoggerBase& logger)
 {
     loggers_.push_back(logger);
 }

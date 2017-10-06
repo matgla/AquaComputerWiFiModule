@@ -25,7 +25,8 @@ class TcpServer::TcpServerImpl
 public:
     TcpServerImpl(u16 port, dispatcher::ReaderCallback readerCallback)
         : logger_("TcpServerImpl"), socket_(ioService_),
-          acceptor_(ioService_, tcp::endpoint(tcp::v4(), port)), readerCallback_(readerCallback)
+          acceptor_(ioService_, tcp::endpoint(tcp::v4(), port)),
+          readerCallback_(std::move(readerCallback))
     {
     }
 
@@ -33,6 +34,11 @@ public:
     {
         stop();
     }
+
+    TcpServerImpl(const TcpServerImpl&) = delete;
+    TcpServerImpl(const TcpServerImpl&&) = delete;
+    TcpServerImpl& operator=(const TcpServerImpl&& other) = delete;
+    TcpServerImpl& operator=(const TcpServerImpl& other) = delete;
 
     void start()
     {
@@ -52,7 +58,7 @@ public:
         }
     }
 
-    void setHandler(dispatcher::ReaderCallback reader)
+    void setHandler(const dispatcher::ReaderCallback& reader)
     {
         for (auto& session : sessions_)
         {
@@ -90,7 +96,7 @@ private:
 
 
 TcpServer::TcpServer(u16 port, dispatcher::ReaderCallback readerCallback)
-    : tcpServerImpl_(new TcpServerImpl(port, readerCallback))
+    : tcpServerImpl_(new TcpServerImpl(port, std::move(readerCallback)))
 {
 }
 
@@ -106,7 +112,7 @@ void TcpServer::stop()
     tcpServerImpl_->stop();
 }
 
-void TcpServer::setHandler(dispatcher::ReaderCallback reader)
+void TcpServer::setHandler(const dispatcher::ReaderCallback& reader)
 {
     tcpServerImpl_->setHandler(reader);
 }

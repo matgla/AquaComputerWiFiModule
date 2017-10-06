@@ -64,7 +64,7 @@ endif()
 set (clang_tidy_srcs "" CACHE INTERNAL "clang tidy sources")
 
 if (CLANG_TIDY)
-    find_program(CLANG_TIDY_BIN clang-tidy)
+    find_program(CLANG_TIDY_BIN clang-tidy-5.0)
 
     if(CLANG_TIDY_BIN STREQUAL "CLANG_TIDY_BIN-NOTFOUND")
         message(FATAL_ERROR "unable to locate clang-tidy-5.0")
@@ -151,7 +151,7 @@ add_subdirectory(lib)
 if (CLANG_TIDY)
     add_custom_target(
         clang_tidy
-        COMMAND ${CLANG_TIDY_BIN} -checks=clan*,cert*,misc*,perf*,cppc*,read*,mode*,-cert-err58-cpp,-cert-dc158-cpp,-misc-noexcept-move-constructor -header-filter="src" -p . ${clang_tidy_srcs}
+        COMMAND ${CLANG_TIDY_BIN} -checks=clan*,cert*,misc*,perf*,cppc*,read*,mode*,-cert-err58-cpp,-cert-dcl58-cpp,-misc-noexcept-move-constructor -header-filter="src" -p . ${clang_tidy_srcs}
         COMMENT "running clang tidy"
     )
 endif (CLANG_TIDY)

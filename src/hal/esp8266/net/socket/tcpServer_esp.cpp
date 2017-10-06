@@ -17,7 +17,7 @@ TcpServer::TcpServer(u16 port, handler::ReaderCallback readerCallback)
 
 TcpServer::~TcpServer() = default;
 
-void TcpServer::setHandler(handler::ReaderCallback reader)
+void TcpServer::setHandler(const handler::ReaderCallback& reader)
 {
 }
 } // namespace socket

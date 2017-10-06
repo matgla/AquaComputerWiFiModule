@@ -25,26 +25,26 @@ namespace net
 namespace http
 {
 
-auto logger = logger::Logger("HttpServer");
-
 using Handlers = std::map<std::string, RequestHandler>;
 
 class AsyncHttpServer::AsyncHttpWrapper
 {
 public:
-    AsyncHttpWrapper(const std::string& address, u16 port)
+    AsyncHttpWrapper(u16 port)
         : acceptor_(ioService_, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
-          socket_(ioService_)
+          socket_(ioService_), logger_("HttpServer")
     {
     }
+    AsyncHttpWrapper() = delete;
+
     void begin();
 
     std::map<std::string, RequestHandler> getHandlers_;
     std::map<std::string, RequestHandler> postHandlers_;
+    logger::Logger logger_;
 
 private:
     io_service ioService_;
-    AsyncHttpWrapper() = delete;
     void loop();
     ip::tcp::acceptor acceptor_;
     ip::tcp::socket socket_;
@@ -65,26 +65,26 @@ void AsyncHttpServer::AsyncHttpWrapper::loop()
 }
 
 AsyncHttpServer::AsyncHttpServer(u16 port)
-    : port_(port), asyncHttpWrapper_(new AsyncHttpWrapper("127.0.0.1", port))
+    : port_(port), asyncHttpWrapper_(new AsyncHttpWrapper(port))
 {
 }
 
 AsyncHttpServer::~AsyncHttpServer() = default;
 
 
-void AsyncHttpServer::get(const std::string& uri, RequestHandler handler)
+void AsyncHttpServer::get(const std::string& uri, RequestHandler req)
 {
-    asyncHttpWrapper_->getHandlers_[uri] = handler;
+    asyncHttpWrapper_->getHandlers_[uri] = std::move(req);
 }
 
-void AsyncHttpServer::post(const std::string& uri, RequestHandler handler)
+void AsyncHttpServer::post(const std::string& uri, RequestHandler req)
 {
-    asyncHttpWrapper_->postHandlers_[uri] = handler;
+    asyncHttpWrapper_->postHandlers_[uri] = std::move(req);
 }
 
 void AsyncHttpServer::begin()
 {
-    logger.info() << "Starting....";
+    asyncHttpWrapper_->logger_.info() << "Starting....";
     asyncHttpWrapper_->begin();
 }
 

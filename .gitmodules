@@ -15,3 +15,6 @@
 [submodule "lib/CRCpp/CRCpp"]
 	path = lib/CRCpp/CRCpp
 	url = https://github.com/d-bahr/CRCpp.git
+[submodule ".\\lib\\gsl\\gsl"]
+	path = .\\lib\\gsl\\gsl
+	url = https://github.com/Microsoft/GSL.git

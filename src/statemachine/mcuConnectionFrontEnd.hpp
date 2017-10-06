@@ -1,28 +1,28 @@
-#pragma once
+// #pragma once
 
-#include <boost/sml.hpp>
+// #include <boost/sml.hpp>
 
-#include "dispatcher/jsonHandler.hpp"
-#include "logger/logger.hpp"
-#include "statemachine/mcuConnection.hpp"
+// #include "dispatcher/jsonHandler.hpp"
+// #include "logger/logger.hpp"
+// #include "statemachine/mcuConnection.hpp"
 
-namespace statemachine
-{
+// namespace statemachine
+// {
 
-class McuConnectionFrontEnd
-{
-public:
-    McuConnectionFrontEnd(dispatcher::JsonHandler& handler);
+// class McuConnectionFrontEnd
+// {
+// public:
+//     McuConnectionFrontEnd(dispatcher::JsonHandler& handler);
 
-    void connect();
-    void connected();
-    void sendDeviceInfo();
+//     void connect();
+//     void connected();
+//     void sendDeviceInfo();
 
-    boost::sml::sm<McuConnection>& backend();
+//     boost::sml::sm<McuConnection>& backend();
 
-protected:
-    dispatcher::JsonHandler& handler_;
-    logger::Logger logger_;
-    boost::sml::sm<McuConnection> backend_;
-};
-} // namespace statemachine
+// protected:
+//     // dispatcher::JsonHandler& handler_;
+//     logger::Logger logger_;
+//     boost::sml::sm<McuConnection> backend_;
+// };
+// } // namespace statemachine

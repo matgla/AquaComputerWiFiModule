@@ -19,7 +19,7 @@ class WebSocket : public dispatcher::IDataReceiver
 public:
     WebSocket(const std::string& uri, u16 port,
               dispatcher::ReaderCallback handler = dispatcher::defaultReader);
-    ~WebSocket();
+    ~WebSocket() override;
     WebSocket(const WebSocket&) = delete;
     WebSocket(const WebSocket&&) = delete;
     WebSocket& operator=(const WebSocket&&) = delete;
@@ -28,7 +28,7 @@ public:
     void start();
     void stop();
 
-    void setHandler(dispatcher::ReaderCallback handler) override;
+    void setHandler(const dispatcher::ReaderCallback& handler) override;
 
 private:
     class WebSocketWrapper;

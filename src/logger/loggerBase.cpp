@@ -39,8 +39,8 @@ std::string LoggerBase::getFormatedDateAndTime()
     char buffer[TIME_BUFFER_SIZE];
     auto t = std::time(nullptr);
     struct tm* currentTime = std::localtime(&t);
-    std::strftime(buffer, TIME_BUFFER_SIZE, "%d/%m/%y %H:%M:%S", currentTime);
-    return std::string(buffer);
+    std::strftime(static_cast<char*>(buffer), TIME_BUFFER_SIZE, "%d/%m/%y %H:%M:%S", currentTime);
+    return std::string(static_cast<char*>(buffer));
 }
 
 } // namespace logger

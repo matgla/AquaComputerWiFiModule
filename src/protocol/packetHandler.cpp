@@ -15,9 +15,9 @@ namespace protocol
 
 
 PacketHandler::PacketHandler(const u16 port,
-                             const dispatcher::IDataReceiver::RawDataReceiverPtr receiver,
+                             const dispatcher::IDataReceiver::RawDataReceiverPtr& receiver,
                              timer::IManager& timerManager)
-    : port_(port), rxMessageNumber_(0), txMessageNumber_(0), logger_("packetHandler"),
+    : txIndex_{0}, port_(port), rxMessageNumber_{0}, txMessageNumber_{0}, logger_("packetHandler"),
       timerManager_(timerManager)
 {
     handler_.setConnection(receiver);
@@ -40,17 +40,17 @@ void PacketHandler::send(const DataBuffer& data)
     header->control(messages::Control::Transmission);
 
     u8 headerData[6];
-    serializer::serialize(headerData, static_cast<u16>(data.size()));
+    serializer::serialize(static_cast<u8*>(headerData), static_cast<u16>(data.size()));
     headerData[2] = 0;
     headerData[3] = 0;
 
-    const u16 crc = CRC::Calculate(headerData, 4, CRC::CRC_16_ARC());
+    const auto crc = CRC::Calculate(static_cast<u8*>(headerData), 4, CRC::CRC_16_ARC());
     serializer::serialize(&headerData[4], crc);
 
-    header->payload(headerData, sizeof(headerData));
+    header->payload(static_cast<u8*>(headerData), sizeof(headerData));
 
-    txPacketBuffers_.push_back(std::vector<TransmissionFrame>{});
-    txPacketBuffers_.back().push_back(TransmissionFrame{std::move(header)});
+    txPacketBuffers_.emplace_back();
+    txPacketBuffers_.back().emplace_back(std::move(header));
 
     for (auto size = 0; size < data.size(); size += MaxPayloadSize)
     {
@@ -68,8 +68,8 @@ void PacketHandler::send(const DataBuffer& data)
             payloadSize = data.size() - size;
         }
         logger_.debug() << "Created frame with size: " << static_cast<int>(payloadSize);
-        frame->payload(data.data() + size, payloadSize);
-        txPacketBuffers_.back().push_back(TransmissionFrame{std::move(frame)});
+        frame->payload(data.data() + size, payloadSize); // NOLINT
+        txPacketBuffers_.back().emplace_back(std::move(frame));
     }
     const u8 crcSize = 4;
 
@@ -78,10 +78,11 @@ void PacketHandler::send(const DataBuffer& data)
     crcFrame->number(++frameNumber);
     crcFrame->control(messages::Control::Transmission);
     u8 crcPayload[crcSize];
-    serializer::serialize(crcPayload, CRC::Calculate(data.data(), data.size(), CRC::CRC_32()));
+    serializer::serialize(static_cast<u8*>(crcPayload),
+                          CRC::Calculate(data.data(), data.size(), CRC::CRC_32()));
 
-    crcFrame->payload(crcPayload, sizeof(crcPayload));
-    txPacketBuffers_.back().push_back(TransmissionFrame{std::move(crcFrame)});
+    crcFrame->payload(static_cast<u8*>(crcPayload), sizeof(crcPayload));
+    txPacketBuffers_.back().emplace_back(std::move(crcFrame));
 
     txIndex_ = 0;
     transmit();

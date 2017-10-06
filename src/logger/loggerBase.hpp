@@ -3,6 +3,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <type_traits>
 
 #include "logger/ILoggerBase.hpp"
 
@@ -18,10 +19,11 @@ public:
     LoggerBase(LoggerBase&&) = default;
     LoggerBase& operator=(const LoggerBase&&) = delete;
     LoggerBase& operator=(const LoggerBase&) = delete;
+
     template <typename T>
     LoggerBase& operator<<(const T& data)
     {
-        (*stream_) << data;
+        (*stream_) << data; // NOLINT TODO: stadnik implement printer for different arrays
         return *this;
     }
 

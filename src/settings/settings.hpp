@@ -29,16 +29,17 @@ namespace settings
 class Settings
 {
 public:
+    Settings(Settings&&) = delete;
+    Settings(const Settings&) = delete;
+    Settings& operator=(const Settings&) = delete;
+    Settings& operator=(Settings&&) = delete;
+    ~Settings() = default;
+
     static Settings& get();
     static JsonObject& db();
 
 private:
     Settings();
-    Settings(Settings&) = delete;
-    Settings(Settings&&) = delete;
-    Settings(const Settings&) = delete;
-    Settings(const Settings&&) = delete;
-    Settings& operator=(Settings&) = delete;
 
     JsonObject& getDb();
 

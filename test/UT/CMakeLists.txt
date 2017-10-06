@@ -15,7 +15,7 @@ set (CMAKE_CXX_STANDARD 14)
 find_package(Boost 1.58 COMPONENTS system program_options REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 include_directories(SYSTEM ${Beast_INCLUDE_DIR})
-set(target_libs ${target_libs} ${Boost_LIBRARIES} beast ArduinoJson stdc++fs sml crcpp)
+set(target_libs ${target_libs} ${Boost_LIBRARIES} beast ArduinoJson stdc++fs sml crcpp gsl)
 
 add_definitions(-DX86_ARCH)
 
@@ -32,8 +32,6 @@ add_executable(AquaLampServerUTs ${ut_srcs}
                                  ${target_srcs}
                                  ${x86_incs}
 )
-
-set(clang_tidy_srcs ${clang_tidy_srcs} ${ut_srcs} ${target_srcs} CACHE INTERNAL "clang_tidy_srcs")
 
 set(testing_libs ${testing_libs} gmock gtest pthread)
 

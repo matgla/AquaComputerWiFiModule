@@ -7,6 +7,7 @@
 #include <utility>
 
 #include <boost/asio.hpp>
+#include <gsl/span>
 
 #include "hal/x86/net/socket/tcpSession.hpp"
 #include "logger/logger.hpp"
@@ -23,9 +24,9 @@ namespace socket
 class TcpClient::TcpClientImpl
 {
 public:
-    TcpClientImpl(const std::string& url, u16 port, dispatcher::ReaderCallback readerCallback)
-        : url_(url), port_(port), logger_("TcpClientImpl"), resolver_(ioService_),
-          socket_(ioService_), readerCallback_(readerCallback)
+    TcpClientImpl(std::string url, u16 port, dispatcher::ReaderCallback readerCallback)
+        : url_(std::move(url)), port_(port), logger_("TcpClientImpl"), resolver_(ioService_),
+          socket_(ioService_), readerCallback_(std::move(readerCallback))
     {
     }
 
@@ -33,6 +34,11 @@ public:
     {
         stop();
     }
+
+    TcpClientImpl(const TcpClientImpl&) = delete;
+    TcpClientImpl(const TcpClientImpl&&) = delete;
+    TcpClientImpl& operator=(const TcpClientImpl&& other) = delete;
+    TcpClientImpl& operator=(const TcpClientImpl& other) = delete;
 
     void start()
     {
@@ -49,7 +55,8 @@ public:
 
     void write(const u8* buf, std::size_t length)
     {
-        session_->doWrite(buf, length);
+        session_->doWrite(gsl::span<const u8>{
+            buf, static_cast<gsl::span<const unsigned char>::index_type>(length)});
     }
 
     void write(u8 byte)
@@ -62,7 +69,7 @@ public:
         return session_ ? session_->connected() : false;
     }
 
-    void setHandler(dispatcher::ReaderCallback reader)
+    void setHandler(const dispatcher::ReaderCallback& reader)
     {
         readerCallback_ = reader;
         if (session_)
@@ -120,7 +127,8 @@ private:
 };
 
 
-TcpClient::TcpClient(const std::string& url, u16 port, dispatcher::ReaderCallback readerCallback)
+TcpClient::TcpClient(const std::string& url, u16 port,
+                     const dispatcher::ReaderCallback& readerCallback)
     : tcpClientImpl_(new TcpClientImpl(url, port, readerCallback))
 {
 }
@@ -161,7 +169,7 @@ void TcpClient::write(u8 byte)
     }
 }
 
-void TcpClient::setHandler(dispatcher::ReaderCallback reader)
+void TcpClient::setHandler(const dispatcher::ReaderCallback& reader)
 {
     tcpClientImpl_->setHandler(reader);
 }

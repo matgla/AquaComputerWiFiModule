@@ -22,8 +22,8 @@ namespace logger
 
 static std::mutex logMutex;
 
-Logger::Logger(const std::string& name, bool insertNewlineWhenDestruct)
-    : name_(name), insertNewlineWhenDestruct_(insertNewlineWhenDestruct)
+Logger::Logger(std::string name, bool insertNewlineWhenDestruct)
+    : name_(std::move(name)), insertNewlineWhenDestruct_(insertNewlineWhenDestruct)
 {
 }
 

@@ -19,6 +19,10 @@ class AsyncHttpServer
 public:
     AsyncHttpServer(u16 port);
     ~AsyncHttpServer();
+    AsyncHttpServer(const AsyncHttpServer&) = delete;
+    AsyncHttpServer(const AsyncHttpServer&&) = delete;
+    AsyncHttpServer& operator=(const AsyncHttpServer&& other) = delete;
+    AsyncHttpServer& operator=(const AsyncHttpServer& other) = delete;
     void get(const std::string& uri, RequestHandler req);
     void post(const std::string& uri, RequestHandler req);
     void begin();

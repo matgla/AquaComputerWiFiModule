@@ -26,8 +26,13 @@ struct TransmissionFrame
 class PacketHandler
 {
 public:
-    PacketHandler(const u16 port, const dispatcher::IDataReceiver::RawDataReceiverPtr receiver,
+    PacketHandler(u16 port, const dispatcher::IDataReceiver::RawDataReceiverPtr& receiver,
                   timer::IManager& timerManager);
+    ~PacketHandler() = default;
+    PacketHandler(const PacketHandler&) = delete;
+    PacketHandler(const PacketHandler&&) = delete;
+    PacketHandler& operator=(const PacketHandler&&) = delete;
+    PacketHandler& operator=(const PacketHandler&) = delete;
     void send(const DataBuffer& data);
 
 protected:

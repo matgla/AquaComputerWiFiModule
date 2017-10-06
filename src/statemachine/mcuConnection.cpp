@@ -1,33 +1,33 @@
-#include "statemachine/mcuConnection.hpp"
+// #include "statemachine/mcuConnection.hpp"
 
-#include <string>
+// #include <string>
 
-#include "message/messages.hpp"
+// #include "message/messages.hpp"
 
-namespace statemachine
-{
+// namespace statemachine
+// {
 
-void McuConnection::sendHandshake(HandlerPtr handler, logger::Logger& logger)
-{
-    std::string msg = "{\"id\":\"handshake\"}";
-    DynamicJsonBuffer buffer;
-    JsonObject& jsonMsg = buffer.parseObject(msg);
-    handler->send(jsonMsg);
+// void McuConnection::sendHandshake(HandlerPtr handler, logger::Logger& logger)
+// {
+//     std::string msg = "{\"id\":\"handshake\"}";
+//     DynamicJsonBuffer buffer;
+//     JsonObject& jsonMsg = buffer.parseObject(msg);
+//     handler->send(jsonMsg);
 
-    logger.info() << "Handshake was sent to MCU";
-}
+//     logger.info() << "Handshake was sent to MCU";
+// }
 
-void McuConnection::sendInfo(HandlerPtr handler, logger::Logger& logger)
-{
-    logger.info() << "Sending module info!";
-    DynamicJsonBuffer buffer;
-    JsonObject& jsonMsg = buffer.createObject();
-    jsonMsg["id"] = message::ModuleInfo;
-}
+// void McuConnection::sendInfo(HandlerPtr handler, logger::Logger& logger)
+// {
+//     logger.info() << "Sending module info!";
+//     DynamicJsonBuffer buffer;
+//     JsonObject& jsonMsg = buffer.createObject();
+//     jsonMsg["id"] = message::ModuleInfo;
+// }
 
-void McuConnection::connected(HandlerPtr handler, logger::Logger& logger)
-{
-    logger.info() << "Connected to MCU!";
-}
+// void McuConnection::connected(HandlerPtr handler, logger::Logger& logger)
+// {
+//     logger.info() << "Connected to MCU!";
+// }
 
-} // namespace statemachine
+// } // namespace statemachine

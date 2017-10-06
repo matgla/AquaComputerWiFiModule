@@ -3,6 +3,8 @@
 #include <cstring>
 #include <functional>
 
+#include <gsl/span>
+
 using namespace boost::asio;
 using boost::asio::ip::tcp;
 
@@ -13,7 +15,8 @@ namespace net
 namespace socket
 {
 TcpSession::TcpSession(tcp::socket socket, dispatcher::ReaderCallback reader)
-    : socket_(std::move(socket)), logger_("TcpSession"), readerCallback_(reader)
+    : buffer_{}, socket_(std::move(socket)), logger_("TcpSession"),
+      readerCallback_(std::move(reader))
 {
 }
 
@@ -32,24 +35,24 @@ tcp::socket& TcpSession::getSocket()
     return socket_;
 }
 
-void TcpSession::doWrite(std::string data)
+void TcpSession::doWrite(const std::string& data)
 {
     async_write(socket_, buffer(data), [this](boost::system::error_code error, std::size_t size) {
-        if (error)
+        if (nullptr != error)
         {
             logger_.error() << "Write failed: " << error.message();
         }
     });
 }
 
-void TcpSession::doWrite(const u8* buf, std::size_t length)
+void TcpSession::doWrite(const gsl::span<const u8>& buf)
 {
     std::vector<u8> dataBuffer;
-    dataBuffer.resize(length);
-    std::memcpy(&dataBuffer[dataBuffer.size() - length], buf, length);
-    async_write(socket_, buffer(dataBuffer, length),
+    dataBuffer.resize(buf.length());
+    std::memcpy(&dataBuffer[dataBuffer.size() - buf.length()], buf.data(), buf.length());
+    async_write(socket_, buffer(dataBuffer, buf.length()),
                 [this](boost::system::error_code error, std::size_t size) {
-                    if (error)
+                    if (nullptr != error)
                     {
                         logger_.error() << "Write failed: " << error.message();
                     }
@@ -60,7 +63,7 @@ void TcpSession::doWrite(u8 byte)
 {
     std::array<u8, 1> buf = {byte};
     async_write(socket_, buffer(buf, 1), [this](boost::system::error_code error, std::size_t size) {
-        if (error)
+        if (nullptr != error)
         {
             logger_.error() << "Write failed: " << error.message();
         }
@@ -97,18 +100,20 @@ void TcpSession::doRead()
         if (!error)
         {
             std::lock_guard<std::mutex> safeCallback(readerCallbackMutex_);
-            readerCallback_(buffer_, tranferred_bytes,
-                            [this](const u8* buf, std::size_t len) { doWrite(buf, len); });
+            readerCallback_(buffer_, // NOLINT TODO: stadnik change reader callback to gsl::span
+                            tranferred_bytes, [this](const u8* buf, std::size_t len) {
+                                doWrite(gsl::span<const u8>{
+                                    buf, static_cast<gsl::span<const u8>::index_type>(len)});
+                            });
             return doRead();
         }
-        else
-        {
-            logger_.error() << "Reading failed: " << error.message();
-        }
+
+        logger_.error() << "Reading failed: " << error.message();
+
     });
 }
 
-void TcpSession::setHandler(dispatcher::ReaderCallback reader)
+void TcpSession::setHandler(const dispatcher::ReaderCallback& reader)
 {
     std::lock_guard<std::mutex> safeCallback(readerCallbackMutex_);
     readerCallback_ = reader;

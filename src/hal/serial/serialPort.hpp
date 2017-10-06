@@ -15,13 +15,18 @@ namespace serial
 class SerialPort : public dispatcher::IDataReceiver
 {
 public:
-    SerialPort(const std::string& port, int baudRate = 115200);
-    ~SerialPort();
+    explicit SerialPort(const std::string& port, int baudrate = 115200);
+    ~SerialPort() override;
+    SerialPort(const SerialPort&) = delete;
+    SerialPort(const SerialPort&&) = delete;
+    SerialPort& operator=(const SerialPort&& other) = delete;
+    SerialPort& operator=(const SerialPort& other) = delete;
+
     void write(const std::string& data) override;
     void write(const u8* buf, std::size_t length) override;
     void write(u8 byte) override;
 
-    void setHandler(dispatcher::ReaderCallback readerCallback) override;
+    void setHandler(const dispatcher::ReaderCallback& readerCallback) override;
 
     std::size_t isDataToRecive();
     void process();

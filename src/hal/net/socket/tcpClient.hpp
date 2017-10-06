@@ -17,9 +17,9 @@ namespace socket
 class TcpClient : public dispatcher::IDataReceiver
 {
 public:
-    ~TcpClient();
+    ~TcpClient() override;
     TcpClient(const std::string& url, u16 port,
-              dispatcher::ReaderCallback readerCallback = dispatcher::defaultReader);
+              const dispatcher::ReaderCallback& readerCallback = dispatcher::defaultReader);
     TcpClient(const TcpClient&) = delete;
     TcpClient(const TcpClient&&) = delete;
     TcpClient& operator=(const TcpClient&&) = delete;
@@ -28,11 +28,11 @@ public:
     void start();
     void stop();
 
-    void write(const std::string& data);
-    void write(const u8* buf, std::size_t length);
-    void write(u8 byte);
+    void write(const std::string& data) override;
+    void write(const u8* buf, std::size_t length) override;
+    void write(u8 byte) override;
 
-    void setHandler(dispatcher::ReaderCallback reader) override;
+    void setHandler(const dispatcher::ReaderCallback& reader) override;
 
 private:
     class TcpClientImpl;

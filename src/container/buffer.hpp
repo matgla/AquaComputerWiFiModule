@@ -3,6 +3,8 @@
 #include <array>
 #include <mutex>
 
+#include <gsl/span>
+
 #include "utils/types.hpp"
 
 namespace container
@@ -11,11 +13,8 @@ namespace container
 template <std::size_t BUF_SIZE>
 class Buffer
 {
-  public:
-    Buffer()
-        : writerIndex_(0),
-          readerIndex_(0),
-          size_(0)
+public:
+    Buffer() : buffer_{}, writerIndex_{0}, readerIndex_{0}, size_{0}
     {
     }
 
@@ -27,19 +26,10 @@ class Buffer
     }
 
     template <typename Type>
-    void write(Type* str)
+    void write(gsl::span<const Type> str)
     {
         std::lock_guard<std::mutex> lock(dataMutex_);
-        for (int i = 0; i < strlen(str); ++i)
-        {
-            writeUnsafe(str[i]);
-        }
-    }
-
-    void write(u8* str, std::size_t len)
-    {
-        std::lock_guard<std::mutex> lock(dataMutex_);
-        for (int i = 0; i < len; ++i)
+        for (int i = 0; i < str.length(); ++i)
         {
             writeUnsafe(str[i]);
         }
@@ -51,7 +41,7 @@ class Buffer
         return getByteUnsafe();
     }
 
-    bool getValue(u16 offset, u8& value)
+    bool getValue(const u16 offset, u8& value)
     {
         std::lock_guard<std::mutex> lock(dataMutex_);
         if (offset >= size_)
@@ -72,25 +62,25 @@ class Buffer
         return false;
     }
 
-    size_t getData(u8* buf, size_t len)
+    size_t getData(gsl::span<u8>& buf)
     {
         std::lock_guard<std::mutex> lock(dataMutex_);
-        if (len < size_)
+        if (buf.length() < size_)
         {
-            for (size_t i = 0; i < len; i++)
+            for (auto& byte : buf)
             {
-                buf[i] = getByteUnsafe();
+                byte = getByteUnsafe();
             }
         }
         else
         {
-            size_t length = size_;
+            const size_t length = size_;
             for (size_t i = 0; i < length; i++)
             {
                 buf[i] = getByteUnsafe();
             }
         }
-        return len;
+        return buf.length();
     }
 
     u16 size()
@@ -107,7 +97,7 @@ class Buffer
         size_ = 0;
     }
 
-  private:
+private:
     u8 getByteUnsafe()
     {
         if (size_)
@@ -145,12 +135,11 @@ class Buffer
             ++readerIndex_;
         }
     }
-    volatile u8 buffer_[BUF_SIZE];
-    volatile u16 writerIndex_;
-    volatile u16 readerIndex_;
-    volatile u16 size_;
+    u8 buffer_[BUF_SIZE];
+    u16 writerIndex_;
+    u16 readerIndex_;
+    u16 size_;
     std::mutex dataMutex_;
 };
 
-}  // namespace container
-
+} // namespace container

@@ -14,10 +14,9 @@ namespace net
 namespace http
 {
 
-HttpConnection::HttpConnection(boost::asio::ip::tcp::socket socket, Handlers& getHandlers, Handlers& postHandlers)
-    : socket_(std::move(socket)),
-      getHandlers_(getHandlers),
-      postHandlers_(postHandlers),
+HttpConnection::HttpConnection(boost::asio::ip::tcp::socket socket, Handlers& getHandlers,
+                               Handlers& postHandlers)
+    : socket_(std::move(socket)), getHandlers_(getHandlers), postHandlers_(postHandlers),
       logger_("HttpConnection")
 {
 }
@@ -41,8 +40,8 @@ std::string HttpConnection::getBodyCallback()
     return ss.str();
 }
 
-std::unique_ptr<AsyncHttpResponse> HttpConnection::chunkedResponseCallback(const std::string& type,
-                                                                           AsyncHttpRequest::ChunkedResponseParseCallback callback)
+std::unique_ptr<AsyncHttpResponse> HttpConnection::chunkedResponseCallback(
+    const std::string& type, const AsyncHttpRequest::ChunkedResponseParseCallback& callback)
 {
     std::unique_ptr<u8[]> buffer(new u8[1001]);
     std::unique_ptr<AsyncHttpResponse> response(new AsyncHttpResponse());
@@ -55,7 +54,7 @@ std::unique_ptr<AsyncHttpResponse> HttpConnection::chunkedResponseCallback(const
     {
         readedBytes = callback(buffer.get(), 1000, index);
         index += readedBytes;
-        response->getMsg() += reinterpret_cast<char*>(buffer.get());
+        response->getMsg() += reinterpret_cast<char*>(buffer.get()); // NOLINT
         std::memset(buffer.get(), 0, sizeof(u8) * 1001);
     }
     return response;
@@ -71,9 +70,9 @@ void HttpConnection::readRequest()
     {
         return;
     }
-    if (ec)
+    if (ec != nullptr)
     {
-        throw boost::beast::system_error{ec};
+        throw "Unexpected Error in Http connection";
     }
     auto self = shared_from_this();
 
@@ -90,26 +89,24 @@ void HttpConnection::processRequest(boost::beast::error_code& ec)
         case boost::beast::http::verb::get:
             response_.result(boost::beast::http::status::internal_server_error);
             response_.set(boost::beast::http::field::server, "AquaComputerServer");
-            createGetResponse(ec);
+            createGetResponse();
             break;
         case boost::beast::http::verb::post:
-            handlePost(ec);
+            handlePost();
             break;
         default:
 
             response_.result(boost::beast::http::status::bad_request);
             response_.set(boost::beast::http::field::content_type, "text/plain");
             boost::beast::ostream(response_.body)
-                << "Invalid request-method '"
-                << request_.method_string().to_string()
-                << "'";
+                << "Invalid request-method '" << request_.method_string().to_string() << "'";
             break;
     }
 
     writeResponse(ec);
 }
 
-void HttpConnection::handlePost(boost::beast::error_code& ec)
+void HttpConnection::handlePost()
 {
     auto handler = postHandlers_.find(request_.target().to_string());
     if (handler != postHandlers_.end())
@@ -128,21 +125,18 @@ void HttpConnection::handlePost(boost::beast::error_code& ec)
     }
 }
 
-void HttpConnection::createGetResponse(boost::beast::error_code& ec)
+void HttpConnection::createGetResponse()
 {
     auto handler = getHandlers_.find(request_.target().to_string());
     if (handler != getHandlers_.end())
     {
         std::unique_ptr<AsyncHttpRequest> req(new AsyncHttpRequest());
 
-        req->setSendCallback(std::bind(&HttpConnection::getCallback,
-                                       this, std::placeholders::_1,
-                                       std::placeholders::_2,
-                                       std::placeholders::_3));
+        req->setSendCallback(std::bind(&HttpConnection::getCallback, this, std::placeholders::_1,
+                                       std::placeholders::_2, std::placeholders::_3));
 
-        req->setChunkedResponseCallback(std::bind(&HttpConnection::chunkedResponseCallback,
-                                                  this, std::placeholders::_1,
-                                                  std::placeholders::_2));
+        req->setChunkedResponseCallback(std::bind(&HttpConnection::chunkedResponseCallback, this,
+                                                  std::placeholders::_1, std::placeholders::_2));
 
         handler->second(req.get());
     }

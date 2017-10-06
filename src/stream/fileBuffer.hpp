@@ -12,8 +12,12 @@ class FileBuffer : public std::streambuf
 {
 public:
     FileBuffer(const std::string& path);
-    ~FileBuffer();
-    virtual std::streambuf::int_type overflow(std::streambuf::int_type c) override;
+    ~FileBuffer() override;
+    FileBuffer(const FileBuffer&) = delete;
+    FileBuffer(const FileBuffer&&) = delete;
+    FileBuffer& operator=(const FileBuffer&&) = delete;
+    FileBuffer& operator=(const FileBuffer&) = delete;
+    std::streambuf::int_type overflow(std::streambuf::int_type c) override;
 
 private:
     hal::fs::File file_;

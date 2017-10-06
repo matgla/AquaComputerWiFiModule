@@ -53,7 +53,7 @@ void SerialPort::write(u8 byte)
     Serial.write(byte);
 }
 
-void SerialPort::setHandler(handler::ReaderCallback readerCallback)
+void SerialPort::setHandler(const handler::ReaderCallback& readerCallback)
 {
     readerCallback_ = readerCallback;
 }

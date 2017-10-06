@@ -17,7 +17,7 @@ public:
     LoggerConf& operator=(const LoggerConf&&) = delete;
     ~LoggerConf() = default;
 
-    void add(LoggerBase logger);
+    void add(const LoggerBase& logger);
     static LoggerConf& get();
     std::vector<LoggerBase>& getLoggers();
 

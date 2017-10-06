@@ -26,6 +26,10 @@ class SerialPort::SerialWrapper
 public:
     SerialWrapper(const std::string& port, int baudrate);
     ~SerialWrapper();
+    SerialWrapper(const SerialWrapper&) = delete;
+    SerialWrapper(const SerialWrapper&&) = delete;
+    SerialWrapper& operator=(const SerialWrapper&&) = delete;
+    SerialWrapper& operator=(const SerialWrapper&) = delete;
     io_service ioService_;
     serial_port serialPort_;
     std::string port_;
@@ -36,11 +40,11 @@ public:
 
 private:
     void loop();
-    void readCallback(const boost::system::error_code& error, std::size_t bytes_transferred);
+    void readCallback(const boost::system::error_code& error, std::size_t bytesTransferred);
 };
 
-SerialPort::SerialWrapper::SerialWrapper(const std::string& port, int baudrate)
-    : serialPort_(ioService_), port_(port), baudrate_(baudrate)
+SerialPort::SerialWrapper::SerialWrapper(const std::string& port, const int baudrate)
+    : serialPort_(ioService_), port_(port), baudrate_(baudrate), rawBuffer_{}
 {
     try
     {
@@ -57,7 +61,7 @@ SerialPort::SerialWrapper::SerialWrapper(const std::string& port, int baudrate)
     }
     catch (boost::system::system_error& e)
     {
-        throw boost::system::system_error{e};
+        throw std::string(e.what());
     }
 }
 
@@ -74,20 +78,21 @@ void SerialPort::SerialWrapper::loop()
 }
 
 void SerialPort::SerialWrapper::readCallback(const boost::system::error_code& error,
-                                             std::size_t bytes_transferred)
+                                             const std::size_t bytesTransferred)
 {
-    if (error || !bytes_transferred)
+    if (nullptr != error || bytesTransferred != 0u)
     {
         return;
     }
-    readerCallback_(rawBuffer_, bytes_transferred, [this](const u8* buffer, std::size_t len) {
-        serialPort_.write_some(boost::asio::buffer(buffer, len));
-    });
+    readerCallback_(rawBuffer_, bytesTransferred, // NOLINT TODO: stadnik fix it
+                    [this](const u8* buffer, std::size_t len) {
+                        serialPort_.write_some(boost::asio::buffer(buffer, len));
+                    });
     loop();
 }
 
 // TODO: set default reader
-SerialPort::SerialPort(const std::string& port, int baudrate)
+SerialPort::SerialPort(const std::string& port, const int baudrate)
     : serialWrapper_(new SerialWrapper(port, baudrate))
 {
 }
@@ -99,7 +104,7 @@ std::size_t SerialPort::isDataToRecive()
     return serialWrapper_->buffer_.size();
 }
 
-void SerialPort::setHandler(dispatcher::ReaderCallback readerCallback)
+void SerialPort::setHandler(const dispatcher::ReaderCallback& readerCallback)
 {
     serialWrapper_->readerCallback_ = readerCallback;
 }

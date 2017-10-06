@@ -2,7 +2,6 @@ set(COMMON_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 
 set(common_srcs
     ${COMMON_SRC_DIR}/dispatcher/handlers.cpp
-    ${COMMON_SRC_DIR}/dispatcher/messageHandler.cpp
     ${COMMON_SRC_DIR}/dispatcher/dispatcher.cpp
     ${COMMON_SRC_DIR}/dispatcher/jsonHandler.cpp
     ${COMMON_SRC_DIR}/dispatcher/handler/handshakeHandler.cpp
@@ -47,7 +46,6 @@ set(common_incs
     ${COMMON_SRC_DIR}/dispatcher/handlers.hpp
     ${COMMON_SRC_DIR}/dispatcher/IDataReceiver.hpp
     ${COMMON_SRC_DIR}/dispatcher/IFrameHandler.hpp
-    ${COMMON_SRC_DIR}/dispatcher/messageHandler.hpp
     ${COMMON_SRC_DIR}/dispatcher/handler/handshakeHandler.hpp
     ${COMMON_SRC_DIR}/dispatcher/handler/getInfoHandler.hpp
     ${COMMON_SRC_DIR}/dispatcher/stmMessageReceiver.hpp

@@ -61,7 +61,7 @@ public:
         return client_.connected();
     }
 
-    void setHandler(handler::ReaderCallback reader)
+    void setHandler(const handler::ReaderCallback& reader)
     {
         readerCallback_ = reader;
     }
@@ -136,7 +136,7 @@ void TcpClient::write(u8 byte)
     }
 }
 
-void TcpClient::setHandler(handler::ReaderCallback reader)
+void TcpClient::setHandler(const handler::ReaderCallback& reader)
 {
     tcpClientImpl_->setHandler(reader);
 }

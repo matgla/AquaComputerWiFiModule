@@ -12,7 +12,7 @@ namespace fs
 class File::FileWrapper
 {
 public:
-    FileWrapper() : size_(0)
+    FileWrapper() : size_{0}
     {
     }
     std::fstream fs_;
@@ -27,19 +27,19 @@ File::~File() = default;
 
 void File::open(const std::string& path, const std::string& mode)
 {
-    std::ios_base::openmode openmode;
+    std::ios_base::openmode openmode{};
 
-    if (std::string::npos != mode.find("r"))
+    if (std::string::npos != mode.find('r'))
     {
         openmode |= std::ios::in;
     }
 
-    if (std::string::npos != mode.find("w"))
+    if (std::string::npos != mode.find('w'))
     {
         openmode |= std::ios::out;
     }
 
-    if (std::string::npos != mode.find("+"))
+    if (std::string::npos != mode.find('+'))
     {
         openmode |= std::ios::app;
     }

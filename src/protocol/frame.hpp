@@ -29,7 +29,7 @@ class Frame : public IFrame
 public:
     using PayloadContainer = std::array<u8, PAYLOAD_SIZE>;
 
-    Frame(u8 port = 0, u8 number = 0) : port_(port), number_(number), length_(0)
+    Frame(u8 port = 0, u8 number = 0) : port_(port), number_(number), length_{0}, control_{0}
     {
     }
 

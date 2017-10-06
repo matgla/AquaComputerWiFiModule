@@ -3,6 +3,8 @@
 #include <functional>
 #include <memory>
 
+#include <boost/core/ignore_unused.hpp>
+
 #include "dispatcher/IDataReceiver.hpp"
 #include "dispatcher/handlers.hpp"
 #include "utils/types.hpp"
@@ -17,7 +19,7 @@ class TcpServer : public dispatcher::IDataReceiver
 {
 public:
     TcpServer(u16 port, dispatcher::ReaderCallback readerCallback = dispatcher::defaultReader);
-    ~TcpServer();
+    ~TcpServer() override;
     TcpServer(const TcpServer&) = delete;
     TcpServer(const TcpServer&&) = delete;
     TcpServer& operator=(const TcpServer&&) = delete;
@@ -26,16 +28,20 @@ public:
     void start();
     void stop();
 
-    void setHandler(dispatcher::ReaderCallback reader) override;
+    void setHandler(const dispatcher::ReaderCallback& reader) override;
 
     void write(const std::string& data) override
     {
+        boost::ignore_unused(data);
     }
     void write(u8 byte) override
     {
+        boost::ignore_unused(byte);
     }
     void write(const u8* data, std::size_t len) override
     {
+        boost::ignore_unused(data);
+        boost::ignore_unused(len);
     }
 
 private:

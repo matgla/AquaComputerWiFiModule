@@ -12,7 +12,12 @@ class IFrame
 public:
     using FramePtr = std::unique_ptr<IFrame>;
 
+    IFrame() = default;
     virtual ~IFrame() = default;
+    IFrame(const IFrame&) = delete;
+    IFrame(const IFrame&&) = delete;
+    IFrame& operator=(const IFrame&&) = delete;
+    IFrame& operator=(const IFrame&) = delete;
 
     virtual void port(u8 port) = 0;
     virtual u8 port() const = 0;

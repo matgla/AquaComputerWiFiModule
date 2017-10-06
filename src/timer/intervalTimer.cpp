@@ -1,13 +1,15 @@
 #include "timer/intervalTimer.hpp"
 
 #include "hal/time/time.hpp"
+#include "utils/types.hpp"
+#include <algorithm>
 
 namespace timer
 {
 
-IntervalTimer::IntervalTimer(u64 time, TimerCallback callback, int times)
-    : callback_(callback), startTime_(hal::time::milliseconds()), time_(time), enabled_(true),
-      times_(times)
+IntervalTimer::IntervalTimer(const u64 time, TimerCallback callback, const int times)
+    : callback_(std::move(callback)), startTime_(hal::time::milliseconds()), time_(time),
+      enabled_(true), times_(times)
 {
 }
 

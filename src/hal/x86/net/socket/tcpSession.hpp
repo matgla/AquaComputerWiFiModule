@@ -5,6 +5,7 @@
 #include <string>
 
 #include <boost/asio.hpp>
+#include <gsl/span>
 
 #include "dispatcher/handlers.hpp"
 #include "logger/logger.hpp"
@@ -24,17 +25,21 @@ public:
     TcpSession(boost::asio::ip::tcp::socket socket,
                dispatcher::ReaderCallback reader = dispatcher::defaultReader);
     ~TcpSession();
+    TcpSession(const TcpSession&) = delete;
+    TcpSession(const TcpSession&&) = delete;
+    TcpSession& operator=(const TcpSession&& other) = delete;
+    TcpSession& operator=(const TcpSession& other) = delete;
 
     void start();
     boost::asio::ip::tcp::socket& getSocket();
 
-    void doWrite(std::string data);
-    void doWrite(const u8* buf, std::size_t length);
+    void doWrite(const std::string& data);
+    void doWrite(const gsl::span<const u8>& buf);
     void doWrite(u8 byte);
 
     void disconnect();
     bool connected();
-    void setHandler(dispatcher::ReaderCallback reader);
+    void setHandler(const dispatcher::ReaderCallback& reader);
 
 private:
     void doRead();

@@ -6,15 +6,20 @@
 
 #include <boost/asio.hpp>
 #include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 
+#include "boost/beast/core/ostream.hpp"
+#include "boost/beast/http/field.hpp"
+#include "boost/beast/websocket/stream.hpp"
+#include "dispatcher/handlers.hpp"
 #include "logger/logger.hpp"
+#include "utils/types.hpp"
 
 namespace http = boost::beast::http;           // from <beast/http.hpp>
 namespace websocket = boost::beast::websocket; // from <beast/websocket.hpp>
-namespace ip = boost::asio::ip;                // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;              // from <boost/asio.hpp>
 
 namespace hal
@@ -50,9 +55,9 @@ public:
 
     public:
         /// Constructor
-        connection(WebSocketWrapper& parent, tcp::endpoint const& ep, tcp::socket&& sock)
-            : parent_(parent), ep_(ep), ws_(std::move(sock)), strand_(ws_.get_io_service()),
-              id_([] {
+        connection(WebSocketWrapper& parent, tcp::endpoint ep, tcp::socket&& sock)
+            : parent_(parent), ep_(std::move(ep)), ws_(std::move(sock)),
+              strand_(ws_.get_io_service()), id_([] {
                   static std::atomic<std::size_t> n{0};
                   return ++n;
               }())
@@ -63,8 +68,15 @@ public:
             // on or off or adjust the read and write buffer sizes.
             //
             if (parent.mod_)
+            {
                 parent.mod_(ws_);
+            }
         }
+        ~connection() = default;
+        connection(const connection&) = delete;
+        connection(const connection&&) = delete;
+        connection& operator=(const connection&& other) = delete;
+        connection& operator=(const connection& other) = delete;
 
         // Called immediately after the connection is created.
         // We keep this separate from the constructor because
@@ -84,8 +96,10 @@ public:
         // Called after the handshake is performed
         void on_accept(error_code ec)
         {
-            if (ec)
+            if (nullptr != ec)
+            {
                 return fail("accept", ec);
+            }
             do_read();
         }
 
@@ -103,16 +117,20 @@ public:
             // This error means the other side
             // closed the websocket stream.
             if (ec == websocket::error::closed)
+            {
                 return;
+            }
 
-            if (ec)
+            if (nullptr != ec)
+            {
                 return fail("read", ec);
+            }
             // Write the received message back
             std::stringstream ss;
             ss << boost::beast::buffers(buffer_.data());
 
-            parent_.handler_(reinterpret_cast<const u8*>(ss.str().c_str()), ss.str().length(),
-                             [this](const u8* data, std::size_t length) {
+            parent_.handler_(reinterpret_cast<const u8*>(ss.str().c_str()), // NOLINT
+                             ss.str().length(), [this](const u8* data, std::size_t length) {
                                  //  ws_.binary(ws_.got_binary());
                                  ws_.async_write(boost::asio::buffer(data, length),
                                                  strand_.wrap(std::bind(&connection::on_write,
@@ -124,8 +142,10 @@ public:
         // Called after the message write completes
         void on_write(error_code ec)
         {
-            if (ec)
+            if (nullptr != ec)
+            {
                 return fail("write", ec);
+            }
 
             // Empty out the buffer. This is
             // needed if we want to do another read.
@@ -136,30 +156,35 @@ public:
         }
 
         // Pretty-print an error to the log
-        void fail(std::string what, error_code ec)
+        void fail(const std::string& what, error_code ec)
         {
-            logger.error() << "WebSocket failed " << ec.message();
+            logger.error() << "WebSocket failed " << what << ":" << ec.message();
         }
 
         WebSocketWrapper& parent_;
     };
 
-    WebSocketWrapper(const std::string& uri, u16 port, dispatcher::ReaderCallback handler)
-        : uri_(uri), port_(port), sock_(ios_), acceptor_(ios_), work_(ios_), handler_(handler)
+    WebSocketWrapper(std::string uri, const u16 port, dispatcher::ReaderCallback handler)
+        : uri_(std::move(uri)), port_(port), sock_(ios_), acceptor_(ios_), work_(ios_),
+          handler_(std::move(handler))
     {
         thread_.reserve(1);
 
         thread_.emplace_back([&] { ios_.run(); });
     }
+    WebSocketWrapper(const WebSocketWrapper&) = delete;
+    WebSocketWrapper(const WebSocketWrapper&&) = delete;
+    WebSocketWrapper& operator=(const WebSocketWrapper&& other) = delete;
+    WebSocketWrapper& operator=(const WebSocketWrapper& other) = delete;
 
-    void setHandler(dispatcher::ReaderCallback reader)
+    void setHandler(const dispatcher::ReaderCallback& reader)
     {
         handler_ = reader;
     }
 
-    void fail(std::string what, error_code ec)
+    void fail(const std::string& what, error_code ec)
     {
-        logger.error() << "duplo";
+        logger.error() << "duplo: " << what << " with: " << ec.message();
     }
 
     void do_accept()
@@ -173,14 +198,19 @@ public:
     {
         // This can happen during exit
         if (!acceptor_.is_open())
+        {
             return;
+        }
 
         // This can happen during exit
         if (ec == boost::asio::error::operation_aborted)
+        {
             return;
-
-        if (ec)
+        }
+        if (nullptr != ec)
+        {
             fail("accept", ec);
+        }
 
         // Create the connection and run it
         std::make_shared<connection>(*this, ep_, std::move(sock_))->run();
@@ -197,7 +227,9 @@ public:
             acceptor_.close(ec);
         });
         for (auto& t : thread_)
+        {
             t.join();
+        }
     }
 
     /// Return the listening endpoint.
@@ -223,21 +255,26 @@ public:
     void open(tcp::endpoint const& ep, error_code& ec)
     {
         acceptor_.open(ep.protocol(), ec);
-        if (ec)
+        if (nullptr != ec)
+        {
             return fail("open", ec);
+        }
         acceptor_.set_option(boost::asio::socket_base::reuse_address{true});
         acceptor_.bind(ep, ec);
-        if (ec)
+        if (nullptr != ec)
+        {
             return fail("bind", ec);
+        }
         acceptor_.listen(boost::asio::socket_base::max_connections, ec);
-        if (ec)
+        if (nullptr != ec)
+        {
             return fail("listen", ec);
+        }
         do_accept();
     }
 
 protected:
     dispatcher::ReaderCallback handler_;
-    std::ostream* log_;                                   // Used for diagnostic output, may be null
     boost::asio::io_service ios_;                         // The io_service, required
     tcp::socket sock_;                                    // Holds accepted connections
     tcp::endpoint ep_;                                    // The remote endpoint during accept
@@ -264,6 +301,11 @@ public:
     {
     }
 
+    set_stream_options(set_stream_options&&) = default;
+    set_stream_options& operator=(set_stream_options&& other) = default;
+    set_stream_options& operator=(const set_stream_options& other) = default;
+    ~set_stream_options() = default;
+
     template <class NextLayer>
     void operator()(websocket::stream<NextLayer>& ws) const
     {
@@ -281,8 +323,8 @@ public:
 };
 
 
-WebSocket::WebSocket(const std::string& uri, u16 port, dispatcher::ReaderCallback handler)
-    : webSocketWrapper_(new WebSocketWrapper(uri, port, handler))
+WebSocket::WebSocket(const std::string& uri, const u16 port, dispatcher::ReaderCallback handler)
+    : webSocketWrapper_(new WebSocketWrapper(uri, port, std::move(handler)))
 {
     websocket::permessage_deflate pmd;
     pmd.client_enable = true;
@@ -293,7 +335,7 @@ WebSocket::WebSocket(const std::string& uri, u16 port, dispatcher::ReaderCallbac
 
 WebSocket::~WebSocket() = default;
 
-void WebSocket::setHandler(dispatcher::ReaderCallback handler)
+void WebSocket::setHandler(const dispatcher::ReaderCallback& handler)
 {
     webSocketWrapper_->setHandler(handler);
 }
@@ -303,6 +345,6 @@ void WebSocket::start()
     webSocketWrapper_->start();
 }
 
+} // namespace socket
 } // namespace net
 } // namespace hal
-} // namespace socket
