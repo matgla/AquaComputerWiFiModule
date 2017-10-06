@@ -36,6 +36,10 @@ before_script:
     else
       if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
     fi
+
+script:
+  - echo "Building targets"
+
 matrix:
   include:
     ################################
