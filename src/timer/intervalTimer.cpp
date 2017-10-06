@@ -1,8 +1,10 @@
 #include "timer/intervalTimer.hpp"
 
-#include "hal/time/time.hpp"
-#include "utils/types.hpp"
 #include <algorithm>
+
+#include "hal/time/time.hpp"
+#include "timer/ITimer.hpp"
+#include "utils/types.hpp"
 
 namespace timer
 {

@@ -6,7 +6,7 @@ language: cpp
 #before_install:
 #  - docker pull matgla/esp8266
 #  - docker ps -a
-#  - sudo apt-get install lcov 
+#  - sudo apt-get install lcov
 #  - gem install coveralls-lcov
 #script:
 #  - docker run -v $(pwd):/mnt/repo -it matgla/esp8266 /bin/sh -c "cd /mnt/repo && sh run_tests.sh && sh build_x86.sh"
@@ -27,23 +27,23 @@ matrix:
     ################################
     #           doxygen            #
     ################################
-    - os: linux
-      env: 
-        - TEST="Doxygen"
-      addons:
-        apt:
-          packages:
-            - doxygen
-      script:
-        - cd ..
-        - doxygen .doxygen.txt
-        - |
-        - if [[ -s doxygen_warnings.txt ]]; then
-            echo "Doxygen generation failed"
-            echo ""
-            cat doxygen_warnings.txt
-            exit -1
-          fi
+    # - os: linux
+      # env:
+      #   - TEST="Doxygen"
+      # addons:
+      #   apt:
+      #     packages:
+      #       - doxygen
+      # script:
+      #   - cd ..
+      #   - doxygen .doxygen.txt
+      #   - |
+      #   - if [[ -s doxygen_warnings.txt ]]; then
+      #       echo "Doxygen generation failed"
+      #       echo ""
+      #       cat doxygen_warnings.txt
+      #       exit -1
+      #     fi
 
     ################################
     #          clang-tidy          #
@@ -64,4 +64,15 @@ matrix:
     script:
       - mkdir bin_test
       - cd bin_test
-      - cmake .. -DCLANG_TIDY=ON -DBUILD_TESTS
+      - cmake .. -DCLANG_TIDY=ON -DBUILD_TESTS=ON -DARCH=X86
+      - make
+      - make clang_tidy > tidy.log 2>&1
+      - |
+        if [[ -n $(grep "warning: " output.txt) ]] || [[ -n $(grep "error: " output.txt) ]]; then
+            echo "You must pass the clang tidy checks before submitting a pull request"
+            echo ""
+            grep --color -E '^|warning: |error: ' output.txt
+            exit -1;
+        else
+            echo -e "\033[1;32m\xE2\x9C\x93 passed:\033[0m $1";
+        fi
