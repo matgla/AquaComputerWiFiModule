@@ -4,7 +4,6 @@
 #include <string>
 
 #include "dispatcher/IDataReceiver.hpp"
-#include "dispatcher/handlers.hpp"
 #include "utils/types.hpp"
 
 namespace hal
@@ -23,10 +22,10 @@ public:
     SerialPort& operator=(const SerialPort& other) = delete;
 
     void write(const std::string& data) override;
-    void write(const u8* buf, std::size_t length) override;
+    void write(const BufferSpan& buffer) override;
     void write(u8 byte) override;
 
-    void setHandler(const dispatcher::ReaderCallback& readerCallback) override;
+    void setHandler(const ReaderCallback& readerCallback) override;
 
     std::size_t isDataToRecive();
     void process();
@@ -37,7 +36,7 @@ protected:
     class SerialWrapper;
     std::unique_ptr<SerialWrapper> serialWrapper_;
 
-    dispatcher::ReaderCallback readerCallback_;
+    ReaderCallback readerCallback_;
 };
 
 } // namespace serial

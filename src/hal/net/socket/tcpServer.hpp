@@ -6,7 +6,6 @@
 #include <boost/core/ignore_unused.hpp>
 
 #include "dispatcher/IDataReceiver.hpp"
-#include "dispatcher/handlers.hpp"
 #include "utils/types.hpp"
 
 namespace hal
@@ -18,7 +17,7 @@ namespace socket
 class TcpServer : public dispatcher::IDataReceiver
 {
 public:
-    TcpServer(u16 port, dispatcher::ReaderCallback readerCallback = dispatcher::defaultReader);
+    TcpServer(u16 port, ReaderCallback readerCallback = defaultReader);
     ~TcpServer() override;
     TcpServer(const TcpServer&) = delete;
     TcpServer(const TcpServer&&) = delete;
@@ -28,7 +27,7 @@ public:
     void start();
     void stop();
 
-    void setHandler(const dispatcher::ReaderCallback& reader) override;
+    void setHandler(const ReaderCallback& reader) override;
 
     void write(const std::string& data) override
     {
@@ -38,10 +37,9 @@ public:
     {
         boost::ignore_unused(byte);
     }
-    void write(const u8* data, std::size_t len) override
+    void write(const BufferSpan& buffer) override
     {
-        boost::ignore_unused(data);
-        boost::ignore_unused(len);
+        boost::ignore_unused(buffer);
     }
 
 private:

@@ -5,7 +5,6 @@
 #include <string>
 
 #include "dispatcher/IDataReceiver.hpp"
-#include "dispatcher/handlers.hpp"
 #include "utils/types.hpp"
 
 namespace hal
@@ -17,8 +16,7 @@ namespace socket
 class WebSocket : public dispatcher::IDataReceiver
 {
 public:
-    WebSocket(const std::string& uri, u16 port,
-              dispatcher::ReaderCallback handler = dispatcher::defaultReader);
+    WebSocket(const std::string& uri, u16 port, ReaderCallback handler = defaultReader);
     ~WebSocket() override;
     WebSocket(const WebSocket&) = delete;
     WebSocket(const WebSocket&&) = delete;
@@ -28,7 +26,7 @@ public:
     void start();
     void stop();
 
-    void setHandler(const dispatcher::ReaderCallback& handler) override;
+    void setHandler(const ReaderCallback& handler) override;
 
 private:
     class WebSocketWrapper;

@@ -41,7 +41,7 @@ TEST(PacketHandlerShould, SendMessage)
     receiver->writeBuffer.clear();
     auto ack = helper::createAck(testingPort, currentFrameNumber++);
     // ack header
-    receiver->readerCallback(ack.data(), ack.size(), dispatcher::defaultWriter);
+    receiver->readerCallback(BufferSpan{ack}, defaultWriter);
     // received payload ?
     const int startIndex = 0;
     auto expectedMessage =
@@ -52,7 +52,7 @@ TEST(PacketHandlerShould, SendMessage)
     // ack first part
     receiver->writeBuffer.clear();
     auto ackFrame1 = helper::createAck(testingPort, currentFrameNumber++);
-    receiver->readerCallback(ackFrame1.data(), ackFrame1.size(), dispatcher::defaultWriter);
+    receiver->readerCallback(ackFrame1, defaultWriter);
 
     // received rest of payload?
     auto expectedPart2 = helper::createFrame(testingPayload, testingPort, currentFrameNumber,
@@ -63,7 +63,7 @@ TEST(PacketHandlerShould, SendMessage)
     // ack second part
     receiver->writeBuffer.clear();
     auto ackFrame2 = helper::createAck(testingPort, currentFrameNumber++);
-    receiver->readerCallback(ackFrame2.data(), ackFrame2.size(), dispatcher::defaultWriter);
+    receiver->readerCallback(ackFrame2, defaultWriter);
 
     // received CRC32 for message?
     auto crcPart = helper::createCrc32Frame(testingPort, currentFrameNumber++, testingPayload);
@@ -99,7 +99,7 @@ TEST(PacketHandlerShould, RetransmitParts)
     receiver->writeBuffer.clear();
     auto ack = helper::createAck(testingPort, currentFrameNumber++);
     // ack header
-    receiver->readerCallback(ack.data(), ack.size(), dispatcher::defaultWriter);
+    receiver->readerCallback(ack, defaultWriter);
     // received payload ?
     const int startIndex = 0;
     auto expectedMessage =
@@ -118,7 +118,7 @@ TEST(PacketHandlerShould, RetransmitParts)
     receiver->writeBuffer.clear();
     // retransmission succesful, go further
     auto ackFrame1 = helper::createAck(testingPort, currentFrameNumber++);
-    receiver->readerCallback(ackFrame1.data(), ackFrame1.size(), dispatcher::defaultWriter);
+    receiver->readerCallback(ackFrame1, defaultWriter);
 
     // received rest of payload?
     auto expectedPart2 = helper::createFrame(testingPayload, testingPort, currentFrameNumber,
@@ -129,7 +129,7 @@ TEST(PacketHandlerShould, RetransmitParts)
     // ack second part
     receiver->writeBuffer.clear();
     auto ackFrame2 = helper::createAck(testingPort, currentFrameNumber++);
-    receiver->readerCallback(ackFrame2.data(), ackFrame2.size(), dispatcher::defaultWriter);
+    receiver->readerCallback(ackFrame2, defaultWriter);
 
     // received CRC32 for message?
     auto crcPart = helper::createCrc32Frame(testingPort, currentFrameNumber++, testingPayload);

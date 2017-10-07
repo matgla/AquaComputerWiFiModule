@@ -44,7 +44,7 @@ TEST_F(FrameHandlerShould, Success)
                         crc[1],           FrameByte::End};
 
     handler_.connect(testingPort, emptyFrameReceiver);
-    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
+    receiver_->readerCallback(frame , defaultWriter);
 
     const u8 expectedNackFrame[] = {FrameByte::Start,           0,   frameNumber, testingPort,
                                     messages::Control::Success, 0x0, 0x0,         FrameByte::End};
@@ -53,7 +53,7 @@ TEST_F(FrameHandlerShould, Success)
                 ArrayCompare(expectedNackFrame, sizeof(expectedNackFrame)));
 
     receiver_->writeBuffer.clear();
-    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
+    receiver_->readerCallback(frame, defaultWriter);
 
     EXPECT_THAT(receiver_->writeBuffer.data(),
                 ArrayCompare(expectedNackFrame, sizeof(expectedNackFrame)));
@@ -70,7 +70,7 @@ TEST_F(FrameHandlerShould, NackWithPortNotConnected)
         FrameByte::Start, sizeof(payload), frameNumber, testingPort, controlByte,
         payload[0],       payload[1],      0x0,         0x0,         FrameByte::End};
 
-    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
+    receiver_->readerCallback(frame, defaultWriter);
 
     const u8 expectedNackFrame[] = {
         FrameByte::Start, 0, frameNumber, testingPort, messages::Control::PortNotConnect, 0x0, 0x0,
@@ -92,7 +92,7 @@ TEST_F(FrameHandlerShould, NackWhenCrcCalculationFailed)
         payload[0],       payload[1],      0x0,         0x0,         FrameByte::End};
 
     handler_.connect(testingPort, emptyFrameReceiver);
-    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
+    receiver_->readerCallback(frame, defaultWriter);
 
     const u8 expectedNackFrame[] = {FrameByte::Start,
                                     0,
@@ -122,7 +122,7 @@ TEST_F(FrameHandlerShould, NackWhenWrongEndByteReceived)
                         crc[1],           FrameByte::Start};
 
     handler_.connect(testingPort, emptyFrameReceiver);
-    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
+    receiver_->readerCallback(frame, defaultWriter);
 
     const u8 expectedNackFrame[] = {
         FrameByte::Start, 0, frameNumber, testingPort, messages::Control::WrongEndByte, 0x0, 0x0,
@@ -144,7 +144,7 @@ TEST_F(FrameHandlerShould, SuccessWithEmptyPayload)
                         controlByte,      crc[0], crc[1],      FrameByte::End};
 
     handler_.connect(testingPort, emptyFrameReceiver);
-    receiver_->readerCallback(frame, sizeof(frame), dispatcher::defaultWriter);
+    receiver_->readerCallback(frame, defaultWriter);
 
     const u8 expectedAckFrame[] = {FrameByte::Start,           0,   frameNumber, testingPort,
                                    messages::Control::Success, 0x0, 0x0,         FrameByte::End};

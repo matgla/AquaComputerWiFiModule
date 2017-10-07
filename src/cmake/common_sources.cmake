@@ -1,7 +1,6 @@
 set(COMMON_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 
 set(common_srcs
-    ${COMMON_SRC_DIR}/dispatcher/handlers.cpp
     ${COMMON_SRC_DIR}/dispatcher/dispatcher.cpp
     ${COMMON_SRC_DIR}/dispatcher/jsonHandler.cpp
     ${COMMON_SRC_DIR}/dispatcher/handler/handshakeHandler.cpp
@@ -23,6 +22,7 @@ set(common_srcs
     ${COMMON_SRC_DIR}/timer/intervalTimer.cpp
     ${COMMON_SRC_DIR}/timer/manager.cpp
     ${COMMON_SRC_DIR}/timer/timeoutTimer.cpp
+    ${COMMON_SRC_DIR}/utils/types.cpp
     ${COMMON_SRC_DIR}/protocol/frameHandler.cpp
     ${COMMON_SRC_DIR}/protocol/packetHandler.cpp
 )
@@ -43,7 +43,6 @@ set(common_incs
     ${COMMON_SRC_DIR}/hal/time/time.hpp
     ${COMMON_SRC_DIR}/dispatcher/dispatcher.hpp
     ${COMMON_SRC_DIR}/dispatcher/jsonHandler.hpp
-    ${COMMON_SRC_DIR}/dispatcher/handlers.hpp
     ${COMMON_SRC_DIR}/dispatcher/IDataReceiver.hpp
     ${COMMON_SRC_DIR}/dispatcher/IFrameHandler.hpp
     ${COMMON_SRC_DIR}/dispatcher/handler/handshakeHandler.hpp

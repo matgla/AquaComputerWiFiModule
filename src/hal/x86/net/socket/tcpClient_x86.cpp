@@ -24,7 +24,7 @@ namespace socket
 class TcpClient::TcpClientImpl
 {
 public:
-    TcpClientImpl(std::string url, u16 port, dispatcher::ReaderCallback readerCallback)
+    TcpClientImpl(std::string url, u16 port, ReaderCallback readerCallback)
         : url_(std::move(url)), port_(port), logger_("TcpClientImpl"), resolver_(ioService_),
           socket_(ioService_), readerCallback_(std::move(readerCallback))
     {
@@ -53,10 +53,9 @@ public:
         session_->doWrite(data);
     }
 
-    void write(const u8* buf, std::size_t length)
+    void write(const BufferSpan& buffer)
     {
-        session_->doWrite(gsl::span<const u8>{
-            buf, static_cast<gsl::span<const unsigned char>::index_type>(length)});
+        session_->doWrite(buffer);
     }
 
     void write(u8 byte)
@@ -69,7 +68,7 @@ public:
         return session_ ? session_->connected() : false;
     }
 
-    void setHandler(const dispatcher::ReaderCallback& reader)
+    void setHandler(const ReaderCallback& reader)
     {
         readerCallback_ = reader;
         if (session_)
@@ -123,12 +122,12 @@ private:
     tcp::resolver resolver_;
     tcp::socket socket_;
     std::thread thread_;
-    dispatcher::ReaderCallback readerCallback_;
+    ReaderCallback readerCallback_;
 };
 
 
 TcpClient::TcpClient(const std::string& url, u16 port,
-                     const dispatcher::ReaderCallback& readerCallback)
+                     const ReaderCallback& readerCallback)
     : tcpClientImpl_(new TcpClientImpl(url, port, readerCallback))
 {
 }
@@ -153,11 +152,11 @@ void TcpClient::write(const std::string& data)
     }
 }
 
-void TcpClient::write(const u8* buf, std::size_t length)
+void TcpClient::write(const BufferSpan& buffer)
 {
     if (tcpClientImpl_->connected())
     {
-        tcpClientImpl_->write(buf, length);
+        tcpClientImpl_->write(buffer);
     }
 }
 
@@ -169,7 +168,7 @@ void TcpClient::write(u8 byte)
     }
 }
 
-void TcpClient::setHandler(const dispatcher::ReaderCallback& reader)
+void TcpClient::setHandler(const ReaderCallback& reader)
 {
     tcpClientImpl_->setHandler(reader);
 }

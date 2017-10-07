@@ -21,7 +21,7 @@ FrameHandler::~FrameHandler()
 {
     if (connection_)
     {
-        connection_->setHandler(&dispatcher::defaultReader);
+        connection_->setHandler(&defaultReader);
     }
 }
 
@@ -29,7 +29,7 @@ void FrameHandler::setConnection(const dispatcher::IDataReceiver::RawDataReceive
 {
     connection_ = dataReceiver;
     dataReceiver->setHandler(std::bind(&FrameHandler::onRead, this, std::placeholders::_1,
-                                       std::placeholders::_2, std::placeholders::_3));
+                                       std::placeholders::_2));
 
     logger_.info() << "Connection set";
 }
@@ -54,19 +54,18 @@ void FrameHandler::sendReply(const messages::Control status)
     send(frame);
 }
 
-void FrameHandler::onRead(const u8* buffer, const std::size_t length,
-                          const dispatcher::WriterCallback& writer)
+void FrameHandler::onRead(const BufferSpan& buffer,
+                          const WriterCallback& writer)
 {
     boost::ignore_unused(writer);
-    gsl::span<const u8> buf{buffer, static_cast<gsl::span<const u8>::index_type>(length)};
 
-    for (auto i = 0; i < buf.length(); ++i)
+    for (auto i = 0; i < buffer.length(); ++i)
     {
         switch (state_)
         {
             case State::IDLE:
             {
-                if (FrameByte::Start == buf[i])
+                if (FrameByte::Start == buffer[i])
                 {
                     rxLength_ = 0;
                     rxCrcBytesReceived_ = 0;
@@ -79,38 +78,35 @@ void FrameHandler::onRead(const u8* buffer, const std::size_t length,
 
             case State::LENGTH_TRANSMISSION:
             {
-                rxLength_ = buf[i];
+                rxLength_ = buffer[i];
                 state_ = State::FRAME_NUMBER_TRANSMISSION;
             }
             break;
 
             case State::FRAME_NUMBER_TRANSMISSION:
             {
-                rxBuffer_.number(buf[i]);
+                rxBuffer_.number(buffer[i]);
                 state_ = State::PORT_TRANSMISSION;
             }
             break;
 
             case State::PORT_TRANSMISSION:
             {
-                rxBuffer_.port(buf[i]);
+                rxBuffer_.port(buffer[i]);
                 state_ = State::CONTROL_TRANSMISSION;
             }
             break;
 
             case State::CONTROL_TRANSMISSION:
             {
-                rxBuffer_.control(buf[i]);
-                logger_.info() << "Len: " << std::to_string(rxLength_);
+                rxBuffer_.control(buffer[i]);
                 if (rxLength_ > 0)
                 {
                     state_ = State::PAYLOAD_TRANSMISSION;
-                    logger_.info() << "payload";
                 }
                 else
                 {
                     state_ = State::CRC_TRANSMISSION;
-                    logger_.info() << "crc";
                 }
             }
             break;
@@ -122,8 +118,8 @@ void FrameHandler::onRead(const u8* buffer, const std::size_t length,
                 // receive payload
                 if (rxLength_ != 0)
                 {
-                    frameBytesToBeReceived = length - i > rxLength_ ? rxLength_ : length - i;
-                    rxBuffer_.payload(&buf[i], frameBytesToBeReceived);
+                    frameBytesToBeReceived = buffer.length() - i > rxLength_ ? rxLength_ : buffer.length() - i;
+                    rxBuffer_.payload(&buffer[i], frameBytesToBeReceived);
                     rxLength_ -= frameBytesToBeReceived;
                     i += frameBytesToBeReceived - 1;
                 }
@@ -137,7 +133,7 @@ void FrameHandler::onRead(const u8* buffer, const std::size_t length,
 
             case State::CRC_TRANSMISSION:
             {
-                rxCrc_ |= buf[i] << 8 * rxCrcBytesReceived_;
+                rxCrc_ |= buffer[i] << 8 * rxCrcBytesReceived_;
                 if (++rxCrcBytesReceived_ == 2)
                 {
                     state_ = State::END_TRANSMISSION;
@@ -160,7 +156,7 @@ void FrameHandler::onRead(const u8* buffer, const std::size_t length,
                         << ", retranssmision requested";
                     sendReply(messages::Control::CrcChecksumFailed);
                 }
-                else if (buf[i] != FrameByte::End)
+                else if (buffer[i] != FrameByte::End)
                 {
                     logger_.error() << "Wrong end byte received";
                     sendReply(messages::Control::WrongEndByte);
@@ -193,7 +189,7 @@ void FrameHandler::send(const IFrame& frame)
     connection_->write(frame.number());
     connection_->write(frame.port());
     connection_->write(frame.control());
-    connection_->write(frame.payload(), frame.length());
+    connection_->write(BufferSpan{ frame.payload(), frame.payloadSize() });
     u8 crc[2];
     serializer::serialize(static_cast<u8*>(crc), frame.crc());
     connection_->write(gsl::span<const u8>{crc});

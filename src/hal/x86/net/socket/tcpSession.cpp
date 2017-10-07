@@ -14,7 +14,7 @@ namespace net
 {
 namespace socket
 {
-TcpSession::TcpSession(tcp::socket socket, dispatcher::ReaderCallback reader)
+TcpSession::TcpSession(tcp::socket socket, ReaderCallback reader)
     : buffer_{}, socket_(std::move(socket)), logger_("TcpSession"),
       readerCallback_(std::move(reader))
 {
@@ -100,10 +100,8 @@ void TcpSession::doRead()
         if (!error)
         {
             std::lock_guard<std::mutex> safeCallback(readerCallbackMutex_);
-            readerCallback_(buffer_, // NOLINT TODO: stadnik change reader callback to gsl::span
-                            tranferred_bytes, [this](const u8* buf, std::size_t len) {
-                                doWrite(gsl::span<const u8>{
-                                    buf, static_cast<gsl::span<const u8>::index_type>(len)});
+            readerCallback_(buffer_, [this](const BufferSpan& buffer) {
+                                doWrite(buffer);
                             });
             return doRead();
         }
@@ -113,7 +111,7 @@ void TcpSession::doRead()
     });
 }
 
-void TcpSession::setHandler(const dispatcher::ReaderCallback& reader)
+void TcpSession::setHandler(const ReaderCallback& reader)
 {
     std::lock_guard<std::mutex> safeCallback(readerCallbackMutex_);
     readerCallback_ = reader;

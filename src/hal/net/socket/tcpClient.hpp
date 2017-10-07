@@ -5,7 +5,6 @@
 #include <string>
 
 #include "dispatcher/IDataReceiver.hpp"
-#include "dispatcher/handlers.hpp"
 #include "utils/types.hpp"
 
 namespace hal
@@ -19,7 +18,7 @@ class TcpClient : public dispatcher::IDataReceiver
 public:
     ~TcpClient() override;
     TcpClient(const std::string& url, u16 port,
-              const dispatcher::ReaderCallback& readerCallback = dispatcher::defaultReader);
+              const ReaderCallback& readerCallback = defaultReader);
     TcpClient(const TcpClient&) = delete;
     TcpClient(const TcpClient&&) = delete;
     TcpClient& operator=(const TcpClient&&) = delete;
@@ -29,10 +28,10 @@ public:
     void stop();
 
     void write(const std::string& data) override;
-    void write(const u8* buf, std::size_t length) override;
+    void write(const BufferSpan& buffer) override;
     void write(u8 byte) override;
 
-    void setHandler(const dispatcher::ReaderCallback& reader) override;
+    void setHandler(const ReaderCallback& reader) override;
 
 private:
     class TcpClientImpl;

@@ -7,7 +7,6 @@
 #include <boost/asio.hpp>
 #include <gsl/span>
 
-#include "dispatcher/handlers.hpp"
 #include "logger/logger.hpp"
 #include "utils/types.hpp"
 
@@ -23,7 +22,7 @@ class TcpSession
 {
 public:
     TcpSession(boost::asio::ip::tcp::socket socket,
-               dispatcher::ReaderCallback reader = dispatcher::defaultReader);
+               ReaderCallback reader = defaultReader);
     ~TcpSession();
     TcpSession(const TcpSession&) = delete;
     TcpSession(const TcpSession&&) = delete;
@@ -39,7 +38,7 @@ public:
 
     void disconnect();
     bool connected();
-    void setHandler(const dispatcher::ReaderCallback& reader);
+    void setHandler(const ReaderCallback& reader);
 
 private:
     void doRead();
@@ -47,7 +46,7 @@ private:
     u8 buffer_[BUF_SIZE];
     boost::asio::ip::tcp::socket socket_;
     logger::Logger logger_;
-    dispatcher::ReaderCallback readerCallback_;
+    ReaderCallback readerCallback_;
     std::mutex readerCallbackMutex_;
 };
 

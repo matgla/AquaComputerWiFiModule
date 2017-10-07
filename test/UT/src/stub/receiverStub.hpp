@@ -16,10 +16,8 @@ struct ReceiverStub : public dispatcher::IDataReceiver
     ReceiverStub& operator=(const ReceiverStub&&) = delete;
     ReceiverStub& operator=(const ReceiverStub&) = delete;
     ~ReceiverStub() = default;
-    void setHandler(const dispatcher::ReaderCallback& callback) override
+    void setHandler(const ReaderCallback& callback) override
     {
-        u8 test[] = {1, 2, 3};
-        logger.info() << "Set reader callback";
         readerCallback = callback;
     }
 
@@ -30,10 +28,10 @@ struct ReceiverStub : public dispatcher::IDataReceiver
                data.length());
     }
 
-    void write(const u8* buf, const std::size_t size) override
+    void write(const BufferSpan& buffer) override
     {
-        writeBuffer.resize(writeBuffer.size() + size);
-        memcpy(writeBuffer.data() + writeBuffer.size() - size, buf, size);
+        writeBuffer.resize(writeBuffer.size() + buffer.size());
+        memcpy(writeBuffer.data() + writeBuffer.size() - buffer.size(), buffer.data(), buffer.size());
     }
 
     void write(const u8 byte) override
@@ -46,7 +44,7 @@ struct ReceiverStub : public dispatcher::IDataReceiver
         writeBuffer.clear();
     }
 
-    dispatcher::ReaderCallback readerCallback;
+    ReaderCallback readerCallback;
 
     DataBuffer writeBuffer;
     logger::Logger logger;

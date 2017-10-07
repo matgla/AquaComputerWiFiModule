@@ -5,8 +5,6 @@
 
 #include "utils/types.hpp"
 
-#include "dispatcher/handlers.hpp"
-
 namespace dispatcher
 {
 
@@ -22,7 +20,7 @@ public:
     IFrameHandler& operator=(const IFrameHandler&& other) = delete;
     IFrameHandler& operator=(const IFrameHandler& other) = delete;
 
-    virtual void onRead(const u8* buffer, std::size_t length, WriterCallback write) = 0;
+    virtual void onRead(const BufferSpan& buffer, WriterCallback write) = 0;
 
     virtual void send(const DataBuffer& data) = 0;
 };

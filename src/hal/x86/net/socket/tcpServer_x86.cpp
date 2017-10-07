@@ -23,7 +23,7 @@ namespace socket
 class TcpServer::TcpServerImpl
 {
 public:
-    TcpServerImpl(u16 port, dispatcher::ReaderCallback readerCallback)
+    TcpServerImpl(u16 port, ReaderCallback readerCallback)
         : logger_("TcpServerImpl"), socket_(ioService_),
           acceptor_(ioService_, tcp::endpoint(tcp::v4(), port)),
           readerCallback_(std::move(readerCallback))
@@ -58,7 +58,7 @@ public:
         }
     }
 
-    void setHandler(const dispatcher::ReaderCallback& reader)
+    void setHandler(const ReaderCallback& reader)
     {
         for (auto& session : sessions_)
         {
@@ -91,11 +91,11 @@ private:
     tcp::acceptor acceptor_;
     std::vector<std::unique_ptr<TcpSession>> sessions_;
     std::thread thread_;
-    dispatcher::ReaderCallback readerCallback_;
+    ReaderCallback readerCallback_;
 };
 
 
-TcpServer::TcpServer(u16 port, dispatcher::ReaderCallback readerCallback)
+TcpServer::TcpServer(u16 port, ReaderCallback readerCallback)
     : tcpServerImpl_(new TcpServerImpl(port, std::move(readerCallback)))
 {
 }
@@ -112,7 +112,7 @@ void TcpServer::stop()
     tcpServerImpl_->stop();
 }
 
-void TcpServer::setHandler(const dispatcher::ReaderCallback& reader)
+void TcpServer::setHandler(const ReaderCallback& reader)
 {
     tcpServerImpl_->setHandler(reader);
 }

@@ -49,7 +49,7 @@ protected:
     };
 
     void sendReply(messages::Control status);
-    void onRead(const u8* buffer, std::size_t length, const dispatcher::WriterCallback& writer);
+    void onRead(const BufferSpan& buffer, const WriterCallback& writer);
 
     Frame<FRAME_SIZE> rxBuffer_;
 

@@ -36,11 +36,11 @@ public:
     int baudrate_;
     u8 rawBuffer_[1024];
     container::Buffer<2048> buffer_;
-    dispatcher::ReaderCallback readerCallback_;
+    ReaderCallback readerCallback_;
 
 private:
     void loop();
-    void readCallback(const boost::system::error_code& error, std::size_t bytesTransferred);
+    void readCallback(const boost::system::error_code& error, u32 bytesTransferred);
 };
 
 SerialPort::SerialWrapper::SerialWrapper(const std::string& port, const int baudrate)
@@ -78,15 +78,15 @@ void SerialPort::SerialWrapper::loop()
 }
 
 void SerialPort::SerialWrapper::readCallback(const boost::system::error_code& error,
-                                             const std::size_t bytesTransferred)
+                                             const u32 bytesTransferred)
 {
     if (nullptr != error || bytesTransferred != 0u)
     {
         return;
     }
-    readerCallback_(rawBuffer_, bytesTransferred, // NOLINT TODO: stadnik fix it
-                    [this](const u8* buffer, std::size_t len) {
-                        serialPort_.write_some(boost::asio::buffer(buffer, len));
+    readerCallback_(BufferSpan{ rawBuffer_, bytesTransferred },
+                    [this](const BufferSpan& buffer) {
+                        serialPort_.write_some(boost::asio::buffer(buffer.data(), buffer.length()));
                     });
     loop();
 }
@@ -104,7 +104,7 @@ std::size_t SerialPort::isDataToRecive()
     return serialWrapper_->buffer_.size();
 }
 
-void SerialPort::setHandler(const dispatcher::ReaderCallback& readerCallback)
+void SerialPort::setHandler(const ReaderCallback& readerCallback)
 {
     serialWrapper_->readerCallback_ = readerCallback;
 }
@@ -114,9 +114,9 @@ void SerialPort::write(const std::string& data)
     serialWrapper_->serialPort_.write_some(boost::asio::buffer(data));
 }
 
-void SerialPort::write(const u8* buf, std::size_t length)
+void SerialPort::write(const BufferSpan& buffer)
 {
-    serialWrapper_->serialPort_.write_some(boost::asio::buffer(buf, length));
+    serialWrapper_->serialPort_.write_some(boost::asio::buffer(buffer.data(), buffer.length()));
 }
 
 void SerialPort::write(u8 byte)

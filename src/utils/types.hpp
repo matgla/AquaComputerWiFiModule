@@ -1,10 +1,13 @@
 #pragma once
-#include <cstdint>
 
+#include <cstdint>
+#include <functional>
 #include <vector>
 #include <string>
 #include <sstream>
 #include <iomanip>
+
+#include <gsl/span>
 
 using u8 = uint8_t;
 using u16 = uint16_t;
@@ -17,6 +20,15 @@ using i32 = int32_t;
 using i64 = int64_t;
 
 using DataBuffer = std::vector<u8>;
+
+using BufferSpan = gsl::span<const u8>;
+using BufferIndexType = BufferSpan::index_type;
+
+using WriterCallback = std::function<void(const BufferSpan& buffer)>;
+using ReaderCallback = std::function<void(const BufferSpan& buffer, const WriterCallback& writer)>;
+
+void defaultReader(const BufferSpan& buffer, const WriterCallback& writer);
+void defaultWriter(const BufferSpan& buffer);
 
 namespace std
 {

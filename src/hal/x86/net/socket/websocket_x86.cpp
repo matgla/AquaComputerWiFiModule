@@ -14,7 +14,6 @@
 #include "boost/beast/core/ostream.hpp"
 #include "boost/beast/http/field.hpp"
 #include "boost/beast/websocket/stream.hpp"
-#include "dispatcher/handlers.hpp"
 #include "logger/logger.hpp"
 #include "utils/types.hpp"
 
@@ -129,10 +128,10 @@ public:
             std::stringstream ss;
             ss << boost::beast::buffers(buffer_.data());
 
-            parent_.handler_(reinterpret_cast<const u8*>(ss.str().c_str()), // NOLINT
-                             ss.str().length(), [this](const u8* data, std::size_t length) {
+            parent_.handler_(BufferSpan{ reinterpret_cast<const u8*>(ss.str().c_str()), static_cast<u32>(ss.str().length()) }, // NOLINT
+                             [this](const BufferSpan& buffer) {
                                  //  ws_.binary(ws_.got_binary());
-                                 ws_.async_write(boost::asio::buffer(data, length),
+                                 ws_.async_write(boost::asio::buffer(buffer.data(), buffer.size()),
                                                  strand_.wrap(std::bind(&connection::on_write,
                                                                         shared_from_this(),
                                                                         std::placeholders::_1)));
@@ -164,7 +163,7 @@ public:
         WebSocketWrapper& parent_;
     };
 
-    WebSocketWrapper(std::string uri, const u16 port, dispatcher::ReaderCallback handler)
+    WebSocketWrapper(std::string uri, const u16 port, ReaderCallback handler)
         : uri_(std::move(uri)), port_(port), sock_(ios_), acceptor_(ios_), work_(ios_),
           handler_(std::move(handler))
     {
@@ -177,7 +176,7 @@ public:
     WebSocketWrapper& operator=(const WebSocketWrapper&& other) = delete;
     WebSocketWrapper& operator=(const WebSocketWrapper& other) = delete;
 
-    void setHandler(const dispatcher::ReaderCallback& reader)
+    void setHandler(const ReaderCallback& reader)
     {
         handler_ = reader;
     }
@@ -274,7 +273,7 @@ public:
     }
 
 protected:
-    dispatcher::ReaderCallback handler_;
+    ReaderCallback handler_;
     boost::asio::io_service ios_;                         // The io_service, required
     tcp::socket sock_;                                    // Holds accepted connections
     tcp::endpoint ep_;                                    // The remote endpoint during accept
@@ -323,7 +322,7 @@ public:
 };
 
 
-WebSocket::WebSocket(const std::string& uri, const u16 port, dispatcher::ReaderCallback handler)
+WebSocket::WebSocket(const std::string& uri, const u16 port, ReaderCallback handler)
     : webSocketWrapper_(new WebSocketWrapper(uri, port, std::move(handler)))
 {
     websocket::permessage_deflate pmd;
@@ -335,7 +334,7 @@ WebSocket::WebSocket(const std::string& uri, const u16 port, dispatcher::ReaderC
 
 WebSocket::~WebSocket() = default;
 
-void WebSocket::setHandler(const dispatcher::ReaderCallback& handler)
+void WebSocket::setHandler(const ReaderCallback& handler)
 {
     webSocketWrapper_->setHandler(handler);
 }
